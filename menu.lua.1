@@ -1,0 +1,99 @@
+local Shared = ... -- cfgpath, name, askAI
+local State = Shared.State
+local default = Shared.default
+local utils = Shared.utils
+
+local function isReachable (fname)
+  if type(fname)=="boolean" then return fname end
+  for ext in win.GetEnv("PATHEXT"):gmatch"%.[^;]+" do
+    --https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-searchpathw
+    local filename = win.SearchPath(nil,fname,ext)
+    if filename then
+      return not win.GetFileAttr(filename):find"d"
+    end
+  end
+end
+
+local function chooseCfg (prompt)
+  if State.isDlgOpened then return end
+  local _, filename = pcall(utils.readFile, default)
+  local items = {}
+  local empty = true
+  far.RecursiveSearch(Shared.cfgpath, "*.lua.cfg>>DH", function (item, pathname)
+    local cfg = utils.loadCfg(pathname)
+    local reachable = isReachable(cfg.info.exe)
+    empty = empty and not reachable
+    table.insert(items, {
+      text = cfg.info.name,
+      hidden = not reachable,
+      grayed = not reachable,
+      selected = item.FileName==filename,
+      FileName = item.FileName,
+      pathname = pathname,
+      cfg = cfg,
+    })
+    return nil
+  end)
+  local function toggleHidden ()
+    for _,item in ipairs(items) do
+      item.hidden = item.grayed and items.showall
+    end
+    items.showall = not items.showall
+  end
+  if items==0 then
+    far.Message("No config found", Shared.name, nil ,"w")
+    return
+  elseif empty then
+    toggleHidden()
+  else
+    table.sort(items, function (A,B)
+      if A.hidden==B.hidden then
+        return A.FileName:upper() < B.FileName:upper()
+      end
+      return not A.hidden and B.hidden
+    end)
+  end
+  --
+  local props = {
+    Title="Choose utility",
+    Bottom="F4, Alt+F4, Ctrl+H, Alt+F1, F1",
+    HelpTopic=Shared.hlf,
+    Id=win.Uuid("7EF7D50A-9CF2-4053-97E5-041C39DE1774"),
+  }
+  local bkeys = "Enter CtrlEnter F4 AltF4 CtrlH AltF1"
+  repeat
+    State.isDlgOpened = true
+    local item, pos = far.Menu(props, items, bkeys)
+    State.isDlgOpened = false
+    if item then
+      local bk = item.BreakKey
+      item = items[pos]
+      local info = item.cfg.info
+      if bk=="Enter" or bk=="CtrlEnter" or not bk then
+        if item.grayed then
+          win.ShellExecute(nil, nil, info.url)
+        else
+          if bk~="CtrlEnter" then
+            utils.writeFile(default, item.FileName)
+          end
+          return Shared.askAI(prompt, item.cfg)
+        end
+      elseif bk=="CtrlH" then
+        toggleHidden()
+      elseif bk=="F4" then
+        if info.config then
+          editor.Editor(info.config)
+        end
+      elseif bk=="AltF4" then
+        if far.Flags.EEC_MODIFIED==editor.Editor(item.pathname) then
+          return chooseCfg(prompt)
+        end
+      elseif bk=="AltF1" then
+        win.ShellExecute(nil, nil, info.url)
+      end
+    end
+    props.SelectIndex = pos
+  until not item
+end
+
+return chooseCfg

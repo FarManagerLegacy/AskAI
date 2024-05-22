@@ -1,0 +1,329 @@
+﻿local Shared = ... -- name, hlf, outputFilename, clearSession, chooseCfg, askAI
+local State = Shared.State
+local O = Shared.O
+
+local F = far.Flags
+local newDlgInfo do --> begin of Dlg helper <-- v0.1
+local function norm (arg, base, align)
+  if not arg or arg==0 then
+    return base
+  elseif type(arg)=="string" then
+    return base + tonumber(arg)
+  end
+  return base + arg + (arg<0 and align or 0)
+end
+local function add (self,item)
+  item[6] = item[5] or item.Selected or item.ListItems or 0
+  item[7] = item.History
+  item[8] = item.Mask
+  item[9] = item[4] or item.Flags
+  item[10] = item[2] or item.Data
+  item[11] = item.MaxLength
+  item[12] = item.UserData
+  local c = item[3] or item.coords or {}
+  local coords = {}
+  coords[1] = norm(c[1], self.x0, self.width) -- X1
+  coords[2] = norm(c[2], self.y0+self.y)      -- Y1
+  coords[3] = norm(c[3], self.x0, self.width) -- X2
+  coords[4] = not c[4] and coords[2]          -- Y2==Y1
+           or norm(self, c[4], self.y0+self.y)
+  item[1] = item[1] or item.Type
+  for i=2,5 do item[i] = coords[i-1] end
+  local i = #self+1; item.idx = i; self[i] = item;
+  if i==1 and (item[1]==F.DI_SINGLEBOX or item[1]==F.DI_DOUBLEBOX) then
+    self.x0, self.y0, self.width = self.x0+2, self.y0+1, self.width-2*2 -- accomodate "working area" params
+  end
+  if item.name then
+    if self.names[item.name] then
+      far.Message("Duplicated item name: "..item.name, "Error in config", nil ,"lw")
+    else
+      self.names[item.name] = item
+    end
+  end
+  return i
+end
+function newDlgInfo (data)
+  data.Flags = data.Flags or 0
+  assert(type(data.Flags)=="number")
+  local function params (self) -- method; returns all arguments required for far.Dialog[Init]
+    self.dlgHeight = self.y0*2 + self.y+1
+    local item = self[1] -- 1st item
+    if item[1]==F.DI_SINGLEBOX or item[1]==F.DI_DOUBLEBOX then
+      item[5] = self.dlgHeight-self.y0 -- set Y2
+    end
+    return data.Guid,-1,-1, self.dlgWidth, self.dlgHeight, data.HelpTopic, self, data.Flags, data.DlgProc, data.Param
+  end
+  local function ln (self) -- method; "current" line++
+    self.y = self.y+1
+  end
+  local self = {add=add, ln=ln, names={}, params=params }
+  self.y = 0 -- offset - relative to y0
+  local small = bit64.band(data.Flags, F.FDLG_SMALLDIALOG)~=0
+  self.x0 = small and 0 or 3 -- working area start
+  self.y0 = small and 0 or 1 --
+  self.small = small
+  self.width = assert(data.width, "width is required")
+  self.dlgWidth = self.width + self.x0*2 -- width + margins
+  return self
+end
+end--> end of Dlg helper <--
+local X2, SELECTED, FLAGS, DATA = 3,6,9,10
+
+local function populateHistory (self, hDlg, name, values)
+  local param = self.names[name]
+  if not param then return end
+  local hSettings = far.CreateSettings("far") --https://forum.farmanager.com/viewtopic.php?t=13407
+  local subkey = hSettings:OpenSubkey(0, param.History)
+  local history = hSettings:Enum(subkey)
+  hSettings:Free()
+  for _,item in ipairs(history) do
+    history[item.Name] = true
+  end
+  values[0] = ""
+  for i=#values,0,-1 do
+    if not history[values[i]] then
+      hDlg:send(F.DM_ADDHISTORY, param.idx, values[i])
+    end
+  end
+end
+
+local function getEnvValues (list)
+  local t = {}
+  for var in pairs(list) do
+    local v = win.GetEnv(var)
+    if v then table.insert(t,v) end
+  end
+  return t
+end
+
+local function isOpened (filename)
+  for i=1,far.AdvControl"ACTL_GETWINDOWCOUNT" do
+    if far.AdvControl("ACTL_GETWINDOWINFO", i).Name==filename then
+      return true
+    end
+  end
+end
+
+local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
+local SESSION = "default"
+local _prompt = "Ask any &question (editor selection will be included with request)"
+local function main (cfg, prompt, context)
+  if State.isDlgOpened then return end
+  cfg.params = {}
+  for i=1,debug.getinfo(cfg.applyParamsFn, "u").nparams do
+    local name = debug.getlocal(cfg.applyParamsFn, i)
+    cfg.params[i] = name
+    cfg.params[name] = i
+  end
+  local canSession = cfg.info.clearSession or cfg.info.sessionFile
+
+  local width = 86
+  local flags = O.smallDlg and F.FDLG_SMALLDIALOG or 0
+  local maxW = Far.Width
+  if width+(O.smallDlg and 0 or 3*2)>maxW then
+    flags = F.FDLG_SMALLDIALOG
+    width = math.min(maxW, width)
+  end
+  local data = {
+    width=width,
+    Guid=idInput,
+    Flags=flags,
+    HelpTopic=Shared.hlf,
+  }
+  local II = newDlgInfo(data)
+  II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
+  II:add {F.DI_TEXT, _prompt}
+  II:ln() -- -- -- --
+  II:add {F.DI_EDIT, prompt, {[X2]=-1},
+    F.DIF_HOMEITEM +F.DIF_FOCUS
+    +F.DIF_HISTORY +F.DIF_USELASTHISTORY, History="AskAI prompt",
+    name="prompt"
+  }
+  II:ln() -- -- -- --
+  II:add {F.DI_TEXT, cfg.info.name, {}, F.DIF_SEPARATOR +F.DIF_CENTERGROUP}
+  II:ln() -- -- -- --
+  II:add {F.DI_CHECKBOX, "&Session", nil, canSession and F.DIF_3STATE or F.DIF_DISABLE,
+    canSession and State.useSession or 0,
+    name="chkUseSession"
+  }
+  local sessionExists = cfg.info.clearSession
+  if cfg.info.sessionFile then
+    sessionExists = win.GetFileAttr(cfg.info.sessionFile:format(SESSION))
+  end
+  II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
+    onclick=function(hDlg,idx)
+      Shared.clearSession(cfg.info, SESSION)
+      local item = hDlg:send(F.DM_GETDLGITEM, idx)
+      item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
+      hDlg:send(F.DM_SETDLGITEM, idx, item)
+    end, name="btnClrSession"
+  }
+  local x2 = 18
+  II:add {F.DI_CHECKBOX, "st&ream", {x2}, cfg.params.stream and 0 or F.DIF_DISABLE, State.useStream,
+    name="chkStream"
+  }
+  II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
+    onclick=function (hDlg,idx)
+      hDlg:send(F.DM_ENABLE, idx+1, hDlg:send(F.DM_GETCHECK, idx)==0 and 0 or 1)
+    end, name="chkWrap"
+  }
+  II:add {F.DI_FIXEDIT, State.wrapAt, {-3, nil, -1},
+    (State.useWrap~=0 and 0 or F.DIF_DISABLE) +F.DIF_MASKEDIT, Mask="999",
+    name="edtWrap"
+  }
+  II:ln() -- -- -- --
+
+  local hk_i = 0
+  local function formatLabel (param)
+    hk_i = hk_i+1
+    return (hk_i==10 and "&0" or hk_i<10 and "&"..hk_i
+         or hk_i<20 and "&"..string.char(hk_i + string.byte"a" - 11) or " ")..param
+  end
+  for _,param in ipairs(cfg.params) do
+    if not ({context=1, prompt=1, session=1, stream=1})[param] then
+      if hk_i==0 then
+        II:add {F.DI_TEXT, "&Parameters", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
+        II:ln() -- -- -- --
+      end
+      local col2 = math.max(x2, param:len()+1)
+      II:add {F.DI_TEXT, formatLabel(param), {"-1", [X2]=col2-1}}
+      local History="AskAI param "..param
+      if not O.sharedParams[param] then
+        local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
+        History = History.." - "..baseName
+      end
+      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY, History=History,
+        name=param
+      }
+      II:ln() -- -- -- --
+    end
+  end
+  if cfg.info.env then
+    II:add {F.DI_TEXT, "Environment &variables", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
+    II:ln() -- -- -- --
+    for k,env in pairs(cfg.info.env) do
+      local var = win.GetEnv(env)
+      local col2 = math.max(x2, env:len()+1)
+      II:add {F.DI_TEXT, formatLabel(env), {"-1", [X2]=col2-1}}
+      II:add {F.DI_EDIT, var or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY, History="AskAI param "..k,
+        name="env."..k
+      }
+      II:ln() -- -- -- --
+    end
+  end
+  II:add {F.DI_TEXT, nil, nil, F.DIF_SEPARATOR}
+  II:ln() -- -- -- --
+  II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.info.config and 0 or F.DIF_DISABLE),
+    onclick=function()
+      if cfg.info.config then
+        editor.Editor(cfg.info.config)
+      end
+    end,
+  }
+  II:add {F.DI_BUTTON, "Def&inition", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
+    onclick=function(hDlg,idx)
+      if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
+        hDlg:send(F.DM_CLOSE, idx)
+        far.Timer(0, function (t)
+          t:Close()
+          Shared.askAI(prompt)
+        end)
+      end
+    end,
+  }
+  II:add {F.DI_BUTTON, "Swi&tch", nil, F.DIF_CENTERGROUP,
+    name="btnSwitch"
+  }
+  II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
+    name="btnGo"
+  }
+  data.DlgProc=function (hDlg,msg,idx,Rec)
+    local item = II[idx]
+    if msg==F.DN_INITDIALOG then
+      for param,list in pairs(cfg.info.predefined or {}) do
+        populateHistory(II, hDlg, param, list)
+      end
+      for param,list in pairs(O.stdEnvs) do
+        populateHistory(II, hDlg, param, getEnvValues(list))
+      end
+    elseif msg==F.DN_BTNCLICK then
+      if item.onclick then
+        item.onclick(hDlg,idx)
+      end
+    elseif msg==F.DN_CONTROLINPUT then
+      local key = far.InputRecordToName(Rec)
+      if key=="F3" and item.name=="chkUseSession" then
+        if cfg.info.showSession then
+          cfg.info.showSession()
+        elseif cfg.info.sessionFile then
+          local pathname = cfg.info.sessionFile:format(SESSION)
+          if win.GetFileAttr(pathname) then
+            viewer.Viewer(pathname)
+          end
+        end
+        return
+      end
+      if key==O.key then
+        hDlg:send(F.DM_CLOSE, II.names.btnSwitch.idx)
+      elseif key=="AltSubtract" then
+        hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
+      elseif key=="PgUp" then
+        hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
+      end
+    end
+  end
+
+  State.isDlgOpened = true
+  local res = far.Dialog(II:params())
+  State.isDlgOpened = false
+  if res==-1 then return end
+
+  if II[res].name=="btnGo" then
+    if cfg.info.env then
+      for k,var in pairs(cfg.info.env) do
+        local v = II.names["env."..k][DATA]
+        win.SetEnv(var, v~="" and v or nil)
+      end
+    end
+    State.useSession = II.names.chkUseSession[SELECTED]
+    State.useStream = II.names.chkStream[SELECTED]
+    State.useWrap = II.names.chkWrap[SELECTED]
+    if State.useSession==2 and not isOpened(Shared.outputFilename) then
+      Shared.clearSession(cfg.info, SESSION)
+    end
+    if not cfg.params.prompt then
+      local p = II.names.prompt[DATA]
+      if context~="" then
+        local n
+        p,n = p:gsub("{{%input%}}", context)
+        if n==0 then
+          p = p.."\n"..context
+        end
+      end
+      context = p
+    end
+    local base = {
+      context=context,
+      session=State.useSession==0 and "" or SESSION,
+      stream=State.useStream==1,
+    }
+    local args = {}
+    for i=1,#cfg.params do
+      local param = cfg.params[i]
+      local value = base[param]==nil and II.names[param][DATA] or base[param]
+      args[i] = value~="" and value or nil
+    end
+    if context~="" and not cfg.params.context then
+      cfg.info._context = context
+    end
+    local linewrap = ({[0]=nil, tonumber(II.names.edtWrap[DATA]), "dynamic"})[State.useWrap]
+    return cfg.applyParamsFn(unpack(args,1,#cfg.params)),
+           II.names.prompt[DATA],
+           linewrap
+  elseif II[res].name=="btnSwitch" then
+    Shared.chooseCfg(prompt)
+    return
+  end
+end
+
+return main

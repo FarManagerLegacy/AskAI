@@ -1,0 +1,165 @@
+local Shared = ... -- State, name
+local cfgpath = Shared.cfgpath
+local _pathjoin = Shared._pathjoin
+
+local _isWindows = package.config:sub(1,1)=="\\"
+
+local function expandEnv (str) --??linux
+  return (str:gsub("%%([%w_]-)%%", win.GetEnv))
+end
+
+local function _quote (str)
+  return '"'..str..'"'
+end
+
+local function _optional (...)
+  if select("#", ...)==1 then
+    return ... or ""
+  end
+  local key, value, arg = ...
+  if not value then return "" end
+  if arg then
+    if type(arg)=="function" then
+      value = arg(select(4, ...))
+    else--if arg~='"' then??
+      value = arg:format(value)
+    end
+  end
+  return key.." ".._quote(value)
+end
+
+local function readFile (pathname)
+  local fp = assert(io.open(pathname, "r"))
+  local content = fp:read()
+  fp:close()
+  return content
+end
+
+local function writeFile (pathname, content)
+  local fp = assert(io.open(pathname, "w"))
+  fp:write(content)
+  fp:close()
+end
+
+local todel = {}
+local function cleanup()
+  for _, pathname in ipairs(todel) do
+    win.DeleteFile(pathname)
+  end
+  todel = {}
+end
+
+local function _tmpfile (filename, content)
+  local pathname = _pathjoin(Shared._tmp, filename)
+  writeFile(pathname, content)
+  table.insert(todel, pathname)
+  return '"'..pathname..'"'
+end
+
+local _shellTemplate = _isWindows
+  and win.GetEnv"ComSpec"..' /c"%s 2>&1"'
+  or "sh -c '%s 2>&1'" --??win.GetEnv"SHELL"
+local function _pipeOut (exe, context)
+  return function (args)
+    args[0] = exe
+    local cmd = table.concat(args, " ", 0)
+    if context then -- env
+      cmd = (_isWindows and "type %s|" or "cat %s|"):format(_tmpfile("file.input", context))..cmd
+    end
+    return function (cb)
+      local pipe = io.popen(_shellTemplate:format(cmd), "r")
+      repeat
+        local chunk = pipe:read(5)
+        if not chunk then break end
+        while not chunk:isvalid() do --ensure valid utf-8
+          local extra = pipe:read(1)
+          if extra then chunk = chunk..extra; else break; end
+        end
+        cb(chunk)
+      until false
+      cb()
+      pipe:close()
+      cleanup()
+    end
+  end
+end
+
+if pcall(require, "piper") then
+  local STILL_ACTIVE = 259
+  function _pipeOut (exe, context)
+    return function (args)
+      args[0] = exe
+      local cmd = table.concat(args, " ", 0)
+      return function (cb)
+        local prc = require"piper"(cmd, {input=context})
+        if prc.ExitCode==STILL_ACTIVE or prc.ExitCode==0 then
+          for chunk in prc.chunks do
+            cb(chunk)
+          end
+          cb()
+        else -- debug
+          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all, Shared.name, nil, "wl")
+        end
+        cleanup()
+      end
+    end
+  end
+end
+
+local function _import (filename, ...)
+  local pathname = _pathjoin(cfgpath,filename)
+  local fn = assert(loadfile(pathname))
+  local env = getfenv(2)
+  local name = env.name
+  local ret = setfenv(fn,env)(Shared.State, cfgpath, ...)
+  if name and name~=env.name then
+    env.name = ("%s [%s]"):format(name, env.name)
+  end
+  return ret
+end
+
+local mt = setmetatable({
+  _import=_import,
+  _isWindows=_isWindows,
+  _optional=_optional,
+  _pathjoin=_pathjoin,
+  _pipeOut=_pipeOut,
+  _quote=_quote,
+  _tmpfile=_tmpfile,
+}, { __index=_G })
+local function loadCfg (pathname)
+  local env = setmetatable({}, { __index=mt })
+  local fn = assert(loadfile(pathname))
+  local applyParamsFn = setfenv(fn, env)(Shared.State, cfgpath)
+  for _,param in ipairs{"config", "sessionFile"} do
+    if env[param] then
+      env[param] = expandEnv(env[param])
+    end
+  end
+  return {
+    applyParamsFn = applyParamsFn,
+    info = env,
+    pathname = pathname,
+  }
+end
+
+local function clearSession (info, session)
+  if info.clearSession then
+    if type(info.clearSession)=="function" then
+      info.clearSession(session)
+    else
+      local cmd = info.clearSession:format(session)
+      win.system(_shellTemplate:format(cmd))
+    end
+  elseif info.sessionFile then
+    local pathname = info.sessionFile:format(session)
+    win.DeleteFile(pathname)
+  end
+end
+
+return {
+  readFile=readFile,
+  writeFile=writeFile,
+  loadCfg=loadCfg,
+  clearSession=clearSession,
+}
