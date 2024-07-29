@@ -1,7 +1,17 @@
 apibase="https://api.groq.com/openai/v1"
 apikey="ENTER YOUR KEY"
 
---model="gemma-7b-it"
-model="llama3-70b-8192"
---model="llama3-8b-8192"
---model="mixtral-8x7b-32768"
+model="llama-3.1-70b-versatile"
+
+--[[
+"gemma2-9b-it"
+"gemma-7b-it"
+"llama-3.1-70b-versatile"
+"llama-3.1-8b-instant"
+"llama3-70b-8192"
+"llama3-8b-8192"
+"llama3-groq-70b-8192-tool-use-preview"
+"llama3-groq-8b-8192-tool-use-preview"
+"mixtral-8x7b-32768"
+"whisper-large-v3"
+--]]
