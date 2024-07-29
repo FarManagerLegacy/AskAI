@@ -143,6 +143,7 @@
         mistralai/mistral-7b-instruct:free
 
     </details>
+- [Lepton AI](https://www.lepton.ai/playground)
 
 Существуют и другие провайдеры, предоставляющие совместимый интерфейс.
 
