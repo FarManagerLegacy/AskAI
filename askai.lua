@@ -57,11 +57,14 @@ local function HelpTopic (name)
 end
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
-local function progress (text, title)
-  local len = math.max(text:len(), title and title:len() or 0, 7)
+local function progress (text, title, status)
+  local MINLEN = 22
+  local len = math.max(text:len(), title and title:len() or 0, MINLEN)
+  local mid = len/2
   local items = {
-    {F.DI_SINGLEBOX,0,0,len+4,3,0,0,0,F.DIF_NONE,        title},
-    {F.DI_TEXT,     2,1,    0,1,0,0,0,F.DIF_CENTERGROUP, text},
+    {F.DI_SINGLEBOX,0,  0,len+4,3,0,0,0,F.DIF_NONE,        title},
+    {F.DI_TEXT,     0,  1,0,    1,0,0,0,F.DIF_CENTERGROUP, text},
+    {F.DI_TEXT,     mid-1,2,mid-1, 2,0,0,0,F.DIF_CENTERTEXT, status},
   }
   return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL)
 end
@@ -131,10 +134,13 @@ local function askAI (prompt, cfg)
     local start = Far.UpTime
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
-    processStream (function (chunk)
+    processStream(function (chunk, title)
       if start and hDlg then
         hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
-        hDlg:send(F.DM_SETTEXT, 1, (math.ceil((Far.UpTime-start)/100)/10).." s")
+        hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
+        if title then
+          hDlg:send(F.DM_SETTEXT, 1, title)
+        end
         start = false
       end
       for space,word in _words(chunk) do
