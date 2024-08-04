@@ -1,5 +1,5 @@
 apibase="https://api.groq.com/openai/v1"
-apikey="ENTER YOUR KEY"
+apikey=assert(win.GetEnv"GROQ_API_KEY", "set GROQ_API_KEY environment variable")
 
 model="llama-3.1-70b-versatile"
 
