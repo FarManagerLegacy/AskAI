@@ -171,7 +171,7 @@ utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
   State=State, _pathjoin=_pathjoin, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
 }
 chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
-  State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, hlf=HelpTopic "UtilitiesList", askAI=askAI,
+  State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, hlf=HelpTopic "UtilitiesMenu", askAI=askAI,
 }
 dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
   O=O, State=State,
