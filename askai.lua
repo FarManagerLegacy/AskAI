@@ -134,6 +134,7 @@ local function askAI (prompt, cfg)
     local start = Far.UpTime
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
+    local code = false
     processStream(function (chunk, title)
       if start and hDlg then
         hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
@@ -145,10 +146,15 @@ local function askAI (prompt, cfg)
       end
       for space,word in _words(chunk) do
         editor.InsertText(Id, space)
-        if linewrap and editor.GetInfo(Id).CurPos + word:len() > linewrap then
+        if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
           editor.InsertText(Id, "\n")
         end
         editor.InsertText(Id, word)
+        if linewrap then
+          local backticks = space:match"\n" and word:match("^```")
+                         or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
+          if backticks then code = not code end
+        end
       end
       editor.Redraw(Id)
     end)
