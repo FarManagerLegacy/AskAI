@@ -288,6 +288,7 @@ local function main (cfg, prompt, context)
     State.useSession = II.names.chkUseSession[SELECTED]
     State.useStream = II.names.chkStream[SELECTED]
     State.useWrap = II.names.chkWrap[SELECTED]
+    State.wrapAt = II.names.edtWrap[DATA]
     if State.useSession==2 and not isOpened(Shared.outputFilename) then
       Shared.clearSession(cfg.info, SESSION)
     end
