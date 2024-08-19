@@ -2,7 +2,7 @@
 local nfo = Info { _filename or ...,
   name        = "Ask AI";
   description = "bring ChatGPT to Far";
-  version     = "1"; --http://semver.org/lang/ru/
+  version     = "1.1"; --https://semver.org/lang/ru/
   author      = "jd";
   url         = "https://forum.farmanager.com/viewtopic.php?t=13447";
   id          = "4618DD57-B187-441D-BFE2-B3C7CAD37B39";
@@ -12,6 +12,7 @@ local nfo = Info { _filename or ...,
   options     = {
     key = "CtrlB",
     --keyList = "CtrlB:Hold",
+    keyCopy = "CtrlShiftIns",
     sharedParams = { apikey=1, apibase=1, max_tokens=1, model=1, temperature=1, top_p=1, top_k=1, role=1 },
     --smallDlg = true,
     stdEnvs = {
@@ -204,6 +205,41 @@ if Macro then
     condition=function() return not State.isDlgOpened end;
     action=function()
       mf.acall(chooseCfg)
+    end;
+  }
+  Macro { description=nfo.name..": copy paragraphs";
+    area="Editor"; key=O.keyCopy;
+    filemask="Ask AI.md";
+    id="353A2271-B739-41CE-AD47-BFDD109CBB17";
+    condition=function() return Object.Selected end;
+    action=function()
+      mf.beep()
+      far.CopyToClipboard((Editor.SelValue:gsub(" \r?\n"," ")))
+    end;
+  }
+  Macro { description=nfo.name..": unwrap text";
+    area="Editor"; key="AltF2";
+    filemask="Ask AI.md";
+    id="F7E6330A-182A-41BE-8EDF-0EFC4C8168A8";
+    action=function()
+      local ei = editor.GetInfo()
+      local id = ei.EditorID
+      local n = 0
+      for i=1, ei.TotalLines do
+        local line = editor.GetString(id,i,0)
+        if line.StringText:match"%S $" then
+          editor.SetString(id, i, line.StringText, "")
+          n = n+1
+        end
+      end
+      if n>0 and editor.SaveFile(id, ei.FileName) then --reload
+        local title = editor.GetTitle(id)
+        editor.Quit(id)
+        local EFLAGS = {EF_NONMODAL=1, EF_IMMEDIATERETURN=1, EF_DELETEONLYFILEONCLOSE=1, EF_DISABLEHISTORY=1}
+        editor.Editor(ei.FileName, title, nil,nil,nil,nil,EFLAGS,nil,nil,65001)
+      else
+        mf.beep()
+      end
     end;
   }
   return
