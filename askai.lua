@@ -146,7 +146,8 @@ local function askAI (prompt, cfg)
         start = false
       end
       for space,word in _words(chunk) do
-        editor.InsertText(Id, space)
+        editor.InsertText(Id, space:gsub("\r\n","\n")
+                                   :gsub("\r$","")) -- partial
         if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
           editor.InsertText(Id, "\n")
         end
