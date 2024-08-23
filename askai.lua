@@ -207,12 +207,39 @@ if Macro then
       mf.acall(chooseCfg)
     end;
   }
-  Macro { description=nfo.name..": copy paragraphs";
+  local codeStart,codeEnd = "^%s*```%S+$", "^%s*```$"
+  Macro { description=nfo.name..": copy code / paragraphs";
     area="Editor"; key=O.keyCopy;
     filemask="Ask AI.md";
     id="353A2271-B739-41CE-AD47-BFDD109CBB17";
-    condition=function() return Object.Selected end;
     action=function()
+      if not Object.Selected then
+        local ei = editor.GetInfo()
+        local id = ei.EditorID
+        local start,finish
+        for i=ei.CurLine,1,-1 do
+          local line = editor.GetString(id,i,3)
+          if line:match(codeStart) then
+            start = i; break
+          elseif line:match(codeEnd) and i~=ei.CurLine then
+            return
+          end
+        end
+        if not start then return end
+        local from = ei.CurLine + (start==ei.CurLine and 1 or 0)
+        for i=from,ei.TotalLines do
+          local line = editor.GetString(id,i,3)
+          if line:match(codeEnd) then
+            finish = i; break
+          elseif line:match(codeStart) then -- error
+            return
+          end
+        end
+        if not finish then
+          return
+        end
+        editor.Select(id, F.BTYPE_STREAM, start+1, 1, 0, finish-start)
+      end
       mf.beep()
       far.CopyToClipboard((Editor.SelValue:gsub(" \r?\n"," ")))
     end;
