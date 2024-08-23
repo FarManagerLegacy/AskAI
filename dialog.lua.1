@@ -70,6 +70,7 @@ end--> end of Dlg helper <--
 local X2, SELECTED, FLAGS, DATA = 3,6,9,10
 
 local function populateHistory (self, hDlg, name, values)
+  if type(values)~="table" then values = {values} end
   local param = self.names[name]
   if not param then return end
   local hSettings = far.CreateSettings("far") --https://forum.farmanager.com/viewtopic.php?t=13407
