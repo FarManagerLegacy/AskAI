@@ -3,8 +3,13 @@ local State = Shared.State
 local default = Shared.default
 local utils = Shared.utils
 
-local function isReachable (fname)
+local function isReachable (fname, source)
   if type(fname)=="boolean" then return fname end
+  local _type = type(fname)
+  if _type~="string" then
+    far.Message("exe: string or boolean expected, got ".._type, source, nil, "w")
+    return
+  end
   for ext in win.GetEnv("PATHEXT"):gmatch"%.[^;]+" do
     --https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-searchpathw
     local filename = win.SearchPath(nil,fname,ext)
@@ -21,7 +26,7 @@ local function chooseCfg (prompt)
   local empty = true
   far.RecursiveSearch(Shared.cfgpath, "*.lua.cfg>>DH", function (item, pathname)
     local cfg = utils.loadCfg(pathname)
-    local reachable = isReachable(cfg.info.exe)
+    local reachable = isReachable(cfg.info.exe, item.FileName)
     empty = empty and not reachable
     table.insert(items, {
       text = cfg.info.name,
