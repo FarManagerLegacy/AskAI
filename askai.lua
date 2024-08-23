@@ -6,12 +6,13 @@ local nfo = Info { _filename or ...,
   author      = "jd";
   url         = "https://forum.farmanager.com/viewtopic.php?t=13447";
   id          = "4618DD57-B187-441D-BFE2-B3C7CAD37B39";
-  minfarversion = {3,0,0,5047,0}; --FDLG_NONMODAL
+  minfarversion = {3,0,0,6279,0}; --actl: LuaMacro 810
   --files       = "*.lua.cfg;*.preset";--todo
 
   options     = {
     key = "CtrlB",
     --keyList = "CtrlB:Hold",
+    --keyOutput = "CtrlB:Double",
     keyCopy = "CtrlShiftIns",
     sharedParams = { apikey=1, apibase=1, max_tokens=1, model=1, temperature=1, top_p=1, top_k=1, role=1 },
     --smallDlg = true,
@@ -70,6 +71,35 @@ local function progress (text, title, status)
   return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL)
 end
 
+local function openOutput (mode)
+  local CP = 65001
+  local curModal = bit64.band(actl.GetWindowInfo().Flags, F.WIF_MODAL)==F.WIF_MODAL
+  local opened
+  for i=actl.GetWindowCount(),1,-1 do
+    local wi = actl.GetWindowInfo(i)
+    if wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename then
+      opened = true
+      if curModal then editor.Quit(wi.Id) end
+      break
+    end
+  end
+  if mode=="existing" then
+    if not (opened or win.GetFileAttr(outputFilename)) then
+      mf.beep(); return
+    end
+  elseif not opened then
+    win.DeleteFile(outputFilename)
+  end
+  local res
+  if not curModal then
+    local tryNotModal = F.EF_DISABLEHISTORY +F.EF_NONMODAL +F.EF_IMMEDIATERETURN +F.EF_OPENMODE_USEEXISTING
+    res = editor.Editor(outputFilename, nil, nil, nil, nil, nil, tryNotModal, nil, nil, CP)
+  end
+  if curModal or res==F.EEC_LOADING_INTERRUPTED then
+    editor.Editor(outputFilename, nil, nil, nil, nil, nil, F.EF_DISABLEHISTORY +F.EF_OPENMODE_NEWIFOPEN, nil, nil, CP)
+  end
+end
+
 local buf = ""
 local function _words (chunk)
   if chunk then
@@ -106,7 +136,7 @@ local function askAI (prompt, cfg)
   if not processStream then return end
   far.Timer(0, function (t)
     t:Close()
-    local wi = far.AdvControl(F.ACTL_GETWINDOWINFO)
+    local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
     local Id = wi.Id
     editor.SetTitle(Id, "Fetching response...")
@@ -162,17 +192,12 @@ local function askAI (prompt, cfg)
     end)
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
     editor.UndoRedo(Id, F.EUR_END)
+    editor.SaveFile(Id)
     if hDlg then hDlg:send(F.DM_CLOSE) end
     editor.SetTitle(Id, "AI assistant response:")
   end)
 
-  local CP = 65001
-  local flags = F.EF_DELETEONLYFILEONCLOSE +F.EF_DISABLEHISTORY
-  local tryNotModal = flags +F.EF_NONMODAL +F.EF_IMMEDIATERETURN +F.EF_OPENMODE_USEEXISTING
-  local res = editor.Editor(outputFilename, nil, nil, nil, nil, nil, tryNotModal, nil, nil, CP)
-  if res==F.EEC_LOADING_INTERRUPTED then
-    editor.Editor(outputFilename, nil, nil, nil, nil, nil, flags +F.EF_OPENMODE_NEWIFOPEN, nil, nil, CP)
-  end
+  openOutput()
 end
 
 utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
@@ -198,6 +223,14 @@ if Macro then
     condition=function() return not State.isDlgOpened end;
     action=function()
       mf.acall(askAI)
+    end;
+  }
+  Macro { description=nfo.name..": reopen output";
+    area="Common"; key=O.keyOutput or O.key..":Double";
+    id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
+    condition=function() return not State.isDlgOpened end;
+    action=function()
+      openOutput("existing")
     end;
   }
   Macro { description=nfo.name..": choose cfg";
@@ -263,7 +296,7 @@ if Macro then
       if n>0 and editor.SaveFile(id, ei.FileName) then --reload
         local title = editor.GetTitle(id)
         editor.Quit(id)
-        local EFLAGS = {EF_NONMODAL=1, EF_IMMEDIATERETURN=1, EF_DELETEONLYFILEONCLOSE=1, EF_DISABLEHISTORY=1}
+        local EFLAGS = {EF_NONMODAL=1, EF_IMMEDIATERETURN=1, EF_DISABLEHISTORY=1}
         editor.Editor(ei.FileName, title, nil,nil,nil,nil,EFLAGS,nil,nil,65001)
       else
         mf.beep()
