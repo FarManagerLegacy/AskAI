@@ -56,6 +56,13 @@ local function _tmpfile (filename, content)
   return '"'..pathname..'"'
 end
 
+local function check (key)
+  repeat
+    local k = win.ExtractKeyEx()
+    if k and far.InputRecordToName(k)==key then return true end
+  until not k
+end
+
 local _shellTemplate = _isWindows
   and win.GetEnv"ComSpec"..' /c"%s 2>&1"'
   or "sh -c '%s 2>&1'" --??win.GetEnv"SHELL"
@@ -69,6 +76,7 @@ local function _pipeOut (exe, context)
     return function (cb)
       local pipe = io.popen(_shellTemplate:format(cmd), "r")
       repeat
+        if check"Esc" then break end
         local chunk = pipe:read(5)
         if not chunk then break end
         while not chunk:isvalid() do --ensure valid utf-8
@@ -94,6 +102,7 @@ if pcall(require, "piper") then
         local prc = require"piper"(cmd, {input=context})
         if prc.ExitCode==STILL_ACTIVE or prc.ExitCode==0 then
           for chunk in prc.chunks do
+            if check"Esc" then break end
             cb(chunk)
           end
           cb()
