@@ -100,7 +100,7 @@ local function openOutput (mode)
   end
 end
 
-local buf = ""
+local buf
 local function _words (chunk)
   if chunk then
     buf = buf..chunk
@@ -166,6 +166,7 @@ local function askAI (prompt, cfg)
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
     local code = false
+    buf = ""
     local _,err = pcall(processStream, function (chunk, title)
       if start and hDlg then
         hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
