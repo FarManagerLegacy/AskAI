@@ -166,7 +166,7 @@ local function askAI (prompt, cfg)
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
     local code = false
-    processStream(function (chunk, title)
+    local _,err = pcall(processStream, function (chunk, title)
       if start and hDlg then
         hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
         hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
@@ -190,6 +190,9 @@ local function askAI (prompt, cfg)
       end
       editor.Redraw(Id)
     end)
+    if err then
+      far.Message(err:gsub("\t", "   "), "Error", nil, "wl")
+    end
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
     editor.UndoRedo(Id, F.EUR_END)
     editor.SaveFile(Id)
