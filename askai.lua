@@ -190,7 +190,7 @@ local function askAI (prompt, cfg)
       end
       editor.Redraw(Id)
     end)
-    if err then
+    if err and err~="interrupted" then
       far.Message(err:gsub("\t", "   "), "Error", nil, "wl")
     end
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
