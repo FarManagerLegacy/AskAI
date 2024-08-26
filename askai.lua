@@ -245,16 +245,19 @@ if Macro then
       mf.acall(chooseCfg)
     end;
   }
-  local codeStart,codeEnd = "^%s*```%S+$", "^%s*```$"
+  local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"
   Macro { description=nfo.name..": copy code / paragraphs";
     area="Editor"; key=O.keyCopy;
     filemask="Ask AI.md";
     id="353A2271-B739-41CE-AD47-BFDD109CBB17";
     action=function()
-      if not Object.Selected then
+      local sel
+      if Object.Selected then
+        sel = Editor.SelValue:gsub(" \r?\n", " ") -- unwrap
+      else -- find code block
         local ei = editor.GetInfo()
         local id = ei.EditorID
-        local start,finish
+        local start,finish,indent
         for i=ei.CurLine,1,-1 do
           local line = editor.GetString(id,i,3)
           if line:match(codeStart) then
@@ -267,19 +270,35 @@ if Macro then
         local from = ei.CurLine + (start==ei.CurLine and 1 or 0)
         for i=from,ei.TotalLines do
           local line = editor.GetString(id,i,3)
-          if line:match(codeEnd) then
+          indent = line:match(codeEnd)
+          if indent then
             finish = i; break
           elseif line:match(codeStart) then -- error
             return
           end
         end
-        if not finish then
+        if not finish then -- code block not found
           return
         end
         editor.Select(id, F.BTYPE_STREAM, start+1, 1, 0, finish-start)
+        sel = Editor.SelValue
+        if indent:len()>0 then -- trim extra indent
+          local arr = {}
+          for line,eol in sel:gmatch"(.-)(\r?\n)" do
+            if line:len()~=0 then
+              if line:sub(1, indent:len())==indent then
+                line = line:sub(indent:len()+1, -1)
+              else -- something is wrong
+                arr = false; break
+              end
+            end
+            arr[#arr+1] = line..eol
+          end
+          if arr then sel = table.concat(arr) end
+        end
       end
       mf.beep()
-      far.CopyToClipboard((Editor.SelValue:gsub(" \r?\n"," ")))
+      far.CopyToClipboard(sel)
     end;
   }
   Macro { description=nfo.name..": unwrap text";
