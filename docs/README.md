@@ -60,7 +60,7 @@
     - tableshape: <https://github.com/leafo/tableshape>
   - `lib32`/`64`:
     - LuaSocket, LuaSec: <https://github.com/FarManagerLegacy/LuaBinaries/releases>  
-      и их зависимости: [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html), [MS Visual C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
+      и их зависимости: [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html), (для некоторых билдов) [MS Visual C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
     - Lua CJSON: см. <https://github.com/FarManagerLegacy/LuaBinaries>
 
 ## Настройка

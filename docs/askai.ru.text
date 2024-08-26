@@ -89,7 +89,7 @@ _Дополнительные макросы_, активные в окне с �
     - tableshape: https://github.com/leafo/tableshape
   - `lib32`/`64`:
     - LuaSocket, LuaSec: https://github.com/FarManagerLegacy/LuaBinaries/releases  
-      и их зависимости: [OpenSSL], [MS Visual C++ Redist].
+      и их зависимости: [OpenSSL], (для некоторых билдов) [MS Visual C++ Redist].
     - Lua CJSON: см. https://github.com/FarManagerLegacy/LuaBinaries
 
 [OpenSSL]: https://slproweb.com/products/Win32OpenSSL.html
