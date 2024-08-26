@@ -106,7 +106,7 @@ if pcall(require, "piper") then
           end
           cb()
         else -- debug
-          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all, Shared.name, nil, "wl")
+          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all:gsub("\r\n","\n"), Shared.name, nil, "wl")
         end
         cleanup()
       end
