@@ -63,18 +63,15 @@ local function check (key)
   until not k
 end
 
-local _shellTemplate = _isWindows
-  and win.GetEnv"ComSpec"..' /c"%s 2>&1"'
-  or "sh -c '%s 2>&1'" --??win.GetEnv"SHELL"
 local function _pipeOut (exe, context)
   return function (args)
-    args[0] = exe
+    args[0] = _quote(exe)
     local cmd = table.concat(args, " ", 0)
     if context then -- env
       cmd = (_isWindows and "type %s|" or "cat %s|"):format(_tmpfile("file.input", context))..cmd
     end
     return function (cb)
-      local pipe = io.popen(_shellTemplate:format(cmd), "r")
+      local pipe = io.popen(_quote(cmd).." 2>&1", "r")
       repeat
         if check"Esc" then break end
         local chunk = pipe:read(5)
@@ -94,12 +91,14 @@ end
 
 if pcall(require, "piper") then
   local STILL_ACTIVE = 259
+  local _shell = win.GetEnv"ComSpec".." /c"
   function _pipeOut (exe, context)
     return function (args)
-      args[0] = exe
+      args[0] = _quote(exe)
       local cmd = table.concat(args, " ", 0)
       return function (cb)
-        local prc = require"piper"(cmd, {input=context})
+        local prc = require"piper"(_shell.._quote(cmd), {input=context})
+        if not prc then return end
         if prc.ExitCode==STILL_ACTIVE or prc.ExitCode==0 then
           for chunk in prc.chunks do
             if check"Esc" then break end
@@ -158,7 +157,7 @@ local function clearSession (info, session)
       info.clearSession(session)
     else
       local cmd = info.clearSession:format(session)
-      win.system(_shellTemplate:format(cmd))
+      win.system(cmd)
     end
   elseif info.sessionFile then
     local pathname = info.sessionFile:format(session)
