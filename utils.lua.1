@@ -100,7 +100,7 @@ if pcall(require, "piper") then
         local prc = require"piper"(_shell.._quote(cmd), {input=context})
         if not prc then return end
         if prc.ExitCode==STILL_ACTIVE or prc.ExitCode==0 then
-          for chunk in prc.chunks do
+          for chunk in prc.utf8chunks do
             if check"Esc" then break end
             cb(chunk)
           end
