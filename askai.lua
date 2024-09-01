@@ -122,16 +122,26 @@ end
 
 local chooseCfg, dialog, utils --fwd decl.
 local default = _pathjoin(cfgpath, "default")
-local function askAI (prompt, cfg)
-  if not cfg then
+local function getCfg (cfgname)
+  if not cfgname then
     local success, filename = pcall(utils.readFile, default)
     local pathname = success and _pathjoin(cfgpath, filename)
-    if not pathname or not win.GetFileAttr(pathname) then
-      chooseCfg(prompt)
-      return
+    return pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
+  elseif type(cfgname)=="string" then
+    if cfgname=="" then return end -- use chooseCfg menu
+    local pathname
+    if cfgname:match"[\\/]" or cfgname:match"%.lua%.cfg$" then
+      pathname = far.ConvertPath(cfgname)
+    else
+      pathname = _pathjoin(cfgpath, cfgname..".lua.cfg")
     end
-    cfg = utils.loadCfg(pathname)
+    return utils.loadCfg(pathname)
   end
+end
+
+local function askAI (prompt, cfgname)
+  local cfg = getCfg(cfgname) or cfgname
+  if not cfg then return chooseCfg(prompt) end
   local processStream, prompt, linewrap = dialog(cfg, prompt, Editor.SelValue)
   if not processStream then return end
   far.Timer(0, function (t) -- workaround for https://bugs.farmanager.com/view.php?id=3044
@@ -169,6 +179,7 @@ local function askAI (prompt, cfg)
     buf = ""
     local _,err = pcall(processStream, function (chunk, title)
       if start and hDlg then
+        repeat until not win.ExtractKeyEx() -- clean kbd buffer
         hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
         hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
         if title then
@@ -331,7 +342,6 @@ end
 
 if _cmdline=="" then
   sh.acall(askAI)
-  --sh.acall(chooseCfg)
 elseif _cmdline then
   askAI(_cmdline)
 else
