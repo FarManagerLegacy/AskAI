@@ -114,16 +114,16 @@ if pcall(require, "piper") then
   end
 end
 
-local function _import (filename, ...)
+local function _import (filename, env, ...)
   local pathname = _pathjoin(cfgpath,filename)
   local fn = assert(loadfile(pathname))
-  local env = getfenv(2)
+  env = env or getfenv(2) -- parent _ENV
   local name = env.name
   local ret = setfenv(fn,env)(Shared.State, cfgpath, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
-  return ret
+  return ret, env
 end
 
 local mt = setmetatable({
