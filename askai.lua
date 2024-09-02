@@ -126,7 +126,8 @@ local function getCfg (cfgname)
   if not cfgname then
     local success, filename = pcall(utils.readFile, default)
     local pathname = success and _pathjoin(cfgpath, filename)
-    return pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
+    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
+    return cfg and cfg.reachable and cfg
   elseif type(cfgname)=="string" then
     if cfgname=="" then return end -- use chooseCfg menu
     local pathname
@@ -135,7 +136,11 @@ local function getCfg (cfgname)
     else
       pathname = _pathjoin(cfgpath, cfgname..".lua.cfg")
     end
-    return utils.loadCfg(pathname)
+    local cfg = utils.loadCfg(pathname)
+    if not cfg.reachable then
+      error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
+    end
+    return cfg
   end
 end
 

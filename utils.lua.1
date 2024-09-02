@@ -126,6 +126,22 @@ local function _import (filename, env, ...)
   return ret, env
 end
 
+local function isReachable (fname, source)
+  if type(fname)=="boolean" then return fname end
+  local _type = type(fname)
+  if _type~="string" then
+    far.Message("exe: string or boolean expected, got ".._type, source, nil, "w")
+    return
+  end
+  for ext in win.GetEnv("PATHEXT"):gmatch"%.[^;]+" do
+    --https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-searchpathw
+    local filename = win.SearchPath(nil,fname,ext)
+    if filename then
+      return not win.GetFileAttr(filename):find"d"
+    end
+  end
+end
+
 local mt = setmetatable({
   _import=_import,
   _isWindows=_isWindows,
@@ -148,6 +164,7 @@ local function loadCfg (pathname)
     applyParamsFn = applyParamsFn,
     info = env,
     pathname = pathname,
+    reachable = isReachable(env.exe, pathname)
   }
 end
 
