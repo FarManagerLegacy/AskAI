@@ -286,7 +286,9 @@ local function main (cfg, prompt, context)
         win.SetEnv(var, v~="" and v or nil)
       end
     end
-    State.useSession = II.names.chkUseSession[SELECTED]
+    if canSession then
+      State.useSession = II.names.chkUseSession[SELECTED]
+    end
     State.useStream = II.names.chkStream[SELECTED]
     State.useWrap = II.names.chkWrap[SELECTED]
     State.wrapAt = II.names.edtWrap[DATA]
