@@ -59,6 +59,9 @@
     и их зависимости: [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html), (для некоторых билдов) [MS Visual C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
   - `Lua CJSON`: можно извлечь из дистрибутива [OpenResty](https://openresty.org/en/download.html#windows):  
     `lualib\cjson.so` переименовать в `cjson.dll` и положить в `Macros\lib64` (`lib32` для Far x86).
+    - Альтернативно, можно использовать другой json-модуль, если он предоставляет те же функции `encode`/`decode` и константу `null`.  
+      Для указания имени модуля следует использовать опцию `json_module` в начале скрипта.  
+      Её можно изменить прямо в коде, либо воспользоваться возможностями [ScriptsBrowser](https://forum.farmanager.com/viewtopic.php?f=15&t=10418)/`cfgscript`.
 
 ## Настройка
 

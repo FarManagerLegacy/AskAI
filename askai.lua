@@ -27,7 +27,10 @@ local nfo = Info { _filename or ...,
       useStream=1,
       useWrap=1, -- wrap lines
       wrapAt=80,
-    }
+    },
+
+    -- name of the alternative module that provides json `encode`, `decode`, and `null`.
+    --json_module="dkjsonlpeg", -- http://dkolf.de/dkjson-lua/
   };
   --disabled    = false;
 }
@@ -221,7 +224,7 @@ local function askAI (prompt, cfgname)
 end
 
 utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
-  State=State, _pathjoin=_pathjoin, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
+  O=O, State=State, _pathjoin=_pathjoin, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
 }
 chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, hlf=HelpTopic "UtilitiesMenu", askAI=askAI,

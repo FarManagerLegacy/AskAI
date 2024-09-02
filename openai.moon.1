@@ -1,6 +1,6 @@
 -- Credits: leafo, with mods from https://github.com/johnd0e/lua-openai/tree/fork
 ltn12 = require "ltn12"
-json = require "cjson"
+json = select(2, ...) or require "cjson"
 
 class OpenAI
   api_base: "https://api.openai.com/v1"
@@ -80,7 +80,7 @@ class OpenAI
     }
 
     response = table.concat out
-    pcall -> response = json.decode response
+    pcall -> response = assert json.decode response
     status, response, out_headers
 
   get_http: =>
