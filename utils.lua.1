@@ -1,5 +1,4 @@
-local Shared = ... -- State, name
-local cfgpath = Shared.cfgpath
+local Shared = ... -- State, name, cfgpath
 local _pathjoin = Shared._pathjoin
 
 local _isWindows = package.config:sub(1,1)=="\\"
@@ -115,11 +114,11 @@ if pcall(require, "piper") then
 end
 
 local function _import (filename, env, ...)
-  local pathname = _pathjoin(cfgpath,filename)
+  local pathname = _pathjoin(Shared.cfgpath,filename)
   local fn = assert(loadfile(pathname))
   env = env or getfenv(2) -- parent _ENV
   local name = env.name
-  local ret = setfenv(fn,env)(Shared.State, cfgpath, ...)
+  local ret = setfenv(fn,env)(Shared, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
@@ -154,7 +153,7 @@ local mt = setmetatable({
 local function loadCfg (pathname)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
-  local applyParamsFn = setfenv(fn, env)(Shared.State, cfgpath)
+  local applyParamsFn = setfenv(fn, env)(Shared)
   for _,param in ipairs{"config", "sessionFile"} do
     if env[param] then
       env[param] = expandEnv(env[param])
