@@ -111,7 +111,10 @@ local function _words (chunk)
   local eof = not chunk
   return function()
     if buf=="" then return nil end
-    local space, word, other = buf:match("^(%s*)(%S+)(%s.*)")
+    local space, word, other = buf:match("^(%s*)(%S+%-)(.*)") --hyphen
+    if not word then
+      space, word, other = buf:match("^(%s*)(%S+)(%s.*)")
+    end
     if word then
       buf = other
       return space, word
@@ -272,7 +275,7 @@ if Macro then
     action=function()
       local sel
       if Object.Selected then
-        sel = Editor.SelValue:gsub(" \r?\n", " ") -- unwrap
+        sel = Editor.SelValue:gsub("(%S[ -])\r?\n", "%1") -- unwrap
       else -- find code block
         local ei = editor.GetInfo()
         local id = ei.EditorID
@@ -330,7 +333,7 @@ if Macro then
       local n = 0
       for i=1, ei.TotalLines do
         local line = editor.GetString(id,i,0)
-        if line.StringText:match"%S $" then
+        if line.StringText:match"%S[ -]$" then
           editor.SetString(id, i, line.StringText, "")
           n = n+1
         end
