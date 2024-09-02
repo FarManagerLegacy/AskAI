@@ -1,0 +1,96 @@
+-- Credits: leafo, with mods from https://github.com/johnd0e/lua-openai/tree/fork
+ltn12 = require "ltn12"
+json = require "cjson"
+
+class OpenAI
+  api_base: "https://api.openai.com/v1"
+
+  new: (@api_key, apibase, @headers) =>
+    if apibase
+      @api_base = apibase
+
+  create_stream_filter: (chunk_callback) =>
+    accumulation_buffer = ""
+    streamed = false
+
+    (...) ->
+      chunk = ...
+
+      if chunk == nil
+        assert not streamed or accumulation_buffer=="", "buffer not empty"
+      elseif type(chunk) == "string"
+        accumulation_buffer ..= chunk
+
+        while true
+          line, rest = accumulation_buffer\match "^(.-)\r?\n\r?\n(.-)$"
+          unless line
+            break
+
+          accumulation_buffer = rest
+
+          json_blob = line\match "^data:%s+(.-)%s*$"
+          if json_blob and json_blob~="[DONE]"
+            if chunk = json.decode json_blob
+              chunk_callback chunk
+              streamed = true
+
+      ...
+
+
+  chat: (messages, opts, chunk_callback=nil) =>
+    payload = :messages
+
+    if opts
+      for k,v in pairs opts
+        payload[k] = v
+
+    @_request "POST", "/chat/completions", payload, if payload.stream then chunk_callback
+
+  _request: (method, path, payload, chunk_callback) =>
+    body = if payload
+      json.encode payload
+
+    headers = {
+      "Accept": "application/json"
+      "Content-Type": "application/json"
+      "Content-Length": body and #body or nil
+      "Authorization": @api_key and "Bearer #{@api_key}" or nil
+    }
+
+    if @headers
+      for k,v in pairs @headers
+        headers[k] = v
+
+    source = if body
+      ltn12.source.string body
+
+    out = {}
+    sink = ltn12.sink.table out
+
+    if chunk_callback
+      stream_filter = @create_stream_filter chunk_callback
+      sink = ltn12.sink.chain stream_filter, sink
+
+    _, status, out_headers = @get_http!.request {
+      url: @api_base .. path
+      :sink
+      :source
+      :method
+      :headers
+    }
+
+    response = table.concat out
+    pcall -> response = json.decode response
+    status, response, out_headers
+
+  get_http: =>
+    unless @http_provider
+      http_provider = if @api_base\match"https://"
+        "ssl.https"
+      elseif @api_base\match"http://"
+        "socket.http"
+      else
+        error("unknown protocol: "..@api_base)
+      @http_provider = require http_provider
+
+    @http_provider

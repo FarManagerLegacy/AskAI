@@ -81,19 +81,17 @@ _Дополнительные макросы_, активные в окне с �
   с созданием временных файлов, и перенаправлением их в стандартный ввод посредством команд shell.
 - В `%PATH%` должны быть [утилиты](#Utilities), соответствующие имеющимся файлам __определений__ (\*.lua.cfg),  
   см. раздел [Меню выбора утилиты](#UtilitiesMenu).
-- (Опционально), для доступа к сервисам, использующим _REST API_ совместимый с [OpenAI], можно использовать
-  модуль [leafo/lua-openai], с некоторыми [дополнениями][lua-openai-fork].  
-  Установка:
-  - `modules`:
-    - openai/init.moon: https://github.com/johnd0e/lua-openai/raw/fork/openai/init.moon
-    - tableshape: https://github.com/leafo/tableshape
-  - `lib32`/`64`:
-    - LuaSocket, LuaSec: https://github.com/FarManagerLegacy/LuaBinaries/releases  
+- (Опционально) Для доступа к сервисам, использующим _REST API_ совместимый с [OpenAI],
+  служит конфигурация `lua-openai.lua.cfg`.  
+  Для работы с сетью необходимы такие модули:
+    - `LuaSocket`, `LuaSec`: https://github.com/FarManagerLegacy/LuaBinaries/releases  
       и их зависимости: [OpenSSL], (для некоторых билдов) [MS Visual C++ Redist].
-    - Lua CJSON: см. https://github.com/FarManagerLegacy/LuaBinaries
+    - `Lua CJSON`: можно извлечь из дистрибутива [OpenResty]:  
+      `lualib\cjson.so` переименовать в `cjson.dll` и положить в `Macros\lib64` (`lib32` для Far x86).
 
 [OpenSSL]: https://slproweb.com/products/Win32OpenSSL.html
 [MS Visual C++ Redist]: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
+[OpenResty]: https://openresty.org/en/download.html#windows
 
 
 Настройка
@@ -164,7 +162,7 @@ _Дополнительные макросы_, активные в окне с �
 [chatgpt-cli],
 [mods],
 [sgpt]
-или [leafo/lua-openai] -- lua модуль (см. [Установка]).
+или напрямую через сеть (требуется [Установка] соответствующих lua-модулей).
 
 Для их использования важны параметры `api key` и `api base`,
 их значения можно узнать на сайте соответствующих провайдеров.
@@ -247,10 +245,6 @@ _Дополнительные макросы_, активные в окне с �
 https://github.com/PublicAffairs/openai-gemini
 https://gitea.com/PublicAffairs/openai-github-copilot
 -->
-
-[leafo/lua-openai]: https://github.com/leafo/lua-openai
-[lua-openai-fork]: https://github.com/johnd0e/lua-openai/tree/fork
-
 
 ---
 refsTemplate: refsBottom

@@ -52,16 +52,13 @@
   с созданием временных файлов, и перенаправлением их в стандартный ввод посредством команд shell.
 - В `%PATH%` должны быть [утилиты](#обзор-поддерживаемых-утилит), соответствующие имеющимся файлам **определений** (\*.lua.cfg),  
   см. раздел [Меню выбора утилиты](#меню-выбора-утилиты).
-- (Опционально), для доступа к сервисам, использующим *REST API* совместимый с [OpenAI](https://platform.openai.com/), можно использовать
-  модуль [leafo/lua-openai](https://github.com/leafo/lua-openai), с некоторыми [дополнениями](https://github.com/johnd0e/lua-openai/tree/fork).  
-  Установка:
-  - `modules`:
-    - openai/init.moon: <https://github.com/johnd0e/lua-openai/raw/fork/openai/init.moon>
-    - tableshape: <https://github.com/leafo/tableshape>
-  - `lib32`/`64`:
-    - LuaSocket, LuaSec: <https://github.com/FarManagerLegacy/LuaBinaries/releases>  
-      и их зависимости: [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html), (для некоторых билдов) [MS Visual C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
-    - Lua CJSON: см. <https://github.com/FarManagerLegacy/LuaBinaries>
+- (Опционально) Для доступа к сервисам, использующим *REST API* совместимый с [OpenAI](https://platform.openai.com/),
+  служит конфигурация `lua-openai.lua.cfg`.  
+  Для работы с сетью необходимы такие модули:
+  - `LuaSocket`, `LuaSec`: <https://github.com/FarManagerLegacy/LuaBinaries/releases>  
+    и их зависимости: [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html), (для некоторых билдов) [MS Visual C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
+  - `Lua CJSON`: можно извлечь из дистрибутива [OpenResty](https://openresty.org/en/download.html#windows):  
+    `lualib\cjson.so` переименовать в `cjson.dll` и положить в `Macros\lib64` (`lib32` для Far x86).
 
 ## Настройка
 
@@ -114,7 +111,7 @@
 [chatgpt-cli](https://github.com/kardolus/chatgpt-cli),
 [mods](https://github.com/charmbracelet/mods),
 [sgpt](https://github.com/tbckr/sgpt)
-или [leafo/lua-openai](https://github.com/leafo/lua-openai) – lua модуль (см. [Установка](#установка)).
+или напрямую через сеть (требуется [Установка](#установка) соответствующих lua-модулей).
 
 Для их использования важны параметры `api key` и `api base`,
 их значения можно узнать на сайте соответствующих провайдеров.
