@@ -192,14 +192,16 @@ local function askAI (prompt, cfgname)
     local code = false
     buf = ""
     local _,err = pcall(processStream, function (chunk, title)
-      if start and hDlg then
+      if start then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
-        if stream then
-          hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
-        end
-        hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
-        if title then
-          hDlg:send(F.DM_SETTEXT, 1, title)
+        if hDlg then
+          if stream then
+            hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
+          end
+          hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
+          if title then
+            hDlg:send(F.DM_SETTEXT, 1, title)
+          end
         end
         start = false
       end
