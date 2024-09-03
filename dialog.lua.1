@@ -323,7 +323,8 @@ local function main (cfg, prompt, context)
     local linewrap = ({[0]=nil, tonumber(II.names.edtWrap[DATA]), "dynamic"})[State.useWrap]
     return cfg.applyParamsFn(unpack(args,1,#cfg.params)),
            II.names.prompt[DATA],
-           linewrap
+           linewrap,
+           cfg.params.stream and State.useStream==1
   elseif II[res].name=="btnSwitch" then
     Shared.chooseCfg(prompt)
     return

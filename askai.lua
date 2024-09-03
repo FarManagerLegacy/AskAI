@@ -153,7 +153,7 @@ end
 local function askAI (prompt, cfgname)
   local cfg = getCfg(cfgname) or cfgname
   if not cfg then return chooseCfg(prompt) end
-  local processStream, prompt, linewrap = dialog(cfg, prompt, Editor.SelValue)
+  local processStream, prompt, linewrap, stream = dialog(cfg, prompt, Editor.SelValue)
   if not processStream then return end
   far.Timer(0, function (t) -- workaround for https://bugs.farmanager.com/view.php?id=3044
     t:Close()
@@ -194,7 +194,9 @@ local function askAI (prompt, cfgname)
     local _,err = pcall(processStream, function (chunk, title)
       if start and hDlg then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
-        hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
+        if stream then
+          hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
+        end
         hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
         if title then
           hDlg:send(F.DM_SETTEXT, 1, title)
