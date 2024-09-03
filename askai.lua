@@ -176,12 +176,15 @@ local function askAI (prompt, cfgname)
     local i = ei.TotalLines
     if s.StringLength>0 then
       editor.InsertString(Id)
+    end
+    if i>1 then
+      if string.len(editor.GetString(Id, i-1, 3))>0 then
+        editor.InsertString(Id)
+      end
       editor.InsertString(Id)
-      i = i+2
-      editor.SetPosition(Id, i)
     end
     editor.InsertText(Id, "> "..prompt.."\n\n")
-    far.Text()
+    editor.Redraw(Id)
 
     local start = Far.UpTime
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
@@ -202,7 +205,7 @@ local function askAI (prompt, cfgname)
         editor.InsertText(Id, space:gsub("\r\n","\n")
                                    :gsub("\r$","")) -- partial
         if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
-          editor.InsertText(Id, "\n")
+          editor.InsertString(Id)
         end
         editor.InsertText(Id, word)
         if linewrap then
@@ -213,6 +216,7 @@ local function askAI (prompt, cfgname)
       end
       editor.Redraw(Id)
     end)
+    editor.InsertString(Id)
     if err and err~="interrupted" then
       far.Message(err:gsub("\t", "   "), "Error", nil, "wl")
     end
