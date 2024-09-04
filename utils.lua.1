@@ -189,8 +189,11 @@ local function HelpTopic (name)
 end
 
 local HK = {
+  finish=function(self)
+    self.finished = true
+  end,
   iter=function(self,skip)
-    if skip then return self.spc end
+    if skip or self.finished then return self.spc end
     self.i = self.i+1
     local _hk = self.i==10 and "0" or self.i<10 and self.i or string.char(self.i + string.byte"a" - 11)
     _hk = "&".._hk

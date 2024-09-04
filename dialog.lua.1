@@ -180,7 +180,7 @@ local function main (cfg, prompt, context)
   for _,param in ipairs(cfg.params) do
     if not ({context=1, prompt=1, session=1, stream=1})[param] then
       if hk.i==0 then
-        II:add {F.DI_TEXT, "&Parameters", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
+        II:add {F.DI_TEXT, "Parameters", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
         II:ln() -- -- -- --
       end
       local col2 = math.max(x2, param:len()+1)
@@ -229,6 +229,20 @@ local function main (cfg, prompt, context)
       end
     end,
   }
+  II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
+    onclick=function(hDlg)
+      local preset = menu.choosePreset(II.names, cfg.info)
+      if preset then
+        hDlg:send(F.DM_ENABLEREDRAW,0)
+        for k,v in pairs(preset) do
+          local item = II.names[k]
+          hDlg:send(F.DM_SETTEXT, item.idx, tostring(v))
+        end
+      end
+      hDlg:send(F.DM_ENABLEREDRAW,1)
+    end,
+    name="btnPreset"
+  }
   II:add {F.DI_BUTTON, "Swi&tch", nil, F.DIF_CENTERGROUP,
     name="btnSwitch"
   }
@@ -265,6 +279,8 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DM_CLOSE, II.names.btnSwitch.idx)
       elseif key=="AltSubtract" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
+      elseif key=="F5" then
+        hDlg:send(F.DN_BTNCLICK, II.names.btnPreset.idx)
       elseif key=="PgUp" then
         hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
       end

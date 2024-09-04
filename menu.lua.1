@@ -5,9 +5,13 @@ local utils = Shared.utils
 local cfgpath = Shared.cfgpath
 local F = far.Flags
 
+local _pathjoin = win.JoinPath or function (...) -- compat shim
+  return table.concat({...}, package.config:sub(1,1))
+end
+
 local function toggleHidden (items)
   for _,item in ipairs(items) do
-    item.hidden = item.grayed and items.showall
+    item.hidden = item.grayed and items.showall and not (item.err or item.empty)
   end
   items.showall = not items.showall
 end
@@ -88,6 +92,149 @@ local function chooseCfg (prompt)
   until not item
 end
 
+local function fixret (success, ...)
+  if not success then return nil, ... end --errmsg
+  if select("#", ...)>0 then
+    return tostring(...) --cfgname to stick to
+  end
+end
+local function loadPreset (pathname, itemsNames, cfgInfo)
+  local fn,err1 = loadfile(assert(pathname)); if not fn then return nil,nil,err1 end
+  local env = setmetatable({},{__index=_G})
+  local ret,err2 = fixret(pcall(setfenv(fn,env))); if err2 then return nil,nil,err2 end
+  if ret and ret~=cfgInfo.name:sub(1, ret:len()) then
+    return nil,ret
+  end
+  for k in pairs(env) do
+    if not itemsNames[k] then
+      if not cfgInfo.env then
+        return
+      end
+    end
+  end
+  return env
+end
+local presetsTopic = utils.HelpTopic "Presets"
+local function choosePreset (itemsNames, cfgInfo)
+  local items = {}
+  local hk = utils.HK.new(".")
+  local function prepItem (item, data, limit, err)
+    local empty = data and not next(data) and "empty"
+    local extra = err or limit or empty
+    local text = extra and ("%s [%s]"):format(item.name, extra) or item.name
+    item.hk = item.hk or hk:iter()
+    item.text = item.hk.." "..text
+    item.grayed = not data or empty
+    item.data = not empty and data
+    item.err = err
+    item.empty = empty
+    return not data and not err -- to hide
+  end
+  far.RecursiveSearch(cfgpath, "*.preset>>DH", function (file, pathname)
+    local item = {
+      name=file.FileName:sub(1,-(".preset"):len()-1),
+      selected=State.lastPreset==pathname,
+      pathname=pathname,
+    }
+    item.hidden = prepItem(item, loadPreset(pathname, itemsNames, cfgInfo))
+    table.insert(items, item)
+  end)
+  hk:finish()
+  local props = {
+    Title="Load preset",
+    Bottom="Ctrl+H, F1, ...",
+    HelpTopic=presetsTopic,
+    Id=win.Uuid "6B5DB1AE-B377-4A37-8F73-7DCEBE8C332C",
+    Flags=F.FMENU_SHOWSHORTBOX +F.FMENU_SHOWSINGLEBOX,
+  }
+  local bkeys = "ShiftF4 Ins F4 F5 ShiftF5 F6 ShiftF6 F8 Del CtrlH"
+  repeat
+    local item, pos = far.Menu(props, items, bkeys)
+    if not item then break end -- Esc (or Enter in empty list)
+    local bk = item.BreakKey
+    if bk then
+      item = items[pos]
+    else -- Enter
+      State.lastPreset = item.pathname
+      return item.data
+    end
+
+    if bk=="CtrlH" then
+      toggleHidden(items)
+    elseif bk=="ShiftF4" or bk=="Ins" then
+      local name = far.InputBox(win.Uuid "B45A2CFB-6C4F-49E9-A1EE-4721BB4AAFA4",
+                                Shared.name..": create preset", "Enter new name",
+                                "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
+      if name then
+        name = name:gsub("[/\\]","-")
+        local pathname = _pathjoin(cfgpath, name..".preset")
+        if F.EEC_MODIFIED==editor.Editor(pathname) then
+          pos = pos~=0 and bk=="Ins" and pos or 1
+          local newitem = { name=name, pathname=pathname, }
+          prepItem(newitem, loadPreset(pathname, itemsNames, cfgInfo))
+          table.insert(items, pos, newitem)
+        end
+      end
+    elseif not item then -- luacheck: ignore 542
+      -- noop
+    elseif bk=="F4" then
+      if F.EEC_MODIFIED==editor.Editor(item.pathname) then
+        prepItem(item, loadPreset(item.pathname, itemsNames, cfgInfo))
+      end
+    elseif bk=="F5" or bk=="ShiftF5" then
+      local name = far.InputBox(win.Uuid "F2366621-CF3A-4953-B297-D85EA0BD0287",
+                                Shared.name..": copy preset", "Enter new name",
+                                "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
+      if name then
+        name = name:gsub("[/\\]","-")
+        local pathname = _pathjoin(cfgpath, name..".preset")
+        local res,err = win.CopyFile(item.pathname, pathname, true)
+        if res then
+          pos = pos+1
+          local newitem = { name=name, pathname=pathname, }
+          prepItem(newitem, loadPreset(pathname, itemsNames, cfgInfo))
+          table.insert(items, pos, newitem)
+        else
+          err = err:match"^(.-)\r\n$" or err
+          local msg = ('Cannot copy\n"%s"\nto\n"%s"\n\1\n%s'):format(item.name..".preset", pathname, err)
+          far.Message(msg,Shared.name.." copy preset error",
+                      ";Ok", "w", presetsTopic,
+                      win.Uuid "610D35D5-6CBF-4AC4-81D0-99BF791CA3B4")
+        end
+      end
+    elseif bk=="F6" or bk=="ShiftF6" then
+      local name = far.InputBox(win.Uuid "9374B901-94EC-4FD4-9B01-A73010A344D5",
+                                Shared.name..": rename preset", "Enter new name",
+                                "AskAI preset", item.name, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
+      if name then
+        name = name:gsub("[/\\]","-")
+        local pathname = _pathjoin(cfgpath, name..".preset")
+        local res,err = win.MoveFile(item.pathname, pathname)
+        if res then
+          item.name, item.pathname = name, pathname
+          prepItem(item, loadPreset(pathname, itemsNames, cfgInfo))
+        else
+          err = err:match"^(.-)\r\n$" or err
+          local msg = ('Cannot rename\n"%s"\nto\n"%s"\n\1\n%s'):format(item.name..".preset", pathname, err)
+          far.Message(msg,Shared.name.." rename preset error",
+                      ";Ok", "w", presetsTopic,
+                      win.Uuid "2559CAD9-82AD-4297-99B9-D3BA144AA3AE")
+        end
+      end
+    elseif bk=="F8" or bk=="Del" then
+      local ret = far.Message("Do you want to delete the preset?\n"..item.name, Shared.name,
+                              "Delete;Cancel", "w", presetsTopic,
+                              win.Uuid "E4486D00-4751-4AAA-97D4-D30A9D618BEF")
+      if ret==1 and win.DeleteFile(item.pathname) then
+        table.remove(items, pos)
+        if pos>#items then pos = pos-1 end
+      end
+    end
+    props.SelectIndex = pos
+  until false
+end
+
 return {
   chooseCfg=chooseCfg,
+  choosePreset=choosePreset,
 }
