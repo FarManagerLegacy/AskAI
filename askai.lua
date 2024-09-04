@@ -57,10 +57,6 @@ end
 
 local outputFilename = _pathjoin(_tmp, "Ask AI.md")
 
-local function HelpTopic (name)
-  return ("<%s\\>%s"):format(cfgpath,name)
-end
-
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
 local function progress (text, title, status)
   local MINLEN = 22
@@ -238,11 +234,11 @@ utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
   O=O, State=State, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
 }
 chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
-  State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, hlf=HelpTopic "UtilitiesMenu", askAI=askAI,
+  State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, askAI=askAI,
 }
 dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
-  O=O, State=State,
-  name=nfo.name, hlf=HelpTopic"", outputFilename=outputFilename, clearSession=utils.clearSession,
+  O=O, State=State, utils=utils,
+  name=nfo.name, outputFilename=outputFilename, clearSession=utils.clearSession,
   chooseCfg=chooseCfg, askAI=askAI,
 }
 

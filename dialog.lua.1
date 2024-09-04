@@ -1,5 +1,6 @@
-﻿local Shared = ... -- name, hlf, outputFilename, clearSession, chooseCfg, askAI
+﻿local Shared = ... -- name, outputFilename, utils, clearSession, chooseCfg, askAI
 local State = Shared.State
+local utils = Shared.utils -- HelpTopic
 local O = Shared.O
 
 local F = far.Flags
@@ -129,7 +130,7 @@ local function main (cfg, prompt, context)
     width=width,
     Guid=idInput,
     Flags=flags,
-    HelpTopic=Shared.hlf,
+    HelpTopic=utils.HelpTopic"",
   }
   local II = newDlgInfo(data)
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}

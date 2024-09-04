@@ -184,9 +184,14 @@ local function clearSession (info, session)
   end
 end
 
+local function HelpTopic (name)
+  return ("<%s\\>%s"):format(Shared.cfgpath, name)
+end
+
 return {
   readFile=readFile,
   writeFile=writeFile,
   loadCfg=loadCfg,
   clearSession=clearSession,
+  HelpTopic=HelpTopic,
 }
