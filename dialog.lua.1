@@ -1,6 +1,7 @@
-﻿local Shared = ... -- name, outputFilename, utils, chooseCfg, askAI
+﻿local Shared = ... -- name, outputFilename, utils, askAI
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
+local menu = Shared.menu
 local O = Shared.O
 
 local F = far.Flags
@@ -322,7 +323,7 @@ local function main (cfg, prompt, context)
            linewrap,
            cfg.params.stream and State.useStream==1
   elseif II[res].name=="btnSwitch" then
-    Shared.chooseCfg(prompt)
+    menu.chooseCfg(prompt)
     return
   end
 end

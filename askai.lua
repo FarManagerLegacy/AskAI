@@ -122,7 +122,7 @@ local function _words (chunk)
   end
 end
 
-local chooseCfg, dialog, utils --fwd decl.
+local menu, dialog, utils --fwd decl.
 local default = _pathjoin(cfgpath, "default")
 local function getCfg (cfgname)
   if not cfgname then
@@ -148,7 +148,7 @@ end
 
 local function askAI (prompt, cfgname)
   local cfg = getCfg(cfgname) or cfgname
-  if not cfg then return chooseCfg(prompt) end
+  if not cfg then return menu.chooseCfg(prompt) end
   local processStream, prompt, linewrap, stream = dialog(cfg, prompt, Editor.SelValue)
   if not processStream then return end
   far.Timer(0, function (t) -- workaround for https://bugs.farmanager.com/view.php?id=3044
@@ -233,16 +233,15 @@ end
 utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
   O=O, State=State, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
 }
-chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
+menu = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, askAI=askAI,
 }
 dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
-  O=O, State=State, utils=utils,
+  O=O, State=State, utils=utils, menu=menu, askAI=askAI,
   name=nfo.name, outputFilename=outputFilename,
-  chooseCfg=chooseCfg, askAI=askAI,
 }
 
-nfo.config  = function () mf.acall(chooseCfg) end;
+nfo.config  = function () mf.acall(menu.chooseCfg) end;
 nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;
 nfo.execute = function () mf.acall(askAI) end;
 
@@ -268,7 +267,7 @@ if Macro then
     id="FD155A5E-3415-4A9A-BD91-1D7BA91097F0";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      mf.acall(chooseCfg)
+      mf.acall(menu.chooseCfg)
     end;
   }
   local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"

@@ -87,4 +87,6 @@ local function chooseCfg (prompt)
   until not item
 end
 
-return chooseCfg
+return {
+  chooseCfg=chooseCfg,
+}
