@@ -3,6 +3,7 @@ local State = Shared.State
 local default = Shared.default
 local utils = Shared.utils
 local cfgpath = Shared.cfgpath
+local F = far.Flags
 
 local function chooseCfg (prompt)
   if State.isDlgOpened then return end
@@ -75,7 +76,7 @@ local function chooseCfg (prompt)
           editor.Editor(info.config)
         end
       elseif bk=="AltF4" then
-        if far.Flags.EEC_MODIFIED==editor.Editor(item.pathname) then
+        if F.EEC_MODIFIED==editor.Editor(item.pathname) then
           return chooseCfg(prompt)
         end
       elseif bk=="AltF1" then
