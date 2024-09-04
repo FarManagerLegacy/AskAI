@@ -1,6 +1,6 @@
 ﻿local Shared = ... -- name, outputFilename, utils, chooseCfg, askAI
 local State = Shared.State
-local utils = Shared.utils -- HelpTopic, clearSession
+local utils = Shared.utils -- HelpTopic, clearSession, HK
 local O = Shared.O
 
 local F = far.Flags
@@ -175,20 +175,15 @@ local function main (cfg, prompt, context)
   }
   II:ln() -- -- -- --
 
-  local hk_i = 0
-  local function formatLabel (param)
-    hk_i = hk_i+1
-    return (hk_i==10 and "&0" or hk_i<10 and "&"..hk_i
-         or hk_i<20 and "&"..string.char(hk_i + string.byte"a" - 11) or " ")..param
-  end
+  local hk = utils.HK.new("")
   for _,param in ipairs(cfg.params) do
     if not ({context=1, prompt=1, session=1, stream=1})[param] then
-      if hk_i==0 then
+      if hk.i==0 then
         II:add {F.DI_TEXT, "&Parameters", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
         II:ln() -- -- -- --
       end
       local col2 = math.max(x2, param:len()+1)
-      II:add {F.DI_TEXT, formatLabel(param), {"-1", [X2]=col2-1}}
+      II:add {F.DI_TEXT, hk:iter()..param, {"-1", [X2]=col2-1}}
       local History="AskAI param "..param
       if not O.sharedParams[param] then
         local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
@@ -206,7 +201,7 @@ local function main (cfg, prompt, context)
     for k,env in pairs(cfg.info.env) do
       local var = win.GetEnv(env)
       local col2 = math.max(x2, env:len()+1)
-      II:add {F.DI_TEXT, formatLabel(env), {"-1", [X2]=col2-1}}
+      II:add {F.DI_TEXT, hk:iter()..env, {"-1", [X2]=col2-1}}
       II:add {F.DI_EDIT, var or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY, History="AskAI param "..k,
         name="env."..k
       }

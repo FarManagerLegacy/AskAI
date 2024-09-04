@@ -8,11 +8,12 @@ local function chooseCfg (prompt)
   local _, filename = pcall(utils.readFile, default)
   local items = {}
   local empty = true
+  local hk = utils.HK.new(".")
   far.RecursiveSearch(Shared.cfgpath, "*.lua.cfg>>DH", function (item, pathname)
     local cfg = utils.loadCfg(pathname)
     empty = empty and not cfg.reachable
     table.insert(items, {
-      text = cfg.info.name,
+      text = hk:iter(not cfg.reachable).." "..cfg.info.name,
       hidden = not cfg.reachable,
       grayed = not cfg.reachable,
       selected = item.FileName==filename,

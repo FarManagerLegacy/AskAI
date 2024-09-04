@@ -188,10 +188,25 @@ local function HelpTopic (name)
   return ("<%s\\>%s"):format(Shared.cfgpath, name)
 end
 
+local HK = {
+  iter=function(self,skip)
+    if skip then return self.spc end
+    self.i = self.i+1
+    local _hk = self.i==10 and "0" or self.i<10 and self.i or string.char(self.i + string.byte"a" - 11)
+    _hk = "&".._hk
+    return _hk..self.fmt
+  end,
+}
+local _hkmt = { __index=HK }
+function HK.new (fmt)
+  return setmetatable({ i=0, fmt=fmt, spc=string.rep(" ",fmt:len()+1) }, _hkmt)
+end
+
 return {
   readFile=readFile,
   writeFile=writeFile,
   loadCfg=loadCfg,
   clearSession=clearSession,
   HelpTopic=HelpTopic,
+  HK=HK,
 }
