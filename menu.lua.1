@@ -1,7 +1,8 @@
-local Shared = ... -- cfgpath, name, askAI
+local Shared = ... -- name, askAI
 local State = Shared.State
 local default = Shared.default
 local utils = Shared.utils
+local cfgpath = Shared.cfgpath
 
 local function chooseCfg (prompt)
   if State.isDlgOpened then return end
@@ -9,7 +10,7 @@ local function chooseCfg (prompt)
   local items = {}
   local empty = true
   local hk = utils.HK.new(".")
-  far.RecursiveSearch(Shared.cfgpath, "*.lua.cfg>>DH", function (item, pathname)
+  far.RecursiveSearch(cfgpath, "*.lua.cfg>>DH", function (item, pathname)
     local cfg = utils.loadCfg(pathname)
     empty = empty and not cfg.reachable
     table.insert(items, {
