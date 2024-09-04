@@ -1,4 +1,4 @@
-local Shared = ... -- State, name, cfgpath
+local Shared = ... -- State, _tmp, name, cfgpath + O (transit)
 
 local _pathjoin = win.JoinPath or function (...) -- compat shim
   return table.concat({...}, package.config:sub(1,1))

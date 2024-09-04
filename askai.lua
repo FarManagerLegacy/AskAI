@@ -231,13 +231,15 @@ local function askAI (prompt, cfgname)
 end
 
 utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
-  O=O, State=State, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
+  State=State, O=O,
+  cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 menu = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
-  State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, askAI=askAI,
+  State=State, utils=utils, askAI=askAI,
+  cfgpath=cfgpath, default=default, name=nfo.name,
 }
 dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
-  O=O, State=State, utils=utils, menu=menu, askAI=askAI,
+  State=State, O=O, utils=utils, menu=menu, askAI=askAI,
   name=nfo.name, outputFilename=outputFilename,
 }
 
