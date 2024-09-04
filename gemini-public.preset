@@ -1,0 +1,5 @@
+-- https://habr.com/ru/articles/798123/
+
+apibase="https://my-openai-gemini-demo.vercel.app/v1"
+apikey=win.GetEnv"GEMINI_API_KEY"
+model="gemini-1.5-pro-exp-0827"

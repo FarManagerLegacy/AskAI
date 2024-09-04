@@ -1,0 +1,12 @@
+-- https://habr.com/ru/articles/799215/
+
+local function fromFile (name)
+  local file = assert(io.open(name))
+  local data = file:read"*a"
+  file:close()
+  return data
+end
+
+apibase="https://copilot-demo.publicaffairs.workers.dev/v1"
+apikey=win.GetEnv"GHU_TOKEN" --or fromFile(win.GetEnv"USERPROFILE".."/.copilot-cli-access-token")
+model="gpt-4-o-preview"
