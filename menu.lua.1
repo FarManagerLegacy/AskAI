@@ -5,6 +5,13 @@ local utils = Shared.utils
 local cfgpath = Shared.cfgpath
 local F = far.Flags
 
+local function toggleHidden (items)
+  for _,item in ipairs(items) do
+    item.hidden = item.grayed and items.showall
+  end
+  items.showall = not items.showall
+end
+
 local function chooseCfg (prompt)
   if State.isDlgOpened then return end
   local _, filename = pcall(utils.readFile, default)
@@ -25,17 +32,11 @@ local function chooseCfg (prompt)
     })
     return nil
   end)
-  local function toggleHidden ()
-    for _,item in ipairs(items) do
-      item.hidden = item.grayed and items.showall
-    end
-    items.showall = not items.showall
-  end
   if items==0 then
     far.Message("No config found", Shared.name, nil ,"w")
     return
   elseif empty then
-    toggleHidden()
+    toggleHidden(items)
   else
     table.sort(items, function (A,B)
       if A.hidden==B.hidden then
@@ -70,7 +71,7 @@ local function chooseCfg (prompt)
           return Shared.askAI(prompt, item.cfg)
         end
       elseif bk=="CtrlH" then
-        toggleHidden()
+        toggleHidden(items)
       elseif bk=="F4" then
         if info.config then
           editor.Editor(info.config)
