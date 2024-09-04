@@ -1,5 +1,8 @@
 local Shared = ... -- State, name, cfgpath
-local _pathjoin = Shared._pathjoin
+
+local _pathjoin = win.JoinPath or function (...) -- compat shim
+  return table.concat({...}, package.config:sub(1,1))
+end
 
 local _isWindows = package.config:sub(1,1)=="\\"
 

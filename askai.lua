@@ -51,7 +51,7 @@ local State do
   end
 end
 
-local function _pathjoin (...)
+local _pathjoin = win.JoinPath or function (...) -- compat shim
   return table.concat({...}, package.config:sub(1,1))
 end
 
@@ -235,7 +235,7 @@ local function askAI (prompt, cfgname)
 end
 
 utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
-  O=O, State=State, _pathjoin=_pathjoin, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
+  O=O, State=State, _tmp=_tmp, cfgpath=cfgpath, name=nfo.name,
 }
 chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, cfgpath=cfgpath, name=nfo.name, default=default, utils=utils, hlf=HelpTopic "UtilitiesMenu", askAI=askAI,
