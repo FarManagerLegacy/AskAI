@@ -1,6 +1,6 @@
-﻿local Shared = ... -- name, outputFilename, utils, clearSession, chooseCfg, askAI
+﻿local Shared = ... -- name, outputFilename, utils, chooseCfg, askAI
 local State = Shared.State
-local utils = Shared.utils -- HelpTopic
+local utils = Shared.utils -- HelpTopic, clearSession
 local O = Shared.O
 
 local F = far.Flags
@@ -154,7 +154,7 @@ local function main (cfg, prompt, context)
   end
   II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(hDlg,idx)
-      Shared.clearSession(cfg.info, SESSION)
+      utils.clearSession(cfg.info, SESSION)
       local item = hDlg:send(F.DM_GETDLGITEM, idx)
       item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
       hDlg:send(F.DM_SETDLGITEM, idx, item)
@@ -294,7 +294,7 @@ local function main (cfg, prompt, context)
     State.useWrap = II.names.chkWrap[SELECTED]
     State.wrapAt = II.names.edtWrap[DATA]
     if State.useSession==2 and not isOpened(Shared.outputFilename) then
-      Shared.clearSession(cfg.info, SESSION)
+      utils.clearSession(cfg.info, SESSION)
     end
     if not cfg.params.prompt then
       local p = II.names.prompt[DATA]

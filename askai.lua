@@ -238,7 +238,7 @@ chooseCfg = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
 }
 dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
   O=O, State=State, utils=utils,
-  name=nfo.name, outputFilename=outputFilename, clearSession=utils.clearSession,
+  name=nfo.name, outputFilename=outputFilename,
   chooseCfg=chooseCfg, askAI=askAI,
 }
 
