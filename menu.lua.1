@@ -107,7 +107,7 @@ local function loadPreset (pathname, itemsNames, cfgInfo)
   end
   for k in pairs(env) do
     if not itemsNames[k] then
-      if not cfgInfo.env then
+      if not cfgInfo.env or not cfgInfo.env[k] then
         return
       end
     end

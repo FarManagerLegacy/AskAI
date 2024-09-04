@@ -204,7 +204,7 @@ local function main (cfg, prompt, context)
       local col2 = math.max(x2, var:len()+1)
       II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
       II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY, History="AskAI param "..k,
-        name="env."..var
+        name=var
       }
       II:ln() -- -- -- --
     end
@@ -235,7 +235,7 @@ local function main (cfg, prompt, context)
       if preset then
         hDlg:send(F.DM_ENABLEREDRAW,0)
         for k,v in pairs(preset) do
-          local item = II.names[k]
+          local item = II.names[k] or II.names[cfg.info.env[k]]
           hDlg:send(F.DM_SETTEXT, item.idx, tostring(v))
         end
       end
@@ -294,8 +294,8 @@ local function main (cfg, prompt, context)
 
   if II[res].name=="btnGo" then
     if cfg.info.env then
-      for k,var in pairs(cfg.info.env) do
-        local v = II.names["env."..k][DATA]
+      for _,var in pairs(cfg.info.env) do
+        local v = II.names[var][DATA]
         win.SetEnv(var, v~="" and v or nil)
       end
     end
