@@ -29,8 +29,9 @@ local nfo = Info { _filename or ...,
       wrapAt=80,
     },
 
-    -- name of the alternative module that provides json `encode`, `decode`, and `null`.
-    --json_module="dkjsonlpeg", -- http://dkolf.de/dkjson-lua/
+    -- skip autodetection and use specified json module
+    -- the module must provide `encode`, `decode`, and (optionally) `null`.
+    --json_module="dkjson", -- http://dkolf.de/dkjson-lua/
   };
   --disabled    = false;
 }
