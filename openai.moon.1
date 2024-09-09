@@ -37,13 +37,7 @@ class OpenAI
       ...
 
 
-  chat: (messages, opts, chunk_callback=nil) =>
-    payload = :messages
-
-    if opts
-      for k,v in pairs opts
-        payload[k] = v
-
+  chat: (payload, chunk_callback=nil) =>
     @_request "POST", "/chat/completions", payload, if payload.stream then chunk_callback
 
   _request: (method, path, payload, chunk_callback) =>
