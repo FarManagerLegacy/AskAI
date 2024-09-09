@@ -1,4 +1,4 @@
-local Shared = ... -- name, askAI
+﻿local Shared = ... -- name, askAI
 local State = Shared.State
 local utils = Shared.utils
 local cfgpath = Shared.cfgpath
@@ -33,6 +33,7 @@ local function chooseCfg (prompt)
       FileName = item.FileName,
       pathname = pathname,
       cfg = cfg,
+      checked = type(cfg.info.exe)=="string" and utf8.char(0xf4b5) -- "" nf-oct-command_palette
     })
     return nil
   end)
