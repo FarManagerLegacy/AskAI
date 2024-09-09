@@ -1,90 +1,155 @@
--- Credits: leafo, with mods from https://github.com/johnd0e/lua-openai/tree/fork
 ltn12 = require "ltn12"
 json = select(2, ...) or require "cjson"
 
-class OpenAI
-  api_base: "https://api.openai.com/v1"
-
+class LinesStream
   new: (@api_key, apibase, @headers) =>
     if apibase
       @api_base = apibase
 
-  create_stream_filter: (chunk_callback) =>
-    accumulation_buffer = ""
-    streamed = false
+  create_stream_sink: (delta_callback, ctx) =>
+    acc_buffer, streamed, accumulate_only = "", false, false
 
-    (...) ->
-      chunk = ...
+    (chunk, err) ->
+      if chunk==nil
+        if streamed
+          if err = err or acc_buffer~="" and not acc_buffer\match"data: ?%[DONE%]" and "buffer not empty"
+            delta_callback nil, err, acc_buffer
 
-      if chunk == nil
-        assert not streamed or accumulation_buffer=="", "buffer not empty"
-      elseif type(chunk) == "string"
-        accumulation_buffer ..= chunk
+        unless err
+          ctx.response = streamed and "Streamed successfully" or acc_buffer
 
-        while true
-          line, rest = accumulation_buffer\match "^(.-)\r?\n\r?\n(.-)$"
-          unless line
-            break
+      else
+        acc_buffer ..= chunk
+        unless accumulate_only
+          line = true
+          while line
+            line, rest = string.match acc_buffer, "^(.-)\r?\n(.-)$"
+            if line
+              if @process_line(line, delta_callback, ctx)
+                acc_buffer = rest
+                streamed = true
+              elseif streamed
+                delta_callback nil, "Unable to parse line", line
+                return nil, "Unable to parse line"
+              else
+                accumulate_only = true
+                break
 
-          accumulation_buffer = rest
+      chunk, err
 
-          json_blob = line\match "^data:%s+(.-)%s*$"
-          if json_blob and json_blob~="[DONE]"
-            if chunk = json.decode json_blob
-              chunk_callback chunk
-              streamed = true
+  process_line: (line, delta_callback, ctx) =>
+    @process delta_callback, line
 
-      ...
+  process: (delta_callback, data, extra) =>
+    if data=="[DONE]" then return true
+    success, parsed = pcall -> assert json.decode data
+    if success
+      delta_callback parsed, nil, extra
+      true
 
-
-  chat: (payload, chunk_callback=nil) =>
-    @_request "POST", "/chat/completions", payload, if payload.stream then chunk_callback
-
-  _request: (method, path, payload, chunk_callback) =>
+  _request: (method, path, payload, delta_callback) =>
     body = if payload
       json.encode payload
 
     headers = {
-      "Accept": "application/json"
-      "Content-Type": "application/json"
-      "Content-Length": body and #body or nil
-      "Authorization": @api_key and "Bearer #{@api_key}" or nil
+      "accept": delta_callback and "text/event-stream" or "application/json"
+      "content-type": "application/json"
+      "content-length": body and #body or nil
+      "authorization": @api_key and "Bearer #{@api_key}" or nil
     }
-
     if @headers
       for k,v in pairs @headers
-        headers[k] = v
+        headers[k\lower()] = v
 
     source = if body
       ltn12.source.string body
 
     out = {}
-    sink = ltn12.sink.table out
+    sink = if delta_callback
+      @create_stream_sink delta_callback, out
+    else
+      ltn12.sink.table out
 
-    if chunk_callback
-      stream_filter = @create_stream_filter chunk_callback
-      sink = ltn12.sink.chain stream_filter, sink
-
-    _, status, out_headers = @get_http!.request {
+    success, status_code, response_headers, status_line = @get_provider!.request {
       url: @api_base .. path
       :sink
       :source
       :method
       :headers
     }
+    if success
+      response = if delta_callback then out.response else table.concat out
+      pcall -> response = assert json.decode response
+      response, status_code, response_headers, status_line
+    else
+      nil, status_code
 
-    response = table.concat out
-    pcall -> response = assert json.decode response
-    response, status, out_headers
+  providers: {
+    http: "socket.http"
+    https: "ssl.https"
+  }
 
-  get_http: =>
-    unless @http_provider
-      http_provider = if @api_base\match"https://"
-        "ssl.https"
-      elseif @api_base\match"http://"
-        "socket.http"
+  get_provider: =>
+    unless @provider
+      scheme = @api_base\match"^(.-)://"
+      provider = scheme and @providers[scheme]
+      if provider
+        @provider = require provider
       else
-        error("unknown protocol: "..@api_base)
-      @http_provider = require http_provider
+        error("unknown scheme: "..@api_base)
 
-    @http_provider
+    @provider
+
+  chatEndpoint: "/chat"
+
+  chat: (payload, delta_callback) =>
+    @_request "POST", @chatEndpoint, payload, delta_callback
+
+
+class SimpleSSE extends LinesStream
+  process_line: (line, delta_callback) =>
+    if line\sub(1,1)==":" or line\match("^event:")
+      true
+    elseif data = line\match("^data: ?(.+)$")
+      @process(delta_callback, data)
+
+
+class SSE extends LinesStream
+  process_line: (line, delta_callback, ctx) =>
+    ctx.event = ctx.event or {}
+    e = ctx.event
+
+    -- https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation
+    if line==""
+      if next e
+        if e.data
+          @process delta_callback, e.data, e
+        else
+          unless e[""] -- comment
+            delta_callback nil, "data not found", e
+        ctx.event = {} -- reset
+    else
+      field, value = line\match"^(.-):%s?(.+)$"
+      switch field
+        when "data"
+          e.data = e.data and e.data.."\n"..value or value
+        when "event","id","retry","" --comment
+          e[field] = value
+        when nil
+          unless ({event:1,id:1,retry:1,data:1})[line]
+            return false -- do not try to parse SSE anymore
+        else
+          if field\match"^%w+$"
+            delta_callback nil, ('Unknown field "%s" with value "%s"')\format(field, value), e
+          return nil
+
+    true
+
+
+class OpenAI extends SSE
+  api_base: "https://api.openai.com/v1"
+
+  chatEndpoint: "/chat/completions"
+
+  chat: (payload, delta_callback=nil) =>
+    super payload, if payload.stream then delta_callback
