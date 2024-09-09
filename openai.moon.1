@@ -75,7 +75,7 @@ class OpenAI
 
     response = table.concat out
     pcall -> response = assert json.decode response
-    status, response, out_headers
+    response, status, out_headers
 
   get_http: =>
     unless @http_provider
