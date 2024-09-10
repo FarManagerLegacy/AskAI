@@ -208,7 +208,7 @@ local function askAI (prompt, cfgname)
     local code = false
     buf = ""
     local start = Far.UpTime
-    local _,err = pcall(processStream, function (chunk, title)
+    processStream(function (chunk, title)
       if start then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
         if hDlg then
@@ -239,9 +239,6 @@ local function askAI (prompt, cfgname)
       setBigCursor()
     end)
     editor.InsertString(Id)
-    if err and err~="interrupted" then
-      far.Message(err:gsub("\t", "   "), "Error", nil, "wl")
-    end
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
     editor.UndoRedo(Id, F.EUR_END)
     editor.SaveFile(Id)

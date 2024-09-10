@@ -25,9 +25,11 @@ class LinesStream
           while line
             line, rest = string.match acc_buffer, "^(.-)\r?\n(.-)$"
             if line
-              if @process_line(line, delta_callback, ctx)
+              if ret = @process_line(line, delta_callback, ctx)
                 acc_buffer = rest
                 streamed = true
+                if ret=="interrupted"
+                  chunk,err = nil,ret
               elseif streamed
                 delta_callback nil, "Unable to parse line", line
                 return nil, "Unable to parse line"
@@ -45,8 +47,7 @@ class LinesStream
     if data=="[DONE]" then return true
     success, parsed = pcall -> assert json.decode data
     if success
-      delta_callback parsed, nil, extra
-      true
+      (delta_callback parsed, nil, extra) or true
 
   _request: (method, path, payload, delta_callback) =>
     body = if payload
@@ -118,13 +119,13 @@ class SimpleSSE extends LinesStream
 class SSE extends LinesStream
   process_line: (line, delta_callback, ctx) =>
     ctx.event = ctx.event or {}
-    e = ctx.event
+    e,ret = ctx.event
 
     -- https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation
     if line==""
       if next e
         if e.data
-          @process delta_callback, e.data, e
+          ret = @process delta_callback, e.data, e
         else
           unless e[""] -- comment
             delta_callback nil, "data not found", e
@@ -144,7 +145,7 @@ class SSE extends LinesStream
             delta_callback nil, ('Unknown field "%s" with value "%s"')\format(field, value), e
           return nil
 
-    true
+    ret or true
 
 
 class OpenAI extends SSE
