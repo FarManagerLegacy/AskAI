@@ -359,12 +359,14 @@ if Macro then
       local ei = editor.GetInfo()
       local id = ei.EditorID
       local n = 0
-      for i=1, ei.TotalLines do
-        local line = editor.GetString(id,i,0)
-        if line.StringText:match"%S[ -]$" then
+      local line = editor.GetString(id,1,0)
+      for i=1, ei.TotalLines-1 do
+        local nextline = editor.GetString(id,i+1,0)
+        if line.StringText:match"%S[ -]$" or #line>0 and nextline.StringText=="" then
           editor.SetString(id, i, line.StringText, "")
           n = n+1
         end
+        line = nextline
       end
       if n>0 and editor.SaveFile(id, ei.FileName) then --reload
         local title = editor.GetTitle(id)
