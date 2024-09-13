@@ -180,14 +180,13 @@ local function askAI (prompt, cfgname)
       end
       editor.InsertString(Id)
     end
-    editor.InsertText(Id, "> "..prompt.."\n\n")
-    editor.Redraw(Id)
-
-    local start = Far.UpTime
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
+    editor.InsertText(Id, "> "..prompt.."\n\n")
+    editor.Redraw(Id)
     local code = false
     buf = ""
+    local start = Far.UpTime
     local _,err = pcall(processStream, function (chunk, title)
       if start then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
