@@ -118,7 +118,7 @@ local function main (cfg, prompt, context)
     cfg.params[i] = name
     cfg.params[name] = i
   end
-  local canSession = cfg.info.clearSession or cfg.info.sessionFile
+  local canSession = cfg.info.clearSession or cfg.info.sessionFile or cfg.info.historyName
 
   local width = 86
   local flags = O.smallDlg and F.FDLG_SMALLDIALOG or 0
@@ -152,6 +152,8 @@ local function main (cfg, prompt, context)
   local sessionExists = cfg.info.clearSession
   if cfg.info.sessionFile then
     sessionExists = win.GetFileAttr(cfg.info.sessionFile:format(SESSION))
+  elseif cfg.info.historyName then
+    sessionExists = State[cfg.info.historyName]
   end
   II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(hDlg,idx)

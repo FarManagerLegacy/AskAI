@@ -116,20 +116,8 @@ if pcall(require, "piper") then
   end
 end
 
-local function _import (filename, env, ...)
-  local pathname = _pathjoin(Shared.cfgpath,filename)
-  local fn = assert(loadfile(pathname))
-  env = env or getfenv(2) -- parent _ENV
-  local name = env.name
-  local ret = setfenv(fn,env)(Shared, ...)
-  if name and name~=env.name then
-    env.name = ("%s [%s]"):format(name, env.name)
-  end
-  return ret, env
-end
-
 local function isReachable (fname, source)
-  if type(fname)=="boolean" then return fname end
+  if fname==nil or type(fname)=="boolean" then return fname end
   local _type = type(fname)
   if _type~="string" then
     far.Message("exe: string or boolean expected, got ".._type, source, nil, "w")
@@ -144,6 +132,110 @@ local function isReachable (fname, source)
   end
 end
 
+local json_module = Shared.O.json_module
+if not json_module then
+  for _,name in ipairs {"cjson", "rsjson", "ljson", "dkjson", "lunajson", "json"} do
+    if pcall(require, name) then json_module = name; break end
+  end
+end
+local json = json_module and require(json_module)
+
+local export
+if json and pcall(require, "ssl.https") then
+  if json_module=="dkjson" then json = json.use_lpeg() end
+  local _env = setmetatable({json=json},{__index=_G})
+  local _path = _pathjoin(Shared.cfgpath, "restapi.moon.1")
+  local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
+  local State = Shared.State
+  local function getHistory (historyName)
+    State[historyName] = State[historyName] or {}
+    return State[historyName]
+  end
+  local function setHistory (historyName,t)
+    State[historyName] = t
+  end
+
+  local function boolean (str, default)
+    if type(str)=="number" then
+      return str==1
+    elseif type(str)=="boolean" then
+      return str
+    elseif str=="null" then
+      return nil
+    elseif str=="false" then
+      return false
+    else
+      return str=="true" or default
+    end
+  end
+  local function number (str)
+    return str and tonumber(str) or str
+  end
+  local function obj (str)
+    if type(str)=="string" then
+      local fn = require("moonscript").loadstring(str)
+      fn = fn or assert(loadstring("return "..str))
+      str = setfenv(fn,{})()
+    end
+    return str
+  end
+
+  local function formatJsonMsg (response,getMsgText)
+    local msg = getMsgText(response)
+    if type(msg)=="string" then
+      if select(2, msg:gsub("\n","\n"))>2 then
+        msg = ("```error\n%s\n```"):format(msg)
+      end
+      msg = msg.."\n"
+    else
+      msg = ""
+    end
+    return ("%s\n```json\n%s\n```"):format(msg, json.encode(response))--, {indent=true}))
+  end
+
+  local function formatErrMsg (response,status,getMsgText)
+    if type(response)=="string" then
+      local msg = response
+      status = tostring(status)
+      if msg:sub(1, status:len())==status then
+        msg = msg:sub(status:len()+2)
+      end
+      if not msg:lower():find("error") then
+        msg = ("Error %s: %s"):format(status,msg)
+      end
+      return msg
+    else --table
+      return ("Error %s: %s"):format(status, formatJsonMsg(response,getMsgText))
+    end
+  end
+
+  export = {
+    restapi=restapi,
+    getHistory=getHistory,
+    setHistory=setHistory,
+    boolean=boolean,
+    number=number,
+    obj=obj,
+    formatJsonMsg=formatJsonMsg,
+    formatErrMsg=formatErrMsg,
+    check=check,
+    json=json,
+    cfgpath=Shared.cfgpath, -- for presets-openai.lua.cfg
+  }
+end
+
+local function _import (filename, env, ...)
+  local pathname = _pathjoin(Shared.cfgpath,filename)
+  local fn = assert(loadfile(pathname))
+  env = env or getfenv(2) -- parent _ENV
+  local name = env.name
+  local ret = setfenv(fn,env)(export or Shared, ...)
+  if name and name~=env.name then
+    env.name = ("%s [%s]"):format(name, env.name)
+  end
+  return ret, env
+end
+
 local mt = setmetatable({
   _import=_import,
   _isWindows=_isWindows,
@@ -156,10 +248,15 @@ local mt = setmetatable({
 local function loadCfg (pathname)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
-  local applyParamsFn = setfenv(fn, env)(Shared)
+  local applyParamsFn = setfenv(fn, env)(export or Shared)
   for _,param in ipairs{"config", "sessionFile"} do
     if env[param] then
       env[param] = expandEnv(env[param])
+    end
+  end
+  if env.historyName then
+    env.showSession = env.showSession or function () --todo
+      require"le"(Shared.State[env.historyName])
     end
   end
   return {
@@ -181,6 +278,8 @@ local function clearSession (info, session)
   elseif info.sessionFile then
     local pathname = info.sessionFile:format(session)
     win.DeleteFile(pathname)
+  elseif info.historyName then
+    export.setHistory(info.historyName, nil)
   end
 end
 

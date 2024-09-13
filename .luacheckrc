@@ -7,9 +7,14 @@
 local options = {
 
   std = "_G+luamacro",
-  --globals={};
-  read_globals={"_context", "_import", "_isWindows", "_optional", "_pathjoin", "_pipeOut", "_quote", "_tmpfile"};
-  new_globals={"clearSession", "config", "env", "exe", "name", "predefined", "prompt", "sessionFile", "showSession", "url"};
+  globals={
+    "clearSession", "config", "env", "exe", "name", "predefined", "prompt", "sessionFile", "showSession", "url",
+    "historyName",
+  };
+  read_globals={
+    "_context", "_import", "_isWindows", "_optional", "_pathjoin", "_pipeOut", "_quote", "_tmpfile",
+  };
+  --new_globals={};
   --new_read_globals={};
   --not_globals={};
   --global=false;

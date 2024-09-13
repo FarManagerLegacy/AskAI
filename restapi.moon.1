@@ -1,5 +1,5 @@
 ltn12 = require "ltn12"
-json = select(2, ...) or require "cjson"
+json = json or require "cjson"
 
 class LinesStream
   new: (@api_key, apibase, @headers) =>
@@ -153,3 +153,11 @@ class OpenAI extends SSE
 
   chat: (payload, delta_callback=nil) =>
     super payload, if payload.stream then delta_callback
+
+
+{
+  :LinesStream
+  :SimpleSSE
+  :SSE
+  :OpenAI
+}
