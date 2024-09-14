@@ -224,24 +224,7 @@ _Дополнительные макросы_, активные в окне с �
 - [OpenRouter]  
   - api: `https://openrouter.ai/api/v1`
   - целый ряд бесплатных [моделей](https://openrouter.ai/docs/models) (присутствуют ограничения):
-    <details>
-
-    ```
-    meta-llama/llama-3.1-8b-instruct:free
-    google/gemma-2-9b-it:free
-    qwen/qwen-2-7b-instruct:free
-    microsoft/phi-3-mini-128k-instruct:free
-    microsoft/phi-3-medium-128k-instruct:free
-    meta-llama/llama-3-8b-instruct:free
-    google/gemma-7b-it:free
-    nousresearch/nous-capybara-7b:free
-    openchat/openchat-7b:free
-    gryphe/mythomist-7b:free
-    undi95/toppy-m-7b:free
-    huggingfaceh4/zephyr-7b-beta:free
-    mistralai/mistral-7b-instruct:free
-    ```
-    </details>
+    <https://openrouter.ai/models?q=:free>
 - [Lepton AI](https://www.lepton.ai/playground)
 
 Существуют и другие провайдеры, предоставляющие совместимый интерфейс.
