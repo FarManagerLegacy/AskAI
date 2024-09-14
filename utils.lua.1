@@ -259,6 +259,7 @@ local function loadCfg (pathname)
       require"le"(Shared.State[env.historyName])
     end
   end
+  env.url = env.url or type(env.exe~="string") and "https://github.com/FarManagerLegacy/LuaBinaries" or nil
   return {
     applyParamsFn = applyParamsFn,
     info = env,
