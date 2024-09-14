@@ -37,7 +37,7 @@ local function chooseCfg (prompt)
     })
     return nil
   end)
-  if items==0 then
+  if #items==0 then
     far.Message("No config found", Shared.name, nil ,"w")
     return
   elseif empty then
