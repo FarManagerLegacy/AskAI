@@ -213,7 +213,8 @@ local function main (cfg, prompt, context)
   end
   II:add {F.DI_TEXT, nil, nil, F.DIF_SEPARATOR}
   II:ln() -- -- -- --
-  II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.info.config and 0 or F.DIF_DISABLE),
+  local vFlags = cfg.info.exe==true and F.DIF_HIDDEN or cfg.info.config and 0 or F.DIF_DISABLE
+  II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +vFlags,
     onclick=function()
       if cfg.info.config then
         editor.Editor(cfg.info.config)
