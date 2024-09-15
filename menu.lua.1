@@ -19,36 +19,42 @@ end
 local function chooseCfg (prompt)
   if State.isDlgOpened then return end
   local _, filename = pcall(utils.readFile, default)
-  local items = {}
+  local items1,items2 = {visibleN=0}, {visibleN=0}
   local empty = true
   local hk = utils.HK.new(".")
   far.RecursiveSearch(cfgpath, "*.lua.cfg>>DH", function (item, pathname)
     local cfg = utils.loadCfg(pathname)
     empty = empty and not cfg.reachable
+    local items = type(cfg.info.exe)=="string" and items2 or items1
+    if cfg.reachable then items.visibleN = items.visibleN+1 end
     table.insert(items, {
-      text = hk:iter(not cfg.reachable).." "..cfg.info.name,
       hidden = not cfg.reachable,
       grayed = not cfg.reachable,
       selected = item.FileName==filename,
       FileName = item.FileName,
       pathname = pathname,
       cfg = cfg,
-      checked = type(cfg.info.exe)=="string" and utf8.char(0xf4b5) -- "" nf-oct-command_palette
     })
     return nil
   end)
-  if #items==0 then
+  if #items1 + #items2 == 0 then
     far.Message("No config found", Shared.name, nil ,"w")
     return
-  elseif empty then
+  end
+  local items = items1
+  local notBothGroupsPresent = items1.visibleN==0 or items2.visibleN==0
+  table.insert(items, {separator=true, hidden=notBothGroupsPresent, grayed=notBothGroupsPresent})
+  for _,item in ipairs(items2) do
+    item.checked = utf8.char(0xf4b5) -- "" nf-oct-command_palette
+    table.insert(items, item)
+  end
+  for _,item in ipairs(items) do
+    if not item.separator then
+      item.text = hk:iter(not item.cfg.reachable).." "..item.cfg.info.name
+    end
+  end
+  if empty then
     toggleHidden(items)
-  else
-    table.sort(items, function (A,B)
-      if A.hidden==B.hidden then
-        return A.FileName:upper() < B.FileName:upper()
-      end
-      return not A.hidden and B.hidden
-    end)
   end
   --
   local props = {
