@@ -1,0 +1,7 @@
+--https://cloud.cerebras.ai/
+--Try chat: from https://inference.cerebras.ai/
+
+apibase="https://api.cerebras.ai/v1"
+apikey=win.GetEnv"CEREBRAS_API_KEY" or "set CEREBRAS_API_KEY env variable!" -- or demo key
+model="llama3.1-70b"
+--model="llama3.1-8b"

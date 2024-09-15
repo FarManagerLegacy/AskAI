@@ -1,0 +1,7 @@
+--https://platform.openai.com/playground
+apibase=win.GetEnv"OPENAI_API_BASE" or ""
+apikey=win.GetEnv"OPENAI_API_KEY" or "set OPENAI_API_KEY env variable!"
+
+--https://platform.openai.com/docs/models/gpt-4o-mini
+model="gpt-4o-mini"
+--model="gpt-4o-2024-08-06"

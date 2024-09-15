@@ -1,0 +1,7 @@
+--https://deepinfra.com/chat
+--https://deepinfra.com/docs/openai_api
+--https://deepinfra.com/models/text-generation
+
+apibase = "https://api.deepinfra.com/v1/openai"
+apikey = ""
+model = "meta-llama/Meta-Llama-3.1-405B-Instruct"
