@@ -38,6 +38,7 @@ class LinesStream
       chunk, err
 
   process_line: (line, delta_callback, ctx) =>
+    if line=="" then return true
     @process delta_callback, line
 
   process: (delta_callback, data, extra) =>
@@ -108,7 +109,7 @@ class LinesStream
 
 class SimpleSSE extends LinesStream
   process_line: (line, delta_callback) =>
-    if line\sub(1,1)==":" or line\match("^event:")
+    if line=="" or line\sub(1,1)==":" or line\match("^event:")
       true
     elseif data = line\match("^data: ?(.+)$")
       @process(delta_callback, data)
