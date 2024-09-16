@@ -147,6 +147,26 @@ local function getCfg (cfgname)
   end
 end
 
+local ffi = require"ffi"
+pcall(ffi.cdef, [[
+//https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str
+typedef struct _CONSOLE_CURSOR_INFO {
+  DWORD dwSize;
+  BOOL  bVisible;
+} CONSOLE_CURSOR_INFO, *PCONSOLE_CURSOR_INFO;
+//https://learn.microsoft.com/en-us/windows/console/setconsolecursorinfo
+BOOL SetConsoleCursorInfo(
+        HANDLE              hConsoleOutput,
+  const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo
+);
+]])
+local C = ffi.C
+local hConsoleOutput = C.GetStdHandle(-11)
+local ConsoleCursorInfo = ffi.new("CONSOLE_CURSOR_INFO",99,1)
+local function setBigCursor()
+  C.SetConsoleCursorInfo(hConsoleOutput, ConsoleCursorInfo)
+end
+
 local function askAI (prompt, cfgname)
   local cfg = getCfg(cfgname) or cfgname
   if not cfg then return menu.chooseCfg(prompt) end
@@ -184,6 +204,7 @@ local function askAI (prompt, cfgname)
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
     editor.InsertText(Id, "> "..prompt.."\n\n")
     editor.Redraw(Id)
+    setBigCursor()
     local code = false
     buf = ""
     local start = Far.UpTime
@@ -215,6 +236,7 @@ local function askAI (prompt, cfgname)
         end
       end
       editor.Redraw(Id)
+      setBigCursor()
     end)
     editor.InsertString(Id)
     if err and err~="interrupted" then
