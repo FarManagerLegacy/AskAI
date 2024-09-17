@@ -123,12 +123,12 @@ class SSE extends LinesStream
     -- https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation
     if line==""
       if next e
+        ctx.event = {} -- reset
         if e.data
-          @process delta_callback, e.data, e
+          return @process delta_callback, e.data, e
         else
           unless e[""] -- comment
             delta_callback nil, "data not found", e
-        ctx.event = {} -- reset
     else
       field, value = line\match"^(.-):%s?(.+)$"
       switch field
