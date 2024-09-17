@@ -109,15 +109,15 @@ local function _words (chunk)
   local eof = not chunk
   return function()
     if buf=="" then return nil end
-    local space, word, other = buf:match("^(%s*)(%S+%-)(.*)") --hyphen
+    local space, word, other = string.match(buf, "^(%s*)(%S+%-)(.*)") --hyphen
     if not word then
-      space, word, other = buf:match("^(%s*)(%S+)(%s.*)")
+      space, word, other = string.match(buf, "^(%s*)(%S+)(%s.*)")
     end
     if word then
       buf = other
       return space, word
     elseif eof then
-      space, word = buf:match("(%s*)(.*)") -- will always match
+      space, word = string.match(buf, "(%s*)(.*)") -- will always match
       buf = ""
       return space, word
     end
