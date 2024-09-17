@@ -102,6 +102,7 @@ end
 
 local buf
 local function _words (chunk)
+  --if chunk=="" then return function() end end
   if chunk then
     buf = buf..chunk
   end
