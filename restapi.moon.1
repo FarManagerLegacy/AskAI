@@ -44,9 +44,12 @@ class LinesStream
   process: (delta_callback, data, extra) =>
     if data=="[DONE]" then return true
     success, parsed = pcall -> assert json.decode data
-    if success
+    if success and @is_valid parsed
       delta_callback parsed, nil, extra
       true
+
+  is_valid: (parsed) =>
+    true -- stub
 
   _request: (method, path, payload, delta_callback) =>
     body = if payload
@@ -154,6 +157,9 @@ class OpenAI extends SSE
 
   chat: (payload, delta_callback=nil) =>
     super payload, if payload.stream then delta_callback
+
+  is_valid: (parsed) =>
+    parsed.choices
 
 
 {
