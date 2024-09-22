@@ -241,8 +241,8 @@ local function main (cfg, prompt, context)
           local item = II.names[k] or II.names[cfg.info.env[k]]
           hDlg:send(F.DM_SETTEXT, item.idx, tostring(v))
         end
+        hDlg:send(F.DM_ENABLEREDRAW,1)
       end
-      hDlg:send(F.DM_ENABLEREDRAW,1)
     end,
     name="btnPreset"
   }
