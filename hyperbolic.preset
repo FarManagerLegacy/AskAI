@@ -1,0 +1,9 @@
+--https://app.hyperbolic.xyz/models
+--https://app.hyperbolic.xyz/models/llama31-405b-base-bf-16
+--https://docs.hyperbolic.xyz/docs/getting-started
+--https://docs.hyperbolic.xyz/docs/hyperbolic-ai-inference-pricing
+
+apibase="https://api.hyperbolic.xyz/v1"
+apikey=win.GetEnv"HYPERBOLIC_API_KEY" or "set HYPERBOLIC_API_KEY env variable!"
+model="meta-llama/Meta-Llama-3.1-405B-Instruct"
+

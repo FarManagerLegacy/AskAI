@@ -1,0 +1,10 @@
+--https://nextchat-sf.vercel.app/
+--https://siliconflow.cn/models
+--https://siliconflow.cn/pricing
+--https://cloud.siliconflow.cn/playground/chat
+--https://docs.siliconflow.cn/reference/chat-completions-1
+
+apibase="https://api.siliconflow.cn/v1"
+apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!"
+model="Vendor-A/Qwen/Qwen2-72B-Instruct" --Temporarily free
+

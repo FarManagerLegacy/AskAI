@@ -2,3 +2,4 @@
 -- https://api.airforce/
 
 apibase="https://api.airforce/"
+model="chatgpt-4o-latest"
