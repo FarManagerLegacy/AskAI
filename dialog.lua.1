@@ -180,7 +180,10 @@ local function main (cfg, prompt, context)
 
   local function makeHistoryName (param)
     local history = "AskAI param "..param
-    if not O.sharedParams[param] then
+    local name = cfg.info.histories and cfg.info.histories[param]
+    if name then
+      history = "AskAI param "..name
+    elseif not O.sharedParams[param] then
       local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
       history = history.." - "..baseName
     end
