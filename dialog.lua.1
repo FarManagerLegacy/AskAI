@@ -178,6 +178,28 @@ local function main (cfg, prompt, context)
   }
   II:ln() -- -- -- --
 
+  local function makeHistoryName (param)
+    local history = "AskAI param "..param
+    if not O.sharedParams[param] then
+      local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
+      history = history.." - "..baseName
+    end
+    return history
+  end
+  local function processSetsHistories (hDlg, text, dependants)
+    local env = cfg.info.env
+    for _,subparam in ipairs(dependants) do
+      local items = {II.names[subparam]}
+      items[#items+1] = env and env[subparam] and II.names[env[subparam]]
+      for _,item in ipairs(items) do
+        local pos = item.idx
+        hDlg:send(F.DM_SETTEXT, pos, "")
+        hDlg:send(F.DM_SETHISTORY, pos, makeHistoryName(subparam)..":"..text)
+        hDlg:send(F.DM_EDITUNCHANGEDFLAG, pos, 1)
+      end
+    end
+  end
+
   local hk = utils.HK.new("")
   for _,param in ipairs(cfg.params) do
     if not ({context=1, prompt=1, session=1, stream=1})[param] then
@@ -187,12 +209,8 @@ local function main (cfg, prompt, context)
       end
       local col2 = math.max(x2, param:len()+1)
       II:add {F.DI_TEXT, hk:iter()..param, {"-1", [X2]=col2-1}}
-      local History="AskAI param "..param
-      if not O.sharedParams[param] then
-        local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
-        History = History.." - "..baseName
-      end
-      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY, History=History,
+      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY,
+        History=makeHistoryName(param),
         name=param
       }
       II:ln() -- -- -- --
@@ -205,7 +223,8 @@ local function main (cfg, prompt, context)
       local value = win.GetEnv(var)
       local col2 = math.max(x2, var:len()+1)
       II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
-      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY, History="AskAI param "..k,
+      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY,
+        History=makeHistoryName(k),
         name=var
       }
       II:ln() -- -- -- --
@@ -237,9 +256,25 @@ local function main (cfg, prompt, context)
       local preset = menu.choosePreset(II.names, cfg.info)
       if preset then
         hDlg:send(F.DM_ENABLEREDRAW,0)
+        local secondary = {}
         for k,v in pairs(preset) do
+          --v = tostring(v)
           local item = II.names[k] or II.names[cfg.info.env[k]]
-          hDlg:send(F.DM_SETTEXT, item.idx, tostring(v))
+          local dependants = cfg.info.sets and cfg.info.sets[k]
+          if dependants then
+            if v~=hDlg:send(F.DM_GETTEXT, item.idx) then
+              hDlg:send(F.DM_SETTEXT, item.idx, v)
+              processSetsHistories(hDlg, v, dependants)
+            end
+          else
+            secondary[item] = v
+          end
+        end
+        for item,v in pairs(secondary) do
+          local exV = hDlg:send(F.DM_GETTEXT, item.idx)
+          if exV=="" or exV:match" env variable!$" then
+            hDlg:send(F.DM_SETTEXT, item.idx, v)
+          end
         end
         hDlg:send(F.DM_ENABLEREDRAW,1)
       end
@@ -252,7 +287,7 @@ local function main (cfg, prompt, context)
   II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
     name="btnGo"
   }
-  data.DlgProc=function (hDlg,msg,idx,Rec)
+  data.DlgProc=function (hDlg,msg,idx,Param2)
     local item = II[idx]
     if msg==F.DN_INITDIALOG then
       for param,list in pairs(cfg.info.predefined or {}) do
@@ -261,12 +296,34 @@ local function main (cfg, prompt, context)
       for param,list in pairs(O.stdEnvs) do
         populateHistory(II, hDlg, param, getEnvValues(list))
       end
+      local sets = cfg.info.sets
+      if sets then
+        for param, dependants in pairs(sets) do
+          if II.names[param] then
+            local text = hDlg:send(F.DM_GETTEXT, II.names[param].idx)
+            processSetsHistories(hDlg, text, dependants)
+          end
+        end
+      end
+    elseif msg==F.DN_EDITCHANGE then
+      local sets = cfg.info.sets
+      if sets then
+        for param, dependants in pairs(sets) do
+          if II[idx].name==param then
+            local text = Param2[DATA]
+            hDlg:send(F.DM_ENABLEREDRAW,0)
+            processSetsHistories(hDlg, text, dependants)
+            hDlg:send(F.DM_ENABLEREDRAW,1)
+            return
+          end
+        end
+      end
     elseif msg==F.DN_BTNCLICK then
       if item.onclick then
         item.onclick(hDlg,idx)
       end
     elseif msg==F.DN_CONTROLINPUT then
-      local key = far.InputRecordToName(Rec)
+      local key = far.InputRecordToName(Param2)
       if key=="F3" and item.name=="chkUseSession" then
         if cfg.info.showSession then
           cfg.info.showSession()
