@@ -260,6 +260,9 @@ local function loadCfg (pathname)
     end
   end
   env.url = env.url or type(env.exe~="string") and "https://github.com/FarManagerLegacy/LuaBinaries" or nil
+  if env.hidden then
+    for _,v in ipairs(env.hidden) do env.hidden[v] = true end
+  end
   return {
     applyParamsFn = applyParamsFn,
     info = env,

@@ -211,12 +211,13 @@ local function main (cfg, prompt, context)
         II:ln() -- -- -- --
       end
       local col2 = math.max(x2, param:len()+1)
-      II:add {F.DI_TEXT, hk:iter()..param, {"-1", [X2]=col2-1}}
-      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY,
+      local visibility = cfg.info.hidden and cfg.info.hidden[param] and F.DIF_HIDDEN or F.DIF_NONE
+      II:add {F.DI_TEXT, hk:iter(visibility==F.DIF_HIDDEN)..param, {"-1", [X2]=col2-1}, visibility}
+      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY + visibility,
         History=makeHistoryName(param),
         name=param
       }
-      II:ln() -- -- -- --
+      if visibility~=F.DIF_HIDDEN then II:ln() end -- -- -- --
     end
   end
   if cfg.info.env then
