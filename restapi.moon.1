@@ -51,22 +51,24 @@ class LinesStream
   is_valid: (parsed) =>
     true -- stub
 
-  _request: (method, path, payload, delta_callback) =>
-    body = if payload
-      json.encode payload
+  authorization: { "authorization", "Bearer %s" }
 
-    headers = {
-      "accept": delta_callback and "text/event-stream" or "application/json"
-      "content-type": "application/json"
-      "content-length": body and #body or nil
-      "authorization": @api_key and "Bearer #{@api_key}" or nil
-    }
-    if @headers
-      for k,v in pairs @headers
-        headers[k\lower()] = v
+  _request: (method, path, payload, delta_callback, extra_headers) =>
+    headers = "accept": delta_callback and "text/event-stream" or "application/json"
+    local source
+    if payload
+      body = json.encode payload
+      headers["content-type"] = "application/json"
+      headers["content-length"] = #body
+      source = ltn12.source.string body
 
-    source = if body
-      ltn12.source.string body
+    if @authorization and @api_key
+      {name, template} = @authorization
+      headers[name or "authorization"] = template and template\format(@api_key) or @api_key
+
+    for _headers in *{ @headers, extra_headers }
+      if _headers then for k,v in pairs _headers
+        headers[k\lower()] = v or nil -- false becomes nil
 
     out = {}
     sink = if delta_callback
