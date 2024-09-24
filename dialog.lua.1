@@ -178,12 +178,10 @@ local function main (cfg, prompt, context)
   }
   II:ln() -- -- -- --
 
-  local function makeHistoryName (param)
-    local history = "AskAI param "..param
-    local name = cfg.info.histories and cfg.info.histories[param]
-    if name then
-      history = "AskAI param "..name
-    elseif not O.sharedParams[param] then
+  local function makeHistoryName (param, name)
+    name = name or cfg.info.histories and cfg.info.histories[param]
+    local history = "AskAI param "..(name or param)
+    if not (name or O.sharedParams[param]) then
       local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
       history = history.." - "..baseName
     end
@@ -197,7 +195,7 @@ local function main (cfg, prompt, context)
       for _,item in ipairs(items) do
         local pos = item.idx
         hDlg:send(F.DM_SETTEXT, pos, "")
-        hDlg:send(F.DM_SETHISTORY, pos, makeHistoryName(subparam)..":"..text)
+        hDlg:send(F.DM_SETHISTORY, pos, makeHistoryName(nil, subparam..":"..text))
         hDlg:send(F.DM_EDITUNCHANGEDFLAG, pos, 1)
       end
     end

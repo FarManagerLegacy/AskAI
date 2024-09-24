@@ -14,7 +14,7 @@ local nfo = Info { _filename or ...,
     --keyList = "CtrlB:Hold",
     --keyOutput = "CtrlB:Double",
     keyCopy = "CtrlShiftIns",
-    sharedParams = { apikey=1, apibase=1, max_tokens=1, model=1, temperature=1, top_p=1, top_k=1, role=1 },
+    sharedParams = { apibase=1, max_tokens=1, temperature=1, top_p=1, top_k=1, role=1 },
     --smallDlg = true,
     stdEnvs = {
       apikey ={OPENAI_API_KEY=1},
