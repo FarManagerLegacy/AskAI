@@ -106,10 +106,12 @@ class LinesStream
 
     @provider
 
-  chatEndpoint: "/chat"
+  defaultEndpoint: "/chat"
 
-  chat: (payload, delta_callback) =>
-    @_request "POST", @chatEndpoint, payload, delta_callback
+  generate: (endpoint, payload, delta_callback) =>
+    if type(endpoint)~="string"
+      endpoint, payload, delta_callback = @defaultEndpoint, endpoint, payload
+    @_request "POST", endpoint, payload, delta_callback
 
 
 class SimpleSSE extends LinesStream
@@ -155,9 +157,9 @@ class SSE extends LinesStream
 class OpenAI extends SSE
   api_base: "https://api.openai.com/v1"
 
-  chatEndpoint: "/chat/completions"
+  defaultEndpoint: "/chat/completions"
 
-  chat: (payload, delta_callback=nil) =>
+  generate: (payload, delta_callback=nil) =>
     super payload, if payload.stream then delta_callback
 
   is_valid: (parsed) =>
