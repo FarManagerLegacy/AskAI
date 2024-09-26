@@ -139,10 +139,16 @@ if not json_module then
   end
 end
 local json = json_module and require(json_module)
+local pretty_encode = json.encode
 
 local export
 if json and pcall(require, "ssl.https") then
-  if json_module=="dkjson" then json = json.use_lpeg() end
+  if json_module=="dkjson" then
+    json = json.use_lpeg()
+    function pretty_encode (data)
+      return json.encode(data, {indent=true})
+    end
+  end
   local _env = setmetatable({json=json},{__index=_G})
   local _path = _pathjoin(Shared.cfgpath, "restapi.moon.1")
   local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
@@ -190,7 +196,7 @@ if json and pcall(require, "ssl.https") then
     else
       msg = ""
     end
-    return ("%s```json\n%s\n```"):format(msg, json.encode(response))--, {indent=true}))
+    return ("%s```json\n%s\n```"):format(msg, pretty_encode(response))
   end
 
   local function formatErrMsg (statusline,errResponse,sep,getMsgText)
