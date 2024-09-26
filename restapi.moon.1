@@ -111,7 +111,13 @@ class LinesStream
   generate: (endpoint, payload, delta_callback) =>
     if type(endpoint)~="string"
       endpoint, payload, delta_callback = @defaultEndpoint, endpoint, payload
-    @_request "POST", endpoint, payload, delta_callback
+    response, status_code, _, statusline = @_request "POST", endpoint, payload, delta_callback
+    if not response
+      nil, status_code
+    elseif status_code~=200
+      nil, statusline, response
+    else
+      response, statusline
 
 
 class SimpleSSE extends LinesStream

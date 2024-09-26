@@ -190,23 +190,16 @@ if json and pcall(require, "ssl.https") then
     else
       msg = ""
     end
-    return ("%s\n```json\n%s\n```"):format(msg, json.encode(response))--, {indent=true}))
+    return ("%s```json\n%s\n```"):format(msg, json.encode(response))--, {indent=true}))
   end
 
-  local function formatErrMsg (response,status,getMsgText)
-    if type(response)=="string" then
-      local msg = response
-      status = tostring(status)
-      if msg:sub(1, status:len())==status then
-        msg = msg:sub(status:len()+2)
-      end
-      if not msg:lower():find("error") then
-        msg = ("Error %s: %s"):format(status,msg)
-      end
-      return msg
-    else --table
-      return ("Error %s: %s"):format(status, formatJsonMsg(response,getMsgText))
+  local function formatErrMsg (statusline,errResponse,sep,getMsgText)
+    if type(errResponse)=="table" then
+      errResponse = formatJsonMsg(errResponse,getMsgText)
+    elseif type(errResponse)=="string" and statusline:find(errResponse,1,"plain") then
+      errResponse = nil
     end
+    return table.concat({statusline, errResponse}, sep)
   end
 
   export = {
