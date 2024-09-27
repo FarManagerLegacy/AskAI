@@ -11,9 +11,10 @@ end
 
 local function toggleHidden (items)
   for _,item in ipairs(items) do
-    item.hidden = item.grayed and items.showall and not (item.err or item.empty)
+    if item.hidden or item.hidden==false then
+      item.hidden = not item.hidden
+    end
   end
-  items.showall = not items.showall
 end
 
 local function chooseCfg (prompt)
@@ -28,7 +29,7 @@ local function chooseCfg (prompt)
     local items = type(cfg.info.exe)=="string" and items2 or items1
     if cfg.reachable then items.visibleN = items.visibleN+1 end
     table.insert(items, {
-      hidden = not cfg.reachable,
+      hidden = not cfg.reachable or nil,
       grayed = not cfg.reachable,
       selected = item.FileName==filename,
       FileName = item.FileName,
@@ -42,7 +43,7 @@ local function chooseCfg (prompt)
     return
   end
   local items = items1
-  local notBothGroupsPresent = items1.visibleN==0 or items2.visibleN==0
+  local notBothGroupsPresent = items1.visibleN==0 or items2.visibleN==0 or nil
   table.insert(items, {separator=true, hidden=notBothGroupsPresent, grayed=notBothGroupsPresent})
   for _,item in ipairs(items2) do
     item.checked = utf8.char(0xf4b5) -- "" nf-oct-command_palette
