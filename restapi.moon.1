@@ -201,9 +201,27 @@ class OpenAI extends SimpleSSE
     parsed.choices
 
 
+class GoogleGemini extends SimpleSSE
+  api_base: "https://generativelanguage.googleapis.com/v1beta"
+
+  authorization: { "x-goog-api-key" }
+
+  generate: (payload, model, stream, delta_callback=nil) =>
+    assert model, "Model not specified"
+    task = stream and "streamGenerateContent" or "generateContent"
+    endpoint = ("/models/%s:%s%s")\format model, task, stream and "?alt=sse" or ""
+    super endpoint, payload, if stream then delta_callback
+
+  is_valid: (parsed) =>
+    parsed.candidates
+
+  modelsKeys: {models:"models", id:"name"}
+
+
 {
   :LinesStream
   :SimpleSSE
   :SSE
   :OpenAI
+  :GoogleGemini
 }
