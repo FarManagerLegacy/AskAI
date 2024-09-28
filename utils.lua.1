@@ -235,6 +235,19 @@ local function _import (filename, env, ...)
   return ret1,ret2
 end
 
+local function _readLines (exe, args, filter, field)
+  return function () -- getModels
+    local pipe,err = io.popen(exe.." "..args)
+    if not pipe then return nil, err end
+    local list = {}
+    for line in pipe:lines() do
+      table.insert(list, not filter and line or filter(line))
+    end
+    pipe:close()
+    return list, field
+  end
+end
+
 local mt = setmetatable({
   _import=_import,
   _isWindows=_isWindows,
@@ -242,6 +255,7 @@ local mt = setmetatable({
   _pathjoin=_pathjoin,
   _pipeOut=_pipeOut,
   _quote=_quote,
+  _readLines=_readLines,
   _tmpfile=_tmpfile,
 }, { __index=_G })
 local function loadCfg (pathname)

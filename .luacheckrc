@@ -12,7 +12,7 @@ local options = {
     "hidden", "histories", "historyName", "sets",
   };
   read_globals={
-    "_context", "_import", "_isWindows", "_optional", "_pathjoin", "_pipeOut", "_quote", "_tmpfile",
+    "_context", "_import", "_isWindows", "_optional", "_pathjoin", "_pipeOut", "_quote", "_readLines", "_tmpfile",
   };
   --new_globals={};
   --new_read_globals={};
