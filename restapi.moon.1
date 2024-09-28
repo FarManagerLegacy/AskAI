@@ -149,6 +149,22 @@ class LinesStream
       nil, statusline, response or ""
 
 
+class PlainText extends LinesStream
+  create_stream_sink: (delta_callback, ctx) =>
+    streamed = false
+    (chunk, err) ->
+      if chunk==nil
+        if err
+          delta_callback nil, err
+        else
+          ctx.response = streamed and "Streamed successfully" or ""
+      else
+        delta_callback chunk
+        streamed = true
+
+      chunk, err
+
+
 class SimpleSSE extends LinesStream
   process_line: (line, delta_callback) =>
     if line=="" or line\sub(1,1)==":" or line\match("^event:")
@@ -220,6 +236,7 @@ class GoogleGemini extends SimpleSSE
 
 {
   :LinesStream
+  :PlainText
   :SimpleSSE
   :SSE
   :OpenAI
