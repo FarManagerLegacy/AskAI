@@ -228,11 +228,11 @@ local function _import (filename, env, ...)
   local fn = assert(loadfile(pathname))
   env = env or getfenv(2) -- parent _ENV
   local name = env.name
-  local ret = setfenv(fn,env)(export or Shared, ...)
+  local ret1,ret2 = setfenv(fn,env)(export or Shared, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
-  return ret, env
+  return ret1,ret2
 end
 
 local mt = setmetatable({
@@ -247,7 +247,7 @@ local mt = setmetatable({
 local function loadCfg (pathname)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
-  local applyParamsFn = setfenv(fn, env)(export or Shared)
+  local applyParamsFn, getModels = setfenv(fn, env)(export or Shared)
   for _,param in ipairs{"config", "sessionFile"} do
     if env[param] then
       env[param] = expandEnv(env[param])
@@ -264,6 +264,7 @@ local function loadCfg (pathname)
   end
   return {
     applyParamsFn = applyParamsFn,
+    getModels = getModels,
     info = env,
     pathname = pathname,
     reachable = isReachable(env.exe, pathname)

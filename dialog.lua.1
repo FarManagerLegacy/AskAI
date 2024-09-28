@@ -283,6 +283,29 @@ local function main (cfg, prompt, context)
     end,
     name="btnPreset"
   }
+  II:add {F.DI_BUTTON, "&Models - F6", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.getModels and 0 or F.DIF_DISABLE),
+    onclick=function(hDlg)
+      local args = {}
+      for i=1,#cfg.params do
+        local param = cfg.params[i]
+        local ii = II.names[param] and II.names[param].idx
+        if ii then
+          local value = hDlg:send(F.DM_GETTEXT,ii)
+          args[param] = value~="" and value or nil
+        end
+      end
+      local model, ret2 = menu.chooseModel(cfg.getModels, args)
+      if model then
+        local param = II.names[ret2 or "model"]
+        if not param then return end
+        hDlg:send(F.DM_SETTEXT, param.idx, model)
+        hDlg:send(F.DM_SETFOCUS, param.idx)
+      elseif ret2 then
+        far.Message(ret2, "Error fetching models", nil, "wl")
+      end
+    end,
+    name="btnModels"
+  }
   II:add {F.DI_BUTTON, "Swi&tch", nil, F.DIF_CENTERGROUP,
     name="btnSwitch"
   }
@@ -343,6 +366,10 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
       elseif key=="F5" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnPreset.idx)
+      elseif key=="F6" then
+        if cfg.getModels then
+          hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
+        end
       elseif key=="PgUp" then
         hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
       end

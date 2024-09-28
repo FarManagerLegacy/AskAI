@@ -119,6 +119,35 @@ class LinesStream
     else
       response, statusline
 
+  models: (endpoint) =>
+    response, status_code, _, statusline = @_request "GET", endpoint or "/models"
+    if not response
+      nil, status_code
+    elseif status_code==200
+      if type(response)~="table"
+        return nil, response
+      if @modelsKeys then
+        keys = @modelsKeys
+        models = keys.models and response[keys.models] or response
+        models.keyId = keys.id
+        return models
+      -- else use heuristics
+      models = response.data   or -- openai
+               response.models or -- cohere, google gemini
+               response.result or -- cloudflare
+               response           -- together, github
+      item = models[2]
+      if not item
+        return nil, "Unexpected response"
+      keyId = item.name and not item.name\match" " and "name" or -- cloudflare, cohere, github, google gemini
+              item.id and "id"  -- openai, copilot, openrouter
+      if not keyId
+        return nil, "Unexpected response"
+      models.keyId = keyId
+      models
+    else
+      nil, statusline, response or ""
+
 
 class SimpleSSE extends LinesStream
   process_line: (line, delta_callback) =>

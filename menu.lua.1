@@ -242,7 +242,58 @@ local function choosePreset (itemsNames, cfgInfo)
   until false
 end
 
+local function chooseModel (getModels, args)
+  local models, param = getModels(args)
+  if not models and param then
+    return nil, param
+  elseif models and models[1] then
+    local keyId = type(models[1])=="table" and models.keyId
+    local filterFn, nameFn = models.filterFn, models.nameFn
+    local current = args[param or "model"]
+    local items = {}
+    for i,model in ipairs(models) do
+      local id = nameFn and nameFn(model) or not keyId and model or model[keyId]
+      local hidden = filterFn and not filterFn(model) or nil
+      items[i] = {
+        text=id,
+        hidden=hidden,
+        grayed=hidden,
+        selected=id==current,
+        model=model,
+      }
+    end
+    local props = {
+      Title="Available models",
+      Bottom="Enter to choose",
+      HelpTopic=utils.HelpTopic"",
+      Id=win.Uuid "2E982903-4E60-4A44-8E78-2543ED869A63",
+      Flags=F.FMENU_SHOWSHORTBOX +F.FMENU_SHOWSINGLEBOX,
+    }
+    local bkeys = "CtrlH" --undoc
+    if pcall(require,"le") then
+      bkeys = bkeys.." F3"
+    end
+    table.sort(items, function(a,b) return a.text:lower() < b.text:lower() end)
+    repeat
+      local ret,pos = far.Menu(props,items,bkeys)
+      if ret then
+        if not ret.BreakKey then
+          return ret.text, param
+        end
+        props.SelectIndex = pos
+        local item = items[pos]
+        if ret.BreakKey=="CtrlH" then
+          toggleHidden(items)
+        elseif item and ret.BreakKey=="F3" then
+          require"le"(item.model)
+        end
+      end
+    until not ret
+  end
+end
+
 return {
   chooseCfg=chooseCfg,
   choosePreset=choosePreset,
+  chooseModel=chooseModel,
 }
