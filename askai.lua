@@ -68,7 +68,7 @@ local function progress (text, title, status)
     {F.DI_TEXT,     0,  1,0,    1,0,0,0,F.DIF_CENTERGROUP, text},
     {F.DI_TEXT,     mid-1,2,mid-1, 2,0,0,0,F.DIF_CENTERTEXT, status},
   }
-  return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL)
+  return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL +(title and 0 or F.FDLG_KEEPCONSOLETITLE))
 end
 
 local function openOutput (mode)
