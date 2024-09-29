@@ -118,6 +118,8 @@ class LinesStream
       nil, status_code
     elseif status_code~=200
       nil, statusline, response
+    elseif response~=STREAMED and (type(response)~="table" or not (@is_valid_final or @is_valid) @,response)
+      nil, statusline, response
     else
       response, statusline
 
