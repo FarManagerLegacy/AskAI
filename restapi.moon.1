@@ -1,6 +1,8 @@
 ltn12 = require "ltn12"
 json = json or require "cjson"
 
+STREAMED = "Streamed successfully"
+
 class LinesStream
   new: (@api_key, apibase, @headers) =>
     if apibase
@@ -16,7 +18,7 @@ class LinesStream
             delta_callback nil, err, acc_buffer
 
         unless err
-          ctx.response = streamed and "Streamed successfully" or acc_buffer
+          ctx.response = streamed and STREAMED or acc_buffer
 
       else
         acc_buffer ..= chunk
@@ -157,7 +159,7 @@ class PlainText extends LinesStream
         if err
           delta_callback nil, err
         else
-          ctx.response = streamed and "Streamed successfully" or ""
+          ctx.response = streamed and STREAMED or ""
       else
         delta_callback chunk
         streamed = true
@@ -235,6 +237,7 @@ class GoogleGemini extends SimpleSSE
 
 
 {
+  :STREAMED
   :LinesStream
   :PlainText
   :SimpleSSE
