@@ -27,7 +27,7 @@ class LinesStream
           while line
             line, rest = string.match acc_buffer, "^(.-)\r?\n(.-)$"
             if line
-              if @process_line(line, delta_callback, ctx)
+              if @process_line line, delta_callback, ctx
                 acc_buffer = rest
                 streamed = true
               elseif streamed
@@ -104,7 +104,7 @@ class LinesStream
       if provider
         @provider = require provider
       else
-        error("unknown scheme: "..@api_base)
+        error "unknown scheme: "..@api_base
 
     @provider
 
@@ -171,10 +171,10 @@ class PlainText extends LinesStream
 
 class SimpleSSE extends LinesStream
   process_line: (line, delta_callback) =>
-    if line=="" or line\sub(1,1)==":" or line\match("^event:")
+    if line=="" or line\sub(1,1)==":" or line\match"^event:"
       true
-    elseif data = line\match("^data: ?(.+)$")
-      @process(delta_callback, data)
+    elseif data = line\match"^data: ?(.+)$"
+      @process delta_callback, data
 
 
 class SSE extends LinesStream
@@ -203,7 +203,7 @@ class SSE extends LinesStream
             return false -- do not try to parse SSE anymore
         else
           if field\match"^%w+$"
-            delta_callback nil, ('Unknown field "%s" with value "%s"')\format(field, value), e
+            delta_callback nil, 'Unknown field "%s" with value "%s"'\format(field, value), e
           return nil
 
     true
@@ -229,7 +229,7 @@ class GoogleGemini extends SimpleSSE
   generate: (payload, model, stream, delta_callback=nil) =>
     assert model, "Model not specified"
     task = stream and "streamGenerateContent" or "generateContent"
-    endpoint = ("/models/%s:%s%s")\format model, task, stream and "?alt=sse" or ""
+    endpoint = "/models/%s:%s%s"\format model, task, stream and "?alt=sse" or ""
     super endpoint, payload, if stream then delta_callback
 
   is_valid: (parsed) =>
