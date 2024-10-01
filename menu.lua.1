@@ -23,7 +23,7 @@ local function chooseCfg (prompt)
   local items1,items2 = {visibleN=0}, {visibleN=0}
   local empty = true
   local hk = utils.HK.new(".")
-  far.RecursiveSearch(cfgpath, "*.lua.cfg>>DH", function (item, pathname)
+  far.RecursiveSearch(cfgpath, "*.lua.cfg>>DH", function (file, pathname)
     local cfg = utils.loadCfg(pathname)
     empty = empty and not cfg.reachable
     local items = type(cfg.info.exe)=="string" and items2 or items1
@@ -31,8 +31,8 @@ local function chooseCfg (prompt)
     table.insert(items, {
       hidden = not cfg.reachable or nil,
       grayed = not cfg.reachable,
-      selected = item.FileName==filename,
-      FileName = item.FileName,
+      selected = file.FileName==filename,
+      FileName = file.FileName,
       pathname = pathname,
       cfg = cfg,
     })
