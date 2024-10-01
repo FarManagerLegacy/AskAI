@@ -23,13 +23,13 @@ local function chooseCfg (prompt)
   local items1,items2 = {visibleN=0}, {visibleN=0}
   local empty = true
   local hk = utils.HK.new(".")
-  far.RecursiveSearch(cfgpath, "*.lua.cfg>>DH", function (file, pathname)
+  far.RecursiveSearch(cfgpath, "*.lua.cfg>>D", function (file, pathname)
     local cfg = utils.loadCfg(pathname)
     empty = empty and not cfg.reachable
     local items = type(cfg.info.exe)=="string" and items2 or items1
     if cfg.reachable then items.visibleN = items.visibleN+1 end
     table.insert(items, {
-      hidden = not cfg.reachable or nil,
+      hidden = file.FileAttributes:find"h" or not cfg.reachable or nil,
       grayed = not cfg.reachable,
       selected = file.FileName==filename,
       FileName = file.FileName,
@@ -51,7 +51,7 @@ local function chooseCfg (prompt)
   end
   for _,item in ipairs(items) do
     if not item.separator then
-      item.text = hk:iter(not item.cfg.reachable).." "..item.cfg.info.name
+      item.text = hk:iter(item.hidden~=nil).." "..item.cfg.info.name
     end
   end
   if empty then
@@ -126,25 +126,26 @@ local presetsTopic = utils.HelpTopic "Presets"
 local function choosePreset (itemsNames, cfgInfo)
   local items = {}
   local hk = utils.HK.new(".")
-  local function prepItem (item, data, limit, err)
+  local function prepItem (item, hidden, data, limit, err)
+    hidden = (hidden or not data) and not err or nil
     local empty = data and not next(data) and "empty"
     local extra = err or limit or empty
     local text = extra and ("%s [%s]"):format(item.name, extra) or item.name
-    item.hk = item.hk or hk:iter()
+    item.hk = item.hk or hk:iter(hidden)
     item.text = item.hk.." "..text
     item.grayed = not data or empty
     item.data = not empty and data
     item.err = err
     item.empty = empty
-    return not data and not err -- to hide
+    return hidden -- to hide
   end
-  far.RecursiveSearch(cfgpath, "*.preset>>DH", function (file, pathname)
+  far.RecursiveSearch(cfgpath, "*.preset>>D", function (file, pathname)
     local item = {
       name=file.FileName:sub(1,-(".preset"):len()-1),
       selected=State.lastPreset==pathname,
       pathname=pathname,
     }
-    item.hidden = prepItem(item, loadPreset(pathname, itemsNames, cfgInfo))
+    item.hidden = prepItem(item, file.FileAttributes:find"h", loadPreset(pathname, itemsNames, cfgInfo))
     table.insert(items, item)
   end)
   hk:finish()
