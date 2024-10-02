@@ -46,8 +46,12 @@ class LinesStream
   process: (delta_callback, data, extra) =>
     if data=="[DONE]" or data\match"^ -$" then return true
     success, parsed = pcall -> assert json.decode data
-    if success and @is_valid parsed
-      delta_callback parsed, nil, extra
+    if success
+      if @is_valid parsed
+        delta_callback parsed, nil, extra
+      else
+        delta_callback nil, "Unexpected json chunk", parsed
+
       true
 
   is_valid: (parsed) =>
