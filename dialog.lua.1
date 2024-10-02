@@ -273,8 +273,9 @@ local function main (cfg, prompt, context)
           end
         end
         for item,v in pairs(secondary) do
-          local exV = hDlg:send(F.DM_GETTEXT, item.idx)
-          if exV=="" or exV:match" env variable!$" then
+          local exV = not (cfg.info.hidden and cfg.info.hidden[item.name])
+                      and hDlg:send(F.DM_GETTEXT, item.idx)
+          if not exV or exV=="" or exV:match" env variable!$" then
             hDlg:send(F.DM_SETTEXT, item.idx, v)
           end
         end
