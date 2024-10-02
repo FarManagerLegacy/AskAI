@@ -1,16 +1,24 @@
 --https://cloud.sambanova.ai/apis
+--https://cloud.sambanova.ai/pricing
 
 apibase="https://api.sambanova.ai/v1"
 apikey=win.GetEnv"SAMBANOVA_API_KEY" or "set SAMBANOVA_API_KEY env variable!"
-model="Meta-Llama-3.1-405B-Instruct"
---Meta-Llama-3.1-70B-Instruct
---Meta-Llama-3.1-8B-Instruct
---Samba-CoE
---macadeliccc/WestLake-7B-v2-laser-truthy-dpo
---ar bg hu ru sr sl th tr ja
+model={
+  "Meta-Llama-3.1-405B-Instruct",
+  "Meta-Llama-3.1-70B-Instruct",
+  "Meta-Llama-3.1-8B-Instruct",
 
---ignos/Mistral-T5-7B-v1
---stop: {" [ALT"}
+  "Meta-Llama-3.2-3B-Instruct",
+  "Meta-Llama-3.2-1B-Instruct",
 
---v1olet/v1olet_merged_dpo_7B
---stop: {"[QUESTION]"}
+  --old:
+  "Samba-CoE",
+  "macadeliccc/WestLake-7B-v2-laser-truthy-dpo",
+  "ar", "bg", "hu", "ru", "sr", "sl", "th", "tr", "ja",
+
+  "ignos/Mistral-T5-7B-v1",
+  --stop: {" [ALT", "[INST]"}
+
+  "v1olet/v1olet_merged_dpo_7B",
+  --stop: {"[QUESTION]"}
+}
