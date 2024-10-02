@@ -311,6 +311,10 @@ local function main (cfg, prompt, context)
           args[param] = value~="" and value or nil
         end
       end
+      if args.modelsFn=="none" then
+        hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
+        return
+      end
       local model, ret2 = menu.chooseModel(cfg.getModels, args)
       if model then
         local param = II.names[ret2 or "model"]
@@ -386,6 +390,12 @@ local function main (cfg, prompt, context)
       elseif key=="F6" then
         if cfg.getModels then
           hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
+        elseif II.names.model then
+          hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
+        end
+      elseif key=="ShiftF6" then
+        if II.names.model then
+          hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
         end
       elseif key=="PgUp" then
         hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
