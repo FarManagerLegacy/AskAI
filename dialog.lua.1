@@ -260,7 +260,6 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DM_ENABLEREDRAW,0)
         local secondary = {}
         for k,v in pairs(preset) do
-          --v = tostring(v)
           local item = II.names[k] or II.names[cfg.info.env[k]]
           local dependants = cfg.info.sets and cfg.info.sets[k]
           if dependants then
@@ -273,6 +272,10 @@ local function main (cfg, prompt, context)
           end
         end
         for item,v in pairs(secondary) do
+          if type(v)=="table" then
+            populateHistory(II, hDlg, item.name, v)
+            v = v[1]
+          end
           local exV = not (cfg.info.hidden and cfg.info.hidden[item.name])
                       and hDlg:send(F.DM_GETTEXT, item.idx)
           if not exV or exV=="" or exV:match" env variable!$" then
