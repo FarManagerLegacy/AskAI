@@ -1,0 +1,8 @@
+--https://api.together.xyz/models
+--https://api.together.xyz/playground/
+
+apibase="https://api.together.xyz/v1"
+apikey=win.GetEnv"TOGETHER_API_KEY" or "set TOGETHER_API_KEY env variable!"
+
+--https://www.together.ai/blog/llama-3-2-vision-stack#:~:text=Free%20Llama%203.2%2011B%20Vision%20Model%20-%20Developers
+model="meta-llama/Llama-Vision-Free"
