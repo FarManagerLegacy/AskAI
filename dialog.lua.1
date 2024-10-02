@@ -253,6 +253,11 @@ local function main (cfg, prompt, context)
       end
     end,
   }
+  local function _pcall (fn, ...)
+    local success, res = pcall(fn, ...)
+    if success then return res end
+    far.Message(res,"Error in preset",nil,"wl")
+  end
   II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
     onclick=function(hDlg)
       local preset = menu.choosePreset(II.names, cfg.info)
@@ -263,6 +268,10 @@ local function main (cfg, prompt, context)
           local item = II.names[k] or II.names[cfg.info.env[k]]
           local dependants = cfg.info.sets and cfg.info.sets[k]
           if dependants then
+            if type(v)=="function" then
+              v = _pcall(v)
+              if not v then goto exitPresets end
+            end
             if v~=hDlg:send(F.DM_GETTEXT, item.idx) then
               hDlg:send(F.DM_SETTEXT, item.idx, v)
               processSetsHistories(hDlg, v, dependants)
@@ -279,9 +288,13 @@ local function main (cfg, prompt, context)
           local exV = not (cfg.info.hidden and cfg.info.hidden[item.name])
                       and hDlg:send(F.DM_GETTEXT, item.idx)
           if not exV or exV=="" or exV:match" env variable!$" then
-            hDlg:send(F.DM_SETTEXT, item.idx, v)
+            if type(v)=="function" then v = _pcall(v) end
+            if v then
+              hDlg:send(F.DM_SETTEXT, item.idx, v)
+            end
           end
         end
+        ::exitPresets::
         hDlg:send(F.DM_ENABLEREDRAW,1)
       end
     end,
