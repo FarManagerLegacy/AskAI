@@ -387,6 +387,11 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
       elseif key=="F5" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnPreset.idx)
+      elseif key=="ShiftF5" then
+        local apibase = II.names.apibase or II.names.api_base or II.names.api or II.names.provider
+        if apibase then
+          hDlg:send(F.DM_SETDROPDOWNOPENED, apibase.idx, 1)
+        end
       elseif key=="F6" then
         if cfg.getModels then
           hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
