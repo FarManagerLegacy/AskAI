@@ -1,0 +1,27 @@
+--https://developers.cloudflare.com/workers-ai/get-started/rest-api/#1-get-api-token-and-account-id
+--https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/
+--https://developers.cloudflare.com/workers-ai/models/
+
+local id = win.Uuid"528DAB50-5BAE-4C28-99A4-C5605996B567"
+apibase=function()
+  repeat
+    local account_id = far.InputBox(id, "Cloudflare preset", "Enter Account ID:", "AskAI/cloudflare.preset/Account ID")
+    if account_id=="" then
+      far.Message("Account ID required","Cloudflare preset",nil,"wl")
+    elseif account_id then
+      return ("https://api.cloudflare.com/client/v4/accounts/%s/ai/v1"):format(account_id)
+    end
+  until not Account_ID
+end
+
+apikey=win.GetEnv"CF_API_TOKEN" or "set CF_API_TOKEN env variable!"
+
+--https://developers.cloudflare.com/api/operations/workers-ai-search-model
+model="@cf/meta/llama-3.2-11b-vision-instruct"
+
+modelsFn=[[
+  data,getModels = ...
+  if not data.apikey then return end
+  data.apibase = data.apibase:match"^(.-)/v1$"
+  return getModels(data, "/models/search?task=text+generation")
+]]
