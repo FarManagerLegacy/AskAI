@@ -69,7 +69,7 @@ function newDlgInfo (data)
   return self
 end
 end--> end of Dlg helper <--
-local X2, SELECTED, FLAGS, DATA = 3,6,9,10
+local X2, SELECTED, HISTORY, FLAGS, DATA = 3,6,7,9,10
 
 local function populateHistory (self, hDlg, name, values)
   if type(values)~="table" then values = {values} end
@@ -385,6 +385,15 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DM_CLOSE, II.names.btnSwitch.idx)
       elseif key=="AltSubtract" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
+      elseif key=="ShiftF4" then
+        if II.names.headers then
+          local history = hDlg:send(F.DM_GETDLGITEM, II.names.headers.idx)[HISTORY]
+          local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
+          local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):", history)
+          if headers then
+            hDlg:send(F.DM_SETTEXT, II.names.headers.idx, headers)
+          end
+        end
       elseif key=="F5" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnPreset.idx)
       elseif key=="ShiftF5" then
