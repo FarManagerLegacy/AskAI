@@ -186,17 +186,25 @@ if json and pcall(require, "ssl.https") then
     return str
   end
 
+  local function wrapCode (code, codetype)
+    return ("```%s\n%s\n```"):format(codetype or "", code)
+  end
+
+  local function formatJson (data)
+    return wrapCode(pretty_encode(data), "json")
+  end
+
   local function formatJsonMsg (response,getMsgText)
     local msg = getMsgText(response)
     if type(msg)=="string" then
       if select(2, msg:gsub("\n","\n"))>2 then
-        msg = ("```error\n%s\n```"):format(msg)
+        msg = wrapCode(msg, "error")
       end
       msg = msg.."\n"
     else
       msg = ""
     end
-    return ("%s```json\n%s\n```"):format(msg, pretty_encode(response))
+    return msg..formatJson(response)
   end
 
   local function formatErrMsg (statusline,errResponse,sep,getMsgText)
@@ -215,6 +223,7 @@ if json and pcall(require, "ssl.https") then
     boolean=boolean,
     number=number,
     obj=obj,
+    formatJson=formatJson,
     formatJsonMsg=formatJsonMsg,
     formatErrMsg=formatErrMsg,
     check=check,
