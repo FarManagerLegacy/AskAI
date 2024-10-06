@@ -63,8 +63,10 @@ class LinesStream
     headers = "accept": delta_callback and "text/event-stream" or "application/json"
     local source
     if payload
-      body = json.encode payload
-      headers["content-type"] = "application/json"
+      body = payload
+      if type(payload)=="table"
+        body = json.encode payload
+        headers["content-type"] = "application/json"
       headers["content-length"] = #body
       source = ltn12.source.string body
 
