@@ -8,13 +8,19 @@ class LinesStream
     if apibase
       @api_base = apibase
 
+  separatorPattern: "^(.-)\r?\n(.-)$"
+
+  consumeBufferRest: false
+
   create_stream_sink: (delta_callback, ctx) =>
     acc_buffer, streamed, accumulate_only = "", false, false
 
     (chunk, err) ->
       if chunk==nil
         if streamed
-          if err = err or acc_buffer~="" and not acc_buffer\match"data: ?%[DONE%]" and "buffer not empty"
+          if not err and @consumeBufferRest and acc_buffer~=""
+            @process_line acc_buffer, delta_callback, ctx
+          elseif err = err or acc_buffer~="" and not acc_buffer\match"data: ?%[DONE%]" and "buffer not empty"
             delta_callback nil, err, acc_buffer
 
         unless err
@@ -25,7 +31,7 @@ class LinesStream
         unless accumulate_only
           line = true
           while line
-            line, rest = string.match acc_buffer, "^(.-)\r?\n(.-)$"
+            line, rest = string.match acc_buffer, @separatorPattern
             if line
               if @process_line line, delta_callback, ctx
                 acc_buffer = rest
