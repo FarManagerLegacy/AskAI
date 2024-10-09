@@ -1,5 +1,6 @@
 --https://cloud.sambanova.ai/apis
 --https://cloud.sambanova.ai/pricing
+--https://sambanova.ai/blog/fastest-inference-best-models
 
 apibase="https://api.sambanova.ai/v1"
 apikey=win.GetEnv"SAMBANOVA_API_KEY" or "set SAMBANOVA_API_KEY env variable!"
