@@ -3,11 +3,100 @@ json = json or require "cjson"
 
 STREAMED = "Streamed successfully"
 
-class LinesStream
+class Plain
   new: (@api_key, apibase, @headers) =>
     if apibase
       @api_base = apibase
 
+  create_stream_sink: (delta_callback, ctx) =>
+    streamed = false
+    (chunk, err) ->
+      if chunk==nil
+        if err
+          delta_callback nil, err
+        else
+          ctx.response = streamed and STREAMED or ""
+      else
+        delta_callback chunk
+        streamed = true
+
+      chunk, err
+
+  authorization: { "authorization", "Bearer %s" }
+
+  _request: (method, path, payload, delta_callback, extra_headers) =>
+    headers = "accept": delta_callback and "text/event-stream" or "application/json"
+    local source
+    if payload
+      body = payload
+      if type(payload)=="table"
+        body = json.encode payload
+        headers["content-type"] = "application/json"
+      headers["content-length"] = #body
+      source = ltn12.source.string body
+
+    if @api_key
+      {name, template} = @authorization
+      headers[name or "authorization"] = template and template\format(@api_key) or @api_key
+
+    for _headers in *{ @headers, extra_headers }
+      if _headers then for k,v in pairs _headers
+        headers[k\lower()] = v or nil -- false becomes nil
+
+    out = {}
+    sink = if delta_callback
+      @create_stream_sink delta_callback, out
+    else
+      ltn12.sink.table out
+
+    success, status_code, response_headers, status_line = @get_provider!.request {
+      url: @api_base .. path
+      :sink
+      :source
+      :method
+      :headers
+    }
+    if success
+      response = if delta_callback then out.response else table.concat out
+      pcall -> response = assert json.decode response
+      response, status_code, response_headers, status_line
+    else
+      nil, status_code
+
+  request: (method, endpoint, payload, delta_callback) =>
+    if method\match"^[/?]"
+      endpoint, payload, delta_callback = method, endpoint, payload
+      method = payload and "POST" or "GET"
+
+    response, status_code, _, statusline = @_request method, endpoint, payload, delta_callback
+    if not response
+      nil, status_code
+    elseif status_code~=200
+      nil, statusline, response~=STREAMED and response or nil
+    else
+      response, statusline
+
+  generate: (endpoint, payload, delta_callback) =>
+    @request "POST", endpoint, payload, delta_callback
+
+  providers: {
+    http: "socket.http"
+    https: "ssl.https"
+  }
+
+  get_provider: =>
+    unless @provider
+      scheme = @api_base\match"^(.-)://"
+      provider = scheme and @providers[scheme]
+      if provider
+        @provider = require provider
+      else
+        error "unknown scheme: "..@api_base
+
+    @provider
+
+
+class LinesStream extends Plain
   separatorPattern: "^(.-)\r?\n(.-)$"
 
   consumeBufferRest: false
@@ -63,63 +152,6 @@ class LinesStream
   is_valid: (parsed) =>
     true -- stub
 
-  authorization: { "authorization", "Bearer %s" }
-
-  _request: (method, path, payload, delta_callback, extra_headers) =>
-    headers = "accept": delta_callback and "text/event-stream" or "application/json"
-    local source
-    if payload
-      body = payload
-      if type(payload)=="table"
-        body = json.encode payload
-        headers["content-type"] = "application/json"
-      headers["content-length"] = #body
-      source = ltn12.source.string body
-
-    if @authorization and @api_key
-      {name, template} = @authorization
-      headers[name or "authorization"] = template and template\format(@api_key) or @api_key
-
-    for _headers in *{ @headers, extra_headers }
-      if _headers then for k,v in pairs _headers
-        headers[k\lower()] = v or nil -- false becomes nil
-
-    out = {}
-    sink = if delta_callback
-      @create_stream_sink delta_callback, out
-    else
-      ltn12.sink.table out
-
-    success, status_code, response_headers, status_line = @get_provider!.request {
-      url: @api_base .. path
-      :sink
-      :source
-      :method
-      :headers
-    }
-    if success
-      response = if delta_callback then out.response else table.concat out
-      pcall -> response = assert json.decode response
-      response, status_code, response_headers, status_line
-    else
-      nil, status_code
-
-  providers: {
-    http: "socket.http"
-    https: "ssl.https"
-  }
-
-  get_provider: =>
-    unless @provider
-      scheme = @api_base\match"^(.-)://"
-      provider = scheme and @providers[scheme]
-      if provider
-        @provider = require provider
-      else
-        error "unknown scheme: "..@api_base
-
-    @provider
-
   defaultEndpoint: "/chat"
 
   generate: (endpoint, payload, delta_callback) =>
@@ -129,11 +161,13 @@ class LinesStream
     if not response
       nil, status_code
     elseif status_code~=200
-      nil, statusline, response
+      nil, statusline, response~=STREAMED and response or nil
     elseif response~=STREAMED and (type(response)~="table" or not (@is_valid_final or @is_valid) @,response)
       nil, statusline, response
     else
       response, statusline
+
+  --modelsKeys: {models:"data", id:"id"}
 
   models: (endpoint) =>
     response, status_code, _, statusline = @_request "GET", endpoint or "/models"
@@ -165,23 +199,7 @@ class LinesStream
       nil, statusline, response or ""
 
 
-class PlainText extends LinesStream
-  create_stream_sink: (delta_callback, ctx) =>
-    streamed = false
-    (chunk, err) ->
-      if chunk==nil
-        if err
-          delta_callback nil, err
-        else
-          ctx.response = streamed and STREAMED or ""
-      else
-        delta_callback chunk
-        streamed = true
-
-      chunk, err
-
-
-class SimpleSSE extends LinesStream
+class BasicSSE extends LinesStream
   process_line: (line, delta_callback) =>
     if line=="" or line\sub(1,1)==":" or line\match"^event:"
       true
@@ -221,7 +239,7 @@ class SSE extends LinesStream
     true
 
 
-class OpenAI extends SimpleSSE
+class OpenAI extends BasicSSE
   api_base: "https://api.openai.com/v1"
 
   defaultEndpoint: "/chat/completions"
@@ -233,7 +251,7 @@ class OpenAI extends SimpleSSE
     parsed.choices
 
 
-class GoogleGemini extends SimpleSSE
+class GoogleGemini extends BasicSSE
   api_base: "https://generativelanguage.googleapis.com/v1beta"
 
   authorization: { "x-goog-api-key" }
@@ -252,9 +270,9 @@ class GoogleGemini extends SimpleSSE
 
 {
   :STREAMED
+  :Plain
   :LinesStream
-  :PlainText
-  :SimpleSSE
+  :BasicSSE
   :SSE
   :OpenAI
   :GoogleGemini
