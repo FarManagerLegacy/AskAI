@@ -1,0 +1,58 @@
+-- https://keepass.info/plugins.html#keepasscmdr
+-- KeePassCommand.bat expected somewhere in PATH
+
+local Shared = ...
+local State = Shared.State
+
+local group = "AskAI"
+
+local function readKPCoutput (cmd)
+  local pipe = assert(io.popen("2>&1 KeePassCommand "..cmd))
+  local res = pipe:read"*a"
+  pipe:close()
+  return res
+end
+
+local function list ()
+  return readKPCoutput("listgroup "..group)
+end
+
+local function get (name,field)
+  return readKPCoutput(('getfieldraw -stdout-utf8nobom "%s" %s'):format(name, field))
+end
+
+local res = {}
+local function init()
+  local items = {}
+  local hk = Shared.utils.HK.new(". ")
+  for name in list():gmatch"[^\n]+" do
+    items[#items+1] = {
+      text=hk:iter()..name,
+      selected=State.lastKeepassEntry==name,
+      name=name,
+    }
+  end
+  local props = {
+    Title="Keepass entries", Bottom="Enter to choose",
+    Id=win.Uuid"D37BEF78-856A-4ED4-8355-76B0AFD3662B",
+  }
+  local ret = far.Menu(props,items)
+  if ret then
+    State.lastKeepassEntry = ret.name
+    res.apibase  = get(ret.name, "UserName")
+    res.apikey   = get(ret.name, "Password")
+    res.model    = get(ret.name, "model")
+    res.modelsFn = get(ret.name, "modelsFn")
+  end
+  return res
+end
+local function _getter (param)
+  return function()
+    return res[param] or init()[param]
+  end
+end
+
+apibase  = _getter"apibase"
+apikey   = _getter"apikey"
+model    = _getter"model"
+modelsFn = _getter"modelsFn"
