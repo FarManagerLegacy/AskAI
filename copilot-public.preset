@@ -1,3 +1,4 @@
+-- https://copilot-demo.publicaffairs.workers.dev/token
 -- https://habr.com/ru/articles/799215/
 
 local function fromFile (name)

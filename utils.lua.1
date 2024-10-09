@@ -20,7 +20,7 @@ local function _optional (...)
   end
   local key, value, arg = ...
   if not value then return "" end
-  if arg then
+  if arg then -- see bito.lua.cfg
     if type(arg)=="function" then
       value = arg(select(4, ...))
     else--if arg~='"' then??

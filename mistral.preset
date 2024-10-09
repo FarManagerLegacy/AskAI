@@ -1,4 +1,5 @@
 --https://docs.mistral.ai/api/
+--https://docs.mistral.ai/getting-started/models/models_overview/
 --https://chat.mistral.ai/
 
 apibase="https://api.mistral.ai/v1"
