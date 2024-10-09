@@ -244,9 +244,15 @@ local function _import (filename, env, ...)
   return ret1,ret2
 end
 
-local function _readLines (exe, args, filter, field)
-  return function () -- getModels
-    local pipe,err = io.popen(exe.." "..args)
+local function _readLines (args, filter, field)
+  return function (data) -- getModels
+    local args = args
+    if type(args)=="function" then
+      local success
+      success, args = pcall(args,data)
+      if not success then return nil, args end
+    end
+    local pipe,err = io.popen(args)
     if not pipe then return nil, err end
     local list = {}
     for line in pipe:lines() do
