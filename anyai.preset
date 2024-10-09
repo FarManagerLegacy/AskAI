@@ -1,5 +1,5 @@
 -- https://discord.gg/anyai
 -- https://api.airforce/
 
-apibase="https://api.airforce/"
+apibase="https://api.airforce/v1"
 model="chatgpt-4o-latest"
