@@ -109,7 +109,7 @@ end
 local function loadPreset (pathname, itemsNames, cfgInfo)
   local fn,err1 = loadfile(assert(pathname)); if not fn then return nil,nil,err1 end
   local env = setmetatable({},{__index=_G})
-  local ret,err2 = fixret(pcall(setfenv(fn,env))); if err2 then return nil,nil,err2 end
+  local ret,err2 = fixret(pcall(setfenv(fn,env),Shared)); if err2 then return nil,nil,err2 end
   if ret and ret~=cfgInfo.name:sub(1, ret:len()) then
     return nil,ret
   end
