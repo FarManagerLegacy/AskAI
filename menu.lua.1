@@ -115,9 +115,12 @@ local function loadPreset (pathname, itemsNames, cfgInfo)
   end
   for k in pairs(env) do
     if not itemsNames[k] then
-      if not cfgInfo.env or not cfgInfo.env[k] then
-        return
+      if k~="modelsMeta" then
+        local key = cfgInfo.env and cfgInfo.env[k]
+        if not key then return end
+        env[key] = env[k]
       end
+      env[k] = nil
     end
   end
   return env

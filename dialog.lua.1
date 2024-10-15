@@ -265,7 +265,7 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DM_ENABLEREDRAW,0)
         local secondary = {}
         for k,v in pairs(preset) do
-          local item = II.names[k] or II.names[cfg.info.env[k]]
+          local item = II.names[k]
           local dependants = cfg.info.sets and cfg.info.sets[k]
           if dependants then
             if type(v)=="function" then
