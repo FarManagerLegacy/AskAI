@@ -244,9 +244,9 @@ local function choosePreset (itemsNames, cfgInfo)
 end
 
 local function chooseModel (getModels, args)
-  local models, param = getModels(args)
-  if not models and param then
-    return nil, param
+  local success, models, param = pcall(getModels,args)
+  if not success then
+    return nil, models
   elseif models and models[1] then
     local keyId = type(models[1])=="table" and models.keyId
     local filterFn, nameFn = models.filterFn, models.nameFn
