@@ -21,7 +21,7 @@ model={
   "wizardlm-2-8x22b",
   "wizardlm-2-7b",
 }
-modelsFn = "none"
+modelsMeta = "none"
 
 local id = win.Uuid"270C9C4D-F46A-4870-9494-6C2FD94C2492"
 headers = function()

@@ -42,7 +42,7 @@ local function init()
     res.apibase  = get(ret.name, "UserName")
     res.apikey   = get(ret.name, "Password")
     res.model    = get(ret.name, "model")
-    res.modelsFn = get(ret.name, "modelsFn")
+    res.modelsMeta = get(ret.name, "modelsMeta")
   end
   return res
 end
@@ -55,4 +55,4 @@ end
 apibase  = _getter"apibase"
 apikey   = _getter"apikey"
 model    = _getter"model"
-modelsFn = _getter"modelsFn"
+modelsMeta = _getter"modelsMeta"
