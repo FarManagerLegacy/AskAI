@@ -387,9 +387,10 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
       elseif key=="ShiftF4" then
         if II.names.headers then
-          local history = hDlg:send(F.DM_GETDLGITEM, II.names.headers.idx)[HISTORY]
+          local d_item = hDlg:send(F.DM_GETDLGITEM, II.names.headers.idx)
           local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
-          local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):", history)
+          local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):",
+                                       d_item[HISTORY], d_item[DATA])
           if headers then
             hDlg:send(F.DM_SETTEXT, II.names.headers.idx, headers)
           end
