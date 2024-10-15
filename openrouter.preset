@@ -13,9 +13,4 @@ model={
   "qwen/qwen-2-vl-7b-instruct:free",
 }
 
-modelsFn=[[
-  data,getModels = ...
-  return getModels(data, nil, function (model)
-    return model.id:match":free$"
-  end)
-]]
+modelsMeta='filterFn: (model) -> model.id\\match":free$"'
