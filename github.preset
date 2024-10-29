@@ -10,4 +10,13 @@ apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 --https://github.com/marketplace?type=models
 --https://github.com/marketplace/models/azure-openai/gpt-4o/playground
 --https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
-model="gpt-4o"
+model={
+  "gpt-4o", -- default
+
+  -- additionally scraped with curl "https://github.com/marketplace/models" | sed -n 's/"original_name":"[^"]*",/\n&\n/gp' | sed -n 's/"original_name"://p' | sed 's/[",]//g'
+  "AI21-Jamba-1.5-Large",
+  "AI21-Jamba-1.5-Mini",
+  --"Cohere-command-r-08-2024",
+  --"Cohere-command-r-plus-08-2024",
+  "Ministral-3B",
+}
