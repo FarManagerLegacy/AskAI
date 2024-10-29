@@ -5,6 +5,7 @@ local menu = Shared.menu
 local O = Shared.O
 
 local F = far.Flags
+F.DIF_HOMEITEM = F.DIF_HOMEITEM or 0 -- far2m
 local newDlgInfo do --> begin of Dlg helper <-- v0.1
 local function norm (arg, base, align)
   if not arg or arg==0 then
@@ -75,12 +76,10 @@ local function populateHistory (self, hDlg, name, values, init)
   if type(values)~="table" then values = {values} end
   local param = self.names[name]
   if not param then return end
-  local hSettings = far.CreateSettings("far") --https://forum.farmanager.com/viewtopic.php?t=13407
-  local subkey = hSettings:OpenSubkey(0, param.History)
-  local history = hSettings:Enum(subkey)
-  hSettings:Free()
-  for _,item in ipairs(history) do
-    history[item.Name] = true
+  local success, history = pcall(utils.readHistory, param.History)
+  if not success then
+    far.Message(history, "Error", nil, "wl")
+    return
   end
   local added
   for i=#values,1,-1 do
@@ -241,14 +240,16 @@ local function main (cfg, prompt, context)
   end
   II:add {F.DI_TEXT, nil, nil, F.DIF_SEPARATOR}
   II:ln() -- -- -- --
-  local vFlags = cfg.info.exe==true and F.DIF_HIDDEN or cfg.info.config and 0 or F.DIF_DISABLE
-  II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +vFlags,
-    onclick=function()
-      if cfg.info.config then
-        editor.Editor(cfg.info.config)
-      end
-    end,
-  }
+  if cfg.info.exe~=true then
+    local vFlags = cfg.info.config and 0 or F.DIF_DISABLE
+    II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +vFlags,
+      onclick=function()
+        if cfg.info.config then
+          editor.Editor(cfg.info.config)
+        end
+      end,
+    }
+  end
   II:add {F.DI_BUTTON, "Def&inition", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
     onclick=function(hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
@@ -372,8 +373,9 @@ local function main (cfg, prompt, context)
       if item.onclick then
         item.onclick(hDlg,idx)
       end
-    elseif msg==F.DN_CONTROLINPUT then
-      local key = far.InputRecordToName(Param2)
+    elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
+      local key = far.KeyToName and far.KeyToName(Param2) --luacheck: globals far.KeyToName -- far2m
+               or far.InputRecordToName(Param2)
       if key=="F3" and item.name=="chkUseSession" then
         if cfg.info.showSession then
           cfg.info.showSession()
