@@ -24,7 +24,11 @@ local function chooseCfg (prompt)
   local empty = true
   local hk = utils.HK.new(".")
   far.RecursiveSearch(cfgpath, "*.lua.cfg>>D", function (file, pathname)
-    local cfg = utils.loadCfg(pathname)
+    local success, cfg = pcall(utils.loadCfg, pathname)
+    if not success then
+      far.Message(cfg,"Error loading "..file.FileName,nil,"wl")
+      return nil
+    end
     empty = empty and not cfg.reachable
     local items = type(cfg.info.exe)=="string" and items2 or items1
     if cfg.reachable then items.visibleN = items.visibleN+1 end
