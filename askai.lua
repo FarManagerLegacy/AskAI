@@ -40,7 +40,8 @@ local O = nfo.options
 local F = far.Flags
 
 local cfgpath = (_filename or ...):match"^(.*)[\\/]"
-local _tmp = win.GetEnv("FARLOCALPROFILE")
+local _tmp = far.InMyConfig and far.InMyConfig() --luacheck: globals far.InMyConfig -- far2m
+                             or win.GetEnv("FARLOCALPROFILE")
 local outputFilename --fwd decl.
 
 local State do
@@ -140,24 +141,26 @@ local function getCfg (cfgname)
   end
 end
 
-local ffi = require"ffi"
-pcall(ffi.cdef, [[
-//https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str
-typedef struct _CONSOLE_CURSOR_INFO {
-  DWORD dwSize;
-  BOOL  bVisible;
-} CONSOLE_CURSOR_INFO, *PCONSOLE_CURSOR_INFO;
-//https://learn.microsoft.com/en-us/windows/console/setconsolecursorinfo
-BOOL SetConsoleCursorInfo(
-        HANDLE              hConsoleOutput,
-  const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo
-);
-]])
-local C = ffi.C
-local hConsoleOutput = C.GetStdHandle(-11)
-local ConsoleCursorInfo = ffi.new("CONSOLE_CURSOR_INFO",99,1)
-local function setBigCursor()
-  C.SetConsoleCursorInfo(hConsoleOutput, ConsoleCursorInfo)
+local setBigCursor; if jit.os=="Windows" then
+  local ffi = require"ffi"
+  pcall(ffi.cdef, [[
+  //https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str
+  typedef struct _CONSOLE_CURSOR_INFO {
+    DWORD dwSize;
+    BOOL  bVisible;
+  } CONSOLE_CURSOR_INFO, *PCONSOLE_CURSOR_INFO;
+  //https://learn.microsoft.com/en-us/windows/console/setconsolecursorinfo
+  BOOL SetConsoleCursorInfo(
+          HANDLE              hConsoleOutput,
+    const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo
+  );
+  ]])
+  local C = ffi.C
+  local hConsoleOutput = C.GetStdHandle(-11)
+  local ConsoleCursorInfo = ffi.new("CONSOLE_CURSOR_INFO",99,1)
+  function setBigCursor()
+    C.SetConsoleCursorInfo(hConsoleOutput, ConsoleCursorInfo)
+  end
 end
 
 local function askAI (prompt, cfgname)
@@ -191,8 +194,11 @@ local function askAI (prompt, cfgname)
     editor.InsertText(Id, "> "..prompt.."\n\n")
     local modal = bit64.band(F.WIF_MODAL, wi.Flags)~=0
     local hDlg = not modal and progress("Waiting for data..")
-    editor.Redraw(Id)
-    setBigCursor()
+    local isFar3 = F.ACTL_GETFARMANAGERVERSION
+    if isFar3 then
+      editor.Redraw(Id)
+      setBigCursor()
+    end
     if modal then
       far.Message("Waiting for data..", "", "", "")
     end
@@ -237,8 +243,10 @@ local function askAI (prompt, cfgname)
           if backticks then code = not code end
         end
       end
-      editor.Redraw(Id)
-      setBigCursor()
+      if isFar3 then
+        editor.Redraw(Id)
+        setBigCursor()
+      end
     end)
     editor.InsertString(Id)
     if err and err~="interrupted" then

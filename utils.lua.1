@@ -7,10 +7,20 @@ local function pathjoin (...) --same as win.JoinPath since Luafar 857
   return table.concat(args, path_sep)
 end
 
-local _isWindows = package.config:sub(1,1)=="\\"
+local _isWindows = path_sep=="\\"
 
-local function expandEnv (str) --??linux
-  return (str:gsub("%%([%w_]-)%%", win.GetEnv))
+local expandEnv
+if _isWindows then
+  function expandEnv (path)
+    return (path:gsub("%%([%w_]-)%%", win.GetEnv))
+  end
+else
+  function expandEnv (path)
+    if path:sub(1,1)=="~" then
+      return win.GetEnv"HOME"..path:sub(2)
+    end
+    return path
+  end
 end
 
 local function _quote (str)
@@ -76,7 +86,8 @@ local function _pipeOut (exe, context)
       cmd = (_isWindows and "type %s|" or "cat %s|"):format(_tmpfile("file.input", context))..cmd
     end
     return function (cb)
-      local pipe = io.popen(_quote(cmd).." 2>&1", "r")
+      if _isWindows then cmd = _quote(cmd) end
+      local pipe = io.popen(cmd.." 2>&1", "r")
       repeat
         if check"Esc" then break end
         local chunk = pipe:read(5)
@@ -126,11 +137,34 @@ local function isReachable (fname, source)
     far.Message("exe: string or boolean expected, got ".._type, source, nil, "w")
     return
   end
+  if not _isWindows then
+    return 0==os.execute("which "..fname)
+  end
   for ext in win.GetEnv("PATHEXT"):gmatch"%.[^;]+" do
     --https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-searchpathw
     local filename = win.SearchPath(nil,fname,ext)
     if filename then
       return not win.GetFileAttr(filename):find"d"
+    end
+  end
+end
+
+local open; do
+  if win.ShellExecute then
+    function open (url)
+      win.ShellExecute(nil,nil,url)
+    end
+  else
+    for _,fname in ipairs{"xdg-open","explorer.exe","open"} do
+      if 0==os.execute("which "..fname) then
+        function open (url)
+          os.execute(("%s '%s'"):format(fname,url))
+        end
+        break
+      end
+    end
+    open = open or function (url)
+      far.Message(url,"")
     end
   end
 end
@@ -232,6 +266,7 @@ if json and pcall(require, "ssl.https") then
     check=check,
     json=json,
     cfgpath=Shared.cfgpath, -- for presets-openai.lua.cfg
+    open=open,
   }
 end
 
@@ -320,7 +355,7 @@ local function clearSession (info, session)
 end
 
 local function HelpTopic (name)
-  return ("<%s\\>%s"):format(Shared.cfgpath, name)
+  return ("<%s%s>%s"):format(Shared.cfgpath, path_sep, name)
 end
 
 local HK = {
@@ -340,9 +375,70 @@ function HK.new (fmt)
   return setmetatable({ i=0, fmt=fmt, spc=string.rep(" ",fmt:len()+1) }, _hkmt)
 end
 
+local readHistory
+if far.CreateSettings then
+  function readHistory (name)
+    --https://forum.farmanager.com/viewtopic.php?t=13407
+    local hSettings = assert(far.CreateSettings("far"), "Error accessing setings")
+    local subkey = hSettings:OpenSubkey(0,name)
+    local historyArr = assert(hSettings:Enum(subkey), "Error enumerating settings")
+    hSettings:Free()
+    local history = {}
+    for _,item in ipairs(historyArr) do
+      history[#history+1] = item.Name
+      history[item.Name] = true
+    end
+    return history
+  end
+else -- far2m
+  local function splitLines (s,lines)
+    local pos = 1
+    local length = #s
+    while pos<=length do
+      local nlStart,nlEnd = string.find(s, '\n', pos)
+      local line = string.sub(s, pos, (nlStart or 0)-1)
+      lines[#lines+1] = line
+      lines[line] = true
+      if not nlStart then break end
+      pos = nlEnd+1
+    end
+  end
+  local unescape = {
+    --https://github.com/shmuz/far2m/blob/b770d1fd61cfe703d3c68b2b8da94feefced0ad5/utils/src/KeyFileHelper.cpp#L169
+    ["\\r"]="\r",
+    ["\\n"]="\n",
+    ["\\t"]="\t",
+    ["\\0"]="\0",
+    ["\\\\"]="\\",
+  }
+  function readHistory (name)
+    local fullpath = far.InMyConfig("history/dialogs.hst") --luacheck: globals far.InMyConfig
+    local file = assert(io.open(fullpath, "r"))
+    if file then
+      local history = {}
+      local section = "[SavedDialogHistory/"..name.."]"
+      for line in file:lines() do
+        if line==section then
+          local nextLine = file:read()
+          if nextLine then
+            local Lines = nextLine:match"Lines=(.+)"
+            if Lines then
+              local quoted = Lines:match'"(.+)"'
+              splitLines(quoted and quoted:gsub("\\.", unescape) or Lines, history)
+            end
+          end
+          break
+        end
+      end
+      file:close()
+      return history
+    end
+  end
+end
+
 --make use of actl.Synchro after Luafar 859
 local synchro = pcall(actl.Synchro, function()end) and actl.Synchro or function(fn, ...)
-  far.Timer(0, function(t, ...)
+  far.Timer(1, function(t, ...)
     t:Close()
     fn(...)
   end, ...)
@@ -357,4 +453,6 @@ return {
   HelpTopic=HelpTopic,
   HK=HK,
   synchro=synchro,
+  open=open,
+  readHistory=readHistory,
 }
