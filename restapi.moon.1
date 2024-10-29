@@ -71,7 +71,7 @@ class Plain
     response, status_code, _, statusline = @_request method, endpoint, payload, delta_callback
     if not response
       nil, status_code
-    elseif status_code~=200
+    elseif status_code<200 or status_code>299
       nil, statusline, response~=STREAMED and response or nil
     else
       response, statusline
@@ -160,7 +160,7 @@ class LinesStream extends Plain
     response, status_code, _, statusline = @_request "POST", endpoint, payload, delta_callback
     if not response
       nil, status_code
-    elseif status_code~=200
+    elseif status_code<200 or status_code>299
       nil, statusline, response~=STREAMED and response or nil
     elseif response~=STREAMED and (type(response)~="table" or not (@is_valid_final or @is_valid) @,response)
       nil, statusline, response
