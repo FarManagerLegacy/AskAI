@@ -4,6 +4,8 @@ local utils = Shared.utils
 local cfgpath = Shared.cfgpath
 local default = Shared.default
 local F = far.Flags
+F.FMENU_SHOWSHORTBOX = F.FMENU_SHOWSHORTBOX or 0 -- far2m
+F.FMENU_SHOWSINGLEBOX = F.FMENU_SHOWSINGLEBOX or 0
 
 local function toggleHidden (items)
   for _,item in ipairs(items) do
@@ -42,6 +44,11 @@ local function chooseCfg (prompt)
     far.Message("No config found", Shared.name, nil ,"w")
     return
   end
+  local function sortFn (a, b)
+    return a.FileName:lower() < b.FileName:lower()
+  end
+  table.sort(items1, sortFn)
+  table.sort(items2, sortFn)
   local items = items1
   local notBothGroupsPresent = items1.visibleN==0 or items2.visibleN==0 or nil
   table.insert(items, {separator=true, hidden=notBothGroupsPresent, grayed=notBothGroupsPresent})
@@ -75,7 +82,7 @@ local function chooseCfg (prompt)
       local info = item.cfg.info
       if bk=="Enter" or bk=="CtrlEnter" or not bk then
         if item.grayed then
-          win.ShellExecute(nil, nil, info.url)
+          utils.open(info.url)
         else
           if bk~="CtrlEnter" then
             utils.writeFile(default, item.FileName)
@@ -93,7 +100,7 @@ local function chooseCfg (prompt)
           return chooseCfg(prompt)
         end
       elseif bk=="AltF1" then
-        win.ShellExecute(nil, nil, info.url)
+        utils.open(info.url)
       end
     end
     props.SelectIndex = pos
@@ -143,15 +150,17 @@ local function choosePreset (itemsNames, cfgInfo)
     return hidden -- to hide
   end
   far.RecursiveSearch(cfgpath, "*.preset>>D", function (file, pathname)
-    local item = {
+    table.insert(items,{
       name=file.FileName:sub(1,-(".preset"):len()-1),
       selected=State.lastPreset==pathname,
       pathname=pathname,
       fileHidden=file.FileAttributes:find"h",
-    }
-    item.hidden = prepItem(item, loadPreset(pathname, itemsNames, cfgInfo))
-    table.insert(items, item)
+    })
   end)
+  table.sort(items, function(a,b) return a.name:lower() < b.name:lower() end)
+  for _,item in ipairs(items) do
+    item.hidden = prepItem(item, loadPreset(item.pathname, itemsNames, cfgInfo))
+  end
   hk:finish()
   local props = {
     Title="Load preset",
