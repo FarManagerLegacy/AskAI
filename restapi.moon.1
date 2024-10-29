@@ -68,13 +68,13 @@ class Plain
       endpoint, payload, delta_callback = method, endpoint, payload
       method = payload and "POST" or "GET"
 
-    response, status_code, _, statusline = @_request method, endpoint, payload, delta_callback
+    response, status_code, headers, statusline = @_request method, endpoint, payload, delta_callback
     if not response
       nil, status_code
     elseif status_code<200 or status_code>299
       nil, statusline, response~=STREAMED and response or nil
     else
-      response, statusline
+      response, statusline, headers
 
   generate: (endpoint, payload, delta_callback) =>
     @request "POST", endpoint, payload, delta_callback
