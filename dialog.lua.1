@@ -71,7 +71,7 @@ end
 end--> end of Dlg helper <--
 local X2, SELECTED, HISTORY, FLAGS, DATA = 3,6,7,9,10
 
-local function populateHistory (self, hDlg, name, values)
+local function populateHistory (self, hDlg, name, values, init)
   if type(values)~="table" then values = {values} end
   local param = self.names[name]
   if not param then return end
@@ -82,11 +82,18 @@ local function populateHistory (self, hDlg, name, values)
   for _,item in ipairs(history) do
     history[item.Name] = true
   end
-  values[0] = ""
-  for i=#values,0,-1 do
+  local added
+  for i=#values,1,-1 do
     if not history[values[i]] then
       hDlg:send(F.DM_ADDHISTORY, param.idx, values[i])
+      added = true
     end
+  end
+  if added and history[1] then -- preserve lasthistory
+    hDlg:send(F.DM_ADDHISTORY, param.idx, history[1].Name)
+  end
+  if init and #history==0 then
+    hDlg:send(F.DM_SETTEXT, param.idx, values[1] or "")
   end
 end
 
@@ -337,7 +344,7 @@ local function main (cfg, prompt, context)
     local item = II[idx]
     if msg==F.DN_INITDIALOG then
       for param,list in pairs(cfg.info.predefined or {}) do
-        populateHistory(II, hDlg, param, list)
+        populateHistory(II, hDlg, param, list, "init")
       end
       for param,list in pairs(O.stdEnvs) do
         populateHistory(II, hDlg, param, getEnvValues(list))
