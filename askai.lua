@@ -59,14 +59,12 @@ end
 local outputFilename = _pathjoin(_tmp, "Ask AI.md")
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
-local function progress (text, title, status)
+local function progress (text, title)
   local MINLEN = 22
   local len = math.max(text:len(), title and title:len() or 0, MINLEN)
-  local mid = len/2
   local items = {
     {F.DI_SINGLEBOX,0,  0,len+4,3,0,0,0,F.DIF_NONE,        title},
     {F.DI_TEXT,     0,  1,0,    1,0,0,0,F.DIF_CENTERGROUP, text},
-    {F.DI_TEXT,     mid-1,2,mid-1, 2,0,0,0,F.DIF_CENTERTEXT, status},
   }
   return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL +(title and 0 or F.FDLG_KEEPCONSOLETITLE))
 end
@@ -178,12 +176,6 @@ local function askAI (prompt, cfgname)
     local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
     local Id = wi.Id
-    editor.SetTitle(Id, "Fetching response...")
-    local modal = bit64.band(F.WIF_MODAL, wi.Flags)~=0
-    local hDlg = not modal and progress("Waiting for data..")
-    if modal then
-      far.Message("Waiting for data..", "", "", "")
-    end
     editor.UndoRedo(Id, F.EUR_BEGIN)
     local ei = editor.GetInfo(Id)
     if linewrap=="dynamic" then
@@ -204,24 +196,38 @@ local function askAI (prompt, cfgname)
     local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
     editor.InsertText(Id, "> "..prompt.."\n\n")
+    local modal = bit64.band(F.WIF_MODAL, wi.Flags)~=0
+    local hDlg = not modal and progress("Waiting for data..")
     editor.Redraw(Id)
     setBigCursor()
+    if modal then
+      far.Message("Waiting for data..", "", "", "")
+    end
+    editor.SetTitle(Id, "Fetching response...")
+
+    local start = Far.UpTime
+    local function clockwatch ()
+      return math.ceil((Far.UpTime-start)/100)/10
+    end
+
     local code = false
     buf = ""
-    local start = Far.UpTime
-    local _,err = pcall(processStream, function (chunk, title)
-      if start then
+    local before1stToken,total,started,title
+    local _,err = pcall(processStream, function (chunk, _title)
+      if not started then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
+        before1stToken = clockwatch()
+        editor.SetTitle(Id, ("Fetching response [%s s]"):format(before1stToken))
         if hDlg then
           if stream then
             hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
           end
-          hDlg:send(F.DM_SETTEXT, 3, (" %s s "):format(math.ceil((Far.UpTime-start)/100)/10))
-          if title then
+          if _title then
+            title = _title
             hDlg:send(F.DM_SETTEXT, 1, title)
           end
         end
-        start = false
+        started = true
       end
       for space,word in _words(chunk) do
         editor.InsertText(Id, space:gsub("\r\n","\n")
@@ -230,6 +236,8 @@ local function askAI (prompt, cfgname)
           editor.InsertString(Id)
         end
         editor.InsertText(Id, word)
+        total = clockwatch()
+        editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
         if linewrap then
           local backticks = space:match"\n" and word:match("^```")
                          or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
@@ -247,7 +255,9 @@ local function askAI (prompt, cfgname)
     editor.UndoRedo(Id, F.EUR_END)
     editor.SaveFile(Id)
     if hDlg then hDlg:send(F.DM_CLOSE) end
-    editor.SetTitle(Id, "AI assistant response:")
+    title = (title and "["..title.."] " or "").."AI assistant response: "
+    local status = total and total.." s" or "Error!"
+    editor.SetTitle(Id, title..status)
   end)
 
   openOutput()
