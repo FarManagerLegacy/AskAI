@@ -41,6 +41,7 @@ local F = far.Flags
 
 local cfgpath = (_filename or ...):match"^(.*)[\\/]"
 local _tmp = win.GetEnv("FARLOCALPROFILE")
+local outputFilename --fwd decl.
 
 local State do
   local sh = sh or pcall(require,"sh") and require"sh" --LuaShell
@@ -51,12 +52,6 @@ local State do
     _shared.AskAI = State
   end
 end
-
-local _pathjoin = win.JoinPath or function (...) -- compat shim
-  return table.concat({...}, package.config:sub(1,1))
-end
-
-local outputFilename = _pathjoin(_tmp, "Ask AI.md")
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
 local function progress (text, title)
@@ -122,12 +117,11 @@ local function _words (chunk)
   end
 end
 
-local menu, dialog, utils --fwd decl.
-local default = _pathjoin(cfgpath, "default")
+local menu, dialog, utils, default --fwd decl.
 local function getCfg (cfgname)
   if not cfgname then
     local success, filename = pcall(utils.readFile, default)
-    local pathname = success and _pathjoin(cfgpath, filename)
+    local pathname = success and utils.pathjoin(cfgpath, filename)
     local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
     return cfg and cfg.reachable and cfg
   elseif type(cfgname)=="string" then
@@ -136,7 +130,7 @@ local function getCfg (cfgname)
     if cfgname:match"[\\/]" or cfgname:match"%.lua%.cfg$" then
       pathname = far.ConvertPath(cfgname)
     else
-      pathname = _pathjoin(cfgpath, cfgname..".lua.cfg")
+      pathname = utils.pathjoin(cfgpath, cfgname..".lua.cfg")
     end
     local cfg = utils.loadCfg(pathname)
     if not cfg.reachable then
@@ -263,15 +257,18 @@ local function askAI (prompt, cfgname)
   openOutput()
 end
 
-utils = assert(loadfile(_pathjoin(cfgpath, "utils.lua.1"))) {
+utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
-menu = assert(loadfile(_pathjoin(cfgpath, "menu.lua.1"))) {
+default = utils.pathjoin(cfgpath, "default")
+outputFilename = utils.pathjoin(_tmp, "Ask AI.md")
+
+menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, utils=utils, askAI=askAI,
   cfgpath=cfgpath, default=default, name=nfo.name,
 }
-dialog = assert(loadfile(_pathjoin(cfgpath, "dialog.lua.1"))) {
+dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
   State=State, O=O, utils=utils, menu=menu, askAI=askAI,
   name=nfo.name, outputFilename=outputFilename,
 }

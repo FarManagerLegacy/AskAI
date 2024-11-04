@@ -5,10 +5,6 @@ local cfgpath = Shared.cfgpath
 local default = Shared.default
 local F = far.Flags
 
-local _pathjoin = win.JoinPath or function (...) -- compat shim
-  return table.concat({...}, package.config:sub(1,1))
-end
-
 local function toggleHidden (items)
   for _,item in ipairs(items) do
     if item.hidden or item.hidden==false then
@@ -183,7 +179,7 @@ local function choosePreset (itemsNames, cfgInfo)
                                 "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
-        local pathname = _pathjoin(cfgpath, name..".preset")
+        local pathname = utils.pathjoin(cfgpath, name..".preset")
         if F.EEC_MODIFIED==editor.Editor(pathname) then
           pos = pos~=0 and bk=="Ins" and pos or 1
           local newitem = { name=name, pathname=pathname, }
@@ -203,7 +199,7 @@ local function choosePreset (itemsNames, cfgInfo)
                                 "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
-        local pathname = _pathjoin(cfgpath, name..".preset")
+        local pathname = utils.pathjoin(cfgpath, name..".preset")
         local res,err = win.CopyFile(item.pathname, pathname, true)
         if res then
           pos = pos+1
@@ -224,7 +220,7 @@ local function choosePreset (itemsNames, cfgInfo)
                                 "AskAI preset", item.name, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
-        local pathname = _pathjoin(cfgpath, name..".preset")
+        local pathname = utils.pathjoin(cfgpath, name..".preset")
         local res,err = win.MoveFile(item.pathname, pathname)
         if res then
           item.name, item.pathname = name, pathname

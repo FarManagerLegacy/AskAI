@@ -1,7 +1,10 @@
 local Shared = ... -- State, _tmp, name, cfgpath + O (transit)
 
-local _pathjoin = win.JoinPath or function (...) -- compat shim
-  return table.concat({...}, package.config:sub(1,1))
+local path_sep = package.config:sub(1,1)
+local function pathjoin (...) --same as win.JoinPath since Luafar 857
+  local args = {...}
+  assert(#args==select("#",...), "arg cannot be nil")
+  return table.concat(args, path_sep)
 end
 
 local _isWindows = package.config:sub(1,1)=="\\"
@@ -52,7 +55,7 @@ local function cleanup()
 end
 
 local function _tmpfile (filename, content)
-  local pathname = _pathjoin(Shared._tmp, filename)
+  local pathname = pathjoin(Shared._tmp, filename)
   writeFile(pathname, content)
   table.insert(todel, pathname)
   return '"'..pathname..'"'
@@ -150,7 +153,7 @@ if json and pcall(require, "ssl.https") then
     end
   end
   local _env = setmetatable({json=json},{__index=_G})
-  local _path = _pathjoin(Shared.cfgpath, "restapi.moon.1")
+  local _path = pathjoin(Shared.cfgpath, "restapi.moon.1")
   local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
   local State = Shared.State
   local function getHistory (historyName)
@@ -233,7 +236,7 @@ if json and pcall(require, "ssl.https") then
 end
 
 local function _import (filename, env, ...)
-  local pathname = _pathjoin(Shared.cfgpath,filename)
+  local pathname = pathjoin(Shared.cfgpath,filename)
   local fn = assert(loadfile(pathname))
   env = env or getfenv(2) -- parent _ENV
   local name = env.name
@@ -267,7 +270,7 @@ local mt = setmetatable({
   _import=_import,
   _isWindows=_isWindows,
   _optional=_optional,
-  _pathjoin=_pathjoin,
+  _pathjoin=pathjoin,
   _pipeOut=_pipeOut,
   _quote=_quote,
   _readLines=_readLines,
@@ -338,6 +341,7 @@ function HK.new (fmt)
 end
 
 return {
+  pathjoin=pathjoin,
   readFile=readFile,
   writeFile=writeFile,
   loadCfg=loadCfg,
