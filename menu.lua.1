@@ -129,8 +129,8 @@ local presetsTopic = utils.HelpTopic "Presets"
 local function choosePreset (itemsNames, cfgInfo)
   local items = {}
   local hk = utils.HK.new(".")
-  local function prepItem (item, hidden, data, limit, err)
-    hidden = (hidden or not data) and not err or nil
+  local function prepItem (item, data, limit, err)
+    local hidden = (item.fileHidden or not data) and not err or nil
     local empty = data and not next(data) and "empty"
     local extra = err or limit or empty
     local text = extra and ("%s [%s]"):format(item.name, extra) or item.name
@@ -147,8 +147,9 @@ local function choosePreset (itemsNames, cfgInfo)
       name=file.FileName:sub(1,-(".preset"):len()-1),
       selected=State.lastPreset==pathname,
       pathname=pathname,
+      fileHidden=file.FileAttributes:find"h",
     }
-    item.hidden = prepItem(item, file.FileAttributes:find"h", loadPreset(pathname, itemsNames, cfgInfo))
+    item.hidden = prepItem(item, loadPreset(pathname, itemsNames, cfgInfo))
     table.insert(items, item)
   end)
   hk:finish()
