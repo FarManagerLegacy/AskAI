@@ -340,6 +340,14 @@ function HK.new (fmt)
   return setmetatable({ i=0, fmt=fmt, spc=string.rep(" ",fmt:len()+1) }, _hkmt)
 end
 
+--make use of actl.Synchro after Luafar 859
+local synchro = pcall(actl.Synchro, function()end) and actl.Synchro or function(fn, ...)
+  far.Timer(0, function(t, ...)
+    t:Close()
+    fn(...)
+  end, ...)
+end
+
 return {
   pathjoin=pathjoin,
   readFile=readFile,
@@ -348,4 +356,5 @@ return {
   clearSession=clearSession,
   HelpTopic=HelpTopic,
   HK=HK,
+  synchro=synchro,
 }

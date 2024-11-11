@@ -253,10 +253,7 @@ local function main (cfg, prompt, context)
     onclick=function(hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:send(F.DM_CLOSE, idx)
-        far.Timer(0, function (t)
-          t:Close()
-          Shared.askAI(prompt)
-        end)
+        utils.synchro(Shared.askAI, prompt)
       end
     end,
   }

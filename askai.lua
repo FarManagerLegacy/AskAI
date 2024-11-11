@@ -165,8 +165,7 @@ local function askAI (prompt, cfgname)
   if not cfg then return menu.chooseCfg(prompt) end
   local processStream, prompt, linewrap, stream = dialog(cfg, prompt, Editor.SelValue)
   if not processStream then return end
-  far.Timer(0, function (t) -- workaround for https://bugs.farmanager.com/view.php?id=3044
-    t:Close()
+  utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
     local Id = wi.Id
