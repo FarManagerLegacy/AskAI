@@ -72,11 +72,12 @@ end
 end--> end of Dlg helper <--
 local X2, SELECTED, HISTORY, FLAGS, DATA = 3,6,7,9,10
 
-local function populateHistory (self, hDlg, name, values, init)
+local function populateHistory (self, hDlg, name, values, source)
   if type(values)~="table" then values = {values} end
   local param = self.names[name]
   if not param then return end
-  local success, history = pcall(utils.readHistory, param.History)
+  local histName = source=="presets" and hDlg:send(F.DM_GETDLGITEM, param.idx)[HISTORY] or param.History
+  local success, history = pcall(utils.readHistory, histName)
   if not success then
     far.Message(history, "Error", nil, "wl")
     return
@@ -91,7 +92,7 @@ local function populateHistory (self, hDlg, name, values, init)
   if added and history[1] then -- preserve lasthistory
     hDlg:send(F.DM_ADDHISTORY, param.idx, history[1].Name)
   end
-  if init and #history==0 then
+  if source=="init" and #history==0 then
     hDlg:send(F.DM_SETTEXT, param.idx, values[1] or "")
   end
 end
@@ -287,15 +288,18 @@ local function main (cfg, prompt, context)
         end
         for item,v in pairs(secondary) do
           if type(v)=="table" then
-            populateHistory(II, hDlg, item.name, v)
+            populateHistory(II, hDlg, item.name, v, "presets")
             v = v[1]
           end
-          local exV = not (cfg.info.hidden and cfg.info.hidden[item.name])
-                      and hDlg:send(F.DM_GETTEXT, item.idx)
-          if not exV or exV=="" or exV:match" env variable!$" then
+          local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
+          local exV = not isHidden and hDlg:send(F.DM_GETTEXT, item.idx)
+          if isHidden or exV=="" or exV:match" env variable!$" then
             if type(v)=="function" then v = _pcall(v) end
             if v then
               hDlg:send(F.DM_SETTEXT, item.idx, v)
+              if isHidden then
+                hDlg:send(F.DM_ADDHISTORY, item.idx, v)
+              end
             end
           end
         end
