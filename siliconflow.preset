@@ -1,6 +1,8 @@
 --https://nextchat-sf.vercel.app/
 --https://cloud.siliconflow.cn/playground/chat
+--https://cloud.siliconflow.cn/models?types=chat
 --https://docs.siliconflow.cn/reference/chat-completions-1
+--New users will receive 20 million tokens when they register
 
 apibase="https://api.siliconflow.cn/v1"
 apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!"
@@ -8,11 +10,10 @@ apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!
 --https://siliconflow.cn/models
 --https://siliconflow.cn/pricing
 model={
-  "Vendor-A/Qwen/Qwen2-72B-Instruct",  -- Temporarily free
-  "Qwen/Qwen2.5-Coder-7B-Instruct",    -- Temporarily free
-  "Qwen/Qwen2-7B-Instruct",            -- Free:
+  "Qwen/Qwen2.5-7B-Instruct",
+  "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "Qwen/Qwen2-7B-Instruct",
   "Qwen/Qwen2-1.5B-Instruct",
-  "Qwen/Qwen1.5-7B-Chat",
   "THUDM/glm-4-9b-chat",
   "THUDM/chatglm3-6b",
   "01-ai/Yi-1.5-9B-Chat-16K",
@@ -21,5 +22,7 @@ model={
   "google/gemma-2-9b-it",
   "meta-llama/Meta-Llama-3-8B-Instruct",
   "meta-llama/Meta-Llama-3.1-8B-Instruct",
-  "mistralai/Mistral-7B-Instruct-v0.2",
+  --not free anymore
+  --"Vendor-A/Qwen/Qwen2.5-72B-Instruct",
+  --"Vendor-A/Qwen/Qwen2-72B-Instruct",
 }
