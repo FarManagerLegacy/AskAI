@@ -168,7 +168,7 @@
 
 ## Выбор модели
 
-На данный момент наиболее сильные модели это `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/), `gemini-1.5-pro` от [Google](https://ai.google/gemini-ecosystem),
+На данный момент наиболее сильные модели это `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/), `gemini-1.5-pro` от [Google](https://ai.google.dev/),
 `claude-3.5-sonnet` от [Anthropic](https://www.anthropic.com/).  
 Из опенсорсных - все что побольше, например из серии [Llama](https://www.llama.com/) от **Meta AI**: `llama-3.1-405b`, `llama-3.2-90b`, …
 
@@ -183,7 +183,7 @@
 - Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [AI21 labs](https://www.ai21.com) *Jamba*.  
   К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource
   моделям (например таким как [Llama](https://www.llama.com/), основанным на *Llama*, и др.).
-- Провайдеры с собственным API, такие как [Google Gemini](https://ai.google/gemini-ecosystem), [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere Command R+](https://cohere.com/command), и т.д.  
+- Провайдеры с собственным API, такие как [Google Gemini](https://ai.google.dev/), [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere Command R+](https://cohere.com/command), и т.д.  
   Для поддержки в *AskAI* требуется или соответствующая “нативная” конфигурация, или специальный
   сервис-адаптер, который будет конвертировать API в совместисый с *OpenAI* формат.  
   Примеры таких сервисов: [openai-gemini](https://habr.com/ru/articles/798123/), [openai-github-copilot](https://habr.com/ru/articles/799215/), и др.
@@ -205,6 +205,7 @@
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
   - [cloudflare](https://developers.cloudflare.com/workers-ai/models/) (модели до 13b)
+  - [gemini](https://ai.google.dev/gemini-api/docs/openai) от Google
   - [github](https://github.com/marketplace/models/) (включая `gpt-4o`)
   - [groq](https://console.groq.com/playground) (модели до 90b)
   - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
@@ -228,7 +229,9 @@
 
 Кроме того:
 
-- `copilot-public` и `gemini-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.
+- `copilot-`/`gemini-proxy-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.  
+  Примечание: `gemini` [с некоторых пор](https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/)
+  доступен и через OpenAI API.
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 

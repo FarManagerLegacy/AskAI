@@ -258,7 +258,7 @@ _Функции:_
 [Mistral AI]: https://mistral.ai/
 [AI21 labs]: https://www.ai21.com
 [Llama]: https://www.llama.com/
-[Google Gemini]: https://ai.google/gemini-ecosystem
+[Google Gemini]: https://ai.google.dev/
 [Anthropic]: https://www.anthropic.com/
 [Cohere Command R+]: https://cohere.com/command
 [openai-gemini]: https://habr.com/ru/articles/798123/
@@ -283,6 +283,7 @@ _Функции:_
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
    - [cloudflare] (модели до 13b)
+   - [gemini] от Google
    - [github] (включая `gpt-4o`)
    - [groq] (модели до 90b)
    - [mistral], [codestral]
@@ -306,7 +307,9 @@ _Функции:_
 
 Кроме того:
 
-- `copilot-public` и `gemini-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.
+- `copilot-`/`gemini-proxy-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.  
+  Примечание: `gemini` [с некоторых пор](https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/)
+  доступен и через OpenAI API.
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 
@@ -319,6 +322,7 @@ _Функции:_
 [deepinfra]: https://deepinfra.com/models/text-generation
 [featherless]: https://featherless.ai/models
 [fireworks.ai]: https://fireworks.ai/models
+[gemini]: https://ai.google.dev/gemini-api/docs/openai
 [github]: https://github.com/marketplace/models/
 [groq]: https://console.groq.com/playground
 [huggingface]: https://huggingface.co/models?other=text-generation-inference&inference=warm
