@@ -1,0 +1,17 @@
+--https://ai.google.dev/gemini-api/docs/openai
+--https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/
+--https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/call-vertex-using-openai-library#supported_parameters
+
+apibase="https://generativelanguage.googleapis.com/v1beta/openai"
+apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
+model={
+  "gemini-1.5-pro-latest",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash-8b-latest",
+  "gemini-exp-1114",
+  "gemini-exp-1121",
+  "gemini-exp-1206",
+  "gemini-2.0-flash-exp",
+  "gemini-2.0-flash-thinking-exp",
+  "learnlm-1.5-pro-experimental",
+}
