@@ -213,13 +213,14 @@
   - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно в основном небольшие модели, но доступна и `Qwen2-72B-Instruct`)
   - [together.ai](https://api.together.xyz/models) (ограниченное время бесплатна `meta-llama/Llama-Vision-Free`)
 - Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
-  задействовать их приватный API (указав Cookie и другие требуемые данные в заголовках):
+  задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
   - [cerebras](https://cloud.cerebras.ai/) (`llama3.1-8b`, `llama3.1-70b`)
   - [featherless](https://featherless.ai/models) (бесплатно - небольшие модели)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
   - [lepton](https://www.lepton.ai/playground) (всевозможные OpenSource-модели)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
   - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial?
+  - [deepbricks](https://deepbricks.ai/pricing) (o1/gpt-4o/3.5/claude-3.5-sonnet/llama): allows some usage with 0 balance
   - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, Qwen): \$10 credit for free trial
   - [novita.ai](https://novita.ai/model-api/product/llm-api) (OpenSource-модели): \$0.5 credit
 

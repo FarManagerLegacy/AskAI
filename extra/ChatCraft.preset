@@ -1,0 +1,5 @@
+--https://chatcraft.org/
+--Basically: same as OpenRouter but w/o apikey
+ 
+apibase="https://free-chatcraft-ai.deno.dev/api/v1"
+model="auto" -- best available free model

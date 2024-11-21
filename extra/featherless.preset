@@ -1,0 +1,10 @@
+--https://featherless.ai/
+--https://featherless.ai/models/meta-llama/Meta-Llama-3.1-8B-Instruct
+--https://featherless.ai/docs/api-reference
+
+apibase="https://api.featherless.ai/v1"
+--apikey=
+
+--https://featherless.ai/models?view=table
+model="ProdeusUnity/Stellar-Odyssey-12b-v0.0"
+headers="cookie: 'session=xxx'" -- Shift-F4

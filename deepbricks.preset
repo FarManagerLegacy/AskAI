@@ -1,0 +1,6 @@
+--https://deepbricks.ai/playground
+--https://deepbricks.ai/docs
+
+apibase="https://api.deepbricks.ai/v1"
+apikey=win.GetEnv"DEEPBRICKS_API_KEY" or "set DEEPBRICKS_API_KEY env variable!" -- allows some usage with 0 balance
+model="gpt-4o"
