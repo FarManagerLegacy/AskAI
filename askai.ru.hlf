@@ -175,6 +175,9 @@ $ #Меню выбора конфигурации#
 
  #Обзор утилит#
 
+ #•# §¦~gh models~@https://github.com/github/gh-models@ - GitHub Models extension.
+   §¦Инструкуции по установке см. на домашней странице.
+Необходим аккаунт GitHub. Действуют ~лимиты~@https://docs.github.com/en/github-models/prototyping-with-ai-models##rate-limits@.
  #•# §¦~tgpt~@https://github.com/aandrew-me/tgpt@, ~pytgpt~@https://github.com/Simatwa/python-tgpt@ - не требуют предварительной настройки.
    §¦Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
  #•# §¦~bito~@https://bito.ai/@ настройка описана ~тут~@https://forum.farmanager.com/viewtopic.php?t=13283@.
@@ -235,12 +238,11 @@ $ #Обзор конфигураций#
      #•# §¦~deepinfra~@https://deepinfra.com/models/text-generation@ (всевозможные OpenSource модели): some anonymous usage allowed
  #•# §¦Для использования других надо зарегистрироваться и получить ключ.
 Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
-     #•# §¦~sambanova~@https://cloud.sambanova.ai/pricing@ (Llama <= 405b)
      #•# §¦~cloudflare~@https://developers.cloudflare.com/workers-ai/models/@ (модели до 13b)
      #•# §¦~github~@https://github.com/marketplace/models/@ (включая #gpt-4o#)
      #•# §¦~groq~@https://console.groq.com/playground@ (модели до 90b)
-     #•# §¦~mistral~@https://docs.mistral.ai/getting-started/models/models_overview/@
-     #•# §¦~codestral~@https://console.mistral.ai/codestral@
+     #•# §¦~mistral~@https://docs.mistral.ai/getting-started/models/models_overview/@, ~codestral~@https://console.mistral.ai/codestral@
+     #•# §¦~sambanova~@https://cloud.sambanova.ai/pricing@ (Llama <= 405b)
  #•# §¦На некоторых сервисах только часть моделей доступно бесплатно:
      #•# §¦~huggingface~@https://huggingface.co/models?other=text-generation-inference&inference=warm@ (бесплатно в основном небольшие модели, но есть и такие как #CodeLlama-34b-Instruct-hf# и #Qwen2.5-72B-Instruct#)
      #•# §¦~openrouter~@https://openrouter.ai/models?q=:free@ (бесплатно в основном небольшие модели, но доступны и такие как #lfm-40b# и #llama-3.1-405b-instruct#)

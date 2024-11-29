@@ -200,6 +200,9 @@ _Функции:_
 Обзор утилит
 ------------
 
+- [gh models] - GitHub Models extension.  
+  Инструкуции по установке см. на домашней странице.
+  Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
 - [tgpt], [pytgpt] - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
 - [bito] настройка описана [тут](https://forum.farmanager.com/viewtopic.php?t=13283).  
@@ -212,6 +215,7 @@ _Функции:_
   или как __аргументы__ командной строки (доступные в [диалоге][Диалог]),
   или через __переменные окружения__ (также доступны в [диалоге][Диалог]).
 
+[gh models]: https://github.com/github/gh-models
 [tgpt]: https://github.com/aandrew-me/tgpt
 [pytgpt]: https://github.com/Simatwa/python-tgpt
 [bito]: https://bito.ai/
@@ -278,12 +282,11 @@ _Функции:_
    - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
-   - [sambanova] (Llama <= 405b)
    - [cloudflare] (модели до 13b)
    - [github] (включая `gpt-4o`)
    - [groq] (модели до 90b)
-   - [mistral]
-   - [codestral]
+   - [mistral], [codestral]
+   - [sambanova] (Llama <= 405b)
 - На некоторых сервисах только часть моделей доступно бесплатно:
    - [huggingface] (бесплатно в основном небольшие модели, но есть и такие как `CodeLlama-34b-Instruct-hf` и `Qwen2.5-72B-Instruct`)
    - [openrouter] (бесплатно в основном небольшие модели, но доступны и такие как `lfm-40b` и `llama-3.1-405b-instruct`)
