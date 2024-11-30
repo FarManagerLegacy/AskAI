@@ -82,7 +82,9 @@ local function chooseCfg (prompt)
       local info = item.cfg.info
       if bk=="Enter" or bk=="CtrlEnter" or not bk then
         if item.grayed then
-          utils.open(info.url)
+          if info.url then
+            utils.open(info.url)
+          end
         else
           if bk~="CtrlEnter" then
             utils.writeFile(default, item.FileName)
@@ -100,7 +102,9 @@ local function chooseCfg (prompt)
           return chooseCfg(prompt)
         end
       elseif bk=="AltF1" then
-        utils.open(info.url)
+        if info.url then
+          utils.open(info.url)
+        end
       end
     end
     props.SelectIndex = pos
