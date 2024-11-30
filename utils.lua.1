@@ -325,7 +325,9 @@ local function loadCfg (pathname)
       require"le"(Shared.State[env.historyName])
     end
   end
-  env.url = env.url or type(env.exe~="string") and "https://github.com/FarManagerLegacy/LuaBinaries" or nil
+  if not env.exe then
+    env.url = "https://github.com/FarManagerLegacy/LuaBinaries"
+  end
   if env.hidden then
     for _,v in ipairs(env.hidden) do env.hidden[v] = true end
   end
