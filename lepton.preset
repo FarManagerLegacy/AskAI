@@ -1,30 +1,28 @@
 -- https://www.lepton.ai/playground
 apibase="https://{model}.lepton.run/api/v1"
---apikey=
+apikey=win.GetEnv"LEPTON_API_TOKEN" or "set LEPTON_API_TOKEN env variable!"
 
 model={
   "llama3-1-405b",
-  "llama3-1-70b",
-  "llama3-1-8b",
-  "llama3-2-3b",
-  "llama3-70b",
-  "llama3-8b",
-  "llama2-13b",
-  "nous-hermes-llama2-13b",
-  "mistral-7b",
-  "mixtral-8x7b",
-  "dolphin-mixtral-8x7b",
-  "mythomax-l2-13b",
-  "openchat-3-5",
-  "qwen2-72b",
-  "toppy-m-7b",
-  "wizardlm-2-8x22b",
-  "wizardlm-2-7b",
-}
-modelsMeta = "none"
+  "llama3-3-70b",
+  "qwen-qwq-32b",
 
+  --not in the list
+  "mythomax-l2-13b",
+}
+--modelsMeta = "none"
+modelsMeta=[[{
+  endpoint: "/inferences?listable_in=inference"
+  dataFn: (data) -> data.apibase = "https://portal.lepton.ai/api"
+  filterFn: (model) -> model.type=="chat" or model.type=="completion"
+  nameFn: (model) -> model.api\match"//(.-)%.lepton"
+}]]
+
+--headers = 'Origin:"https://www.lepton.ai"'
+
+--[[
 local id = win.Uuid"270C9C4D-F46A-4870-9494-6C2FD94C2492"
 headers = function()
-  -- Origin:"https://www.lepton.ai"
   return far.InputBox(id, "Lepton preset", "Enter headers:", "AskAI/lepton.preset/headers")
 end
+--]]
