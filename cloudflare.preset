@@ -17,7 +17,7 @@ end
 apikey=win.GetEnv"CF_API_TOKEN" or "set CF_API_TOKEN env variable!"
 
 --https://developers.cloudflare.com/api/operations/workers-ai-search-model
-model="@cf/meta/llama-3.2-11b-vision-instruct"
+model="@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
 modelsMeta=[[{
   endpoint: "/models/search?task=text+generation"
