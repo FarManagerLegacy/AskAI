@@ -249,7 +249,7 @@ end
 
 local function _readLines (args, filter, field)
   return function (data) -- getModels
-    local args = args
+    local args = args --luacheck: ignore 432/args
     if type(args)=="function" then
       local success
       success, args = pcall(args,data)
