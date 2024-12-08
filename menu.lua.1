@@ -248,17 +248,15 @@ local function choosePreset (itemsNames, cfgInfo)
 end
 
 local function chooseModel (getModels, args)
-  local success, models, param = pcall(getModels,args)
-  if not success then
-    return nil, models
-  elseif models and models[1] then
+  local models, argName = getModels(args) --not safe
+  if models and models[1] then
     local keyId = type(models[1])=="table" and models.keyId
     local filterFn, nameFn = models.filterFn, models.nameFn
-    local current = args[param or "model"]
+    local current = args[argName or "model"]
     local items = {}
     for i,model in ipairs(models) do
-      local id = nameFn and nameFn(model) or not keyId and model or model[keyId]
-      local hidden = filterFn and not filterFn(model) or nil
+      local id = nameFn and nameFn(model) or not keyId and model or model[keyId] --not safe
+      local hidden = filterFn and not filterFn(model) or nil --not safe
       items[i] = {
         text=id,
         hidden=hidden,
@@ -278,12 +276,12 @@ local function chooseModel (getModels, args)
     if pcall(require,"le") then
       bkeys = bkeys.." F3"
     end
-    table.sort(items, function(a,b) return a.text:lower() < b.text:lower() end)
+    table.sort(items, function(a,b) return a.text:lower() < b.text:lower() end) --not safe
     repeat
       local ret,pos = far.Menu(props,items,bkeys)
       if ret then
         if not ret.BreakKey then
-          return ret.text, param
+          return ret.text, argName
         end
         props.SelectIndex = pos
         local item = items[pos]

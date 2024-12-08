@@ -319,14 +319,14 @@ local function main (cfg, prompt, context)
         hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
         return
       end
-      local model, ret2 = menu.chooseModel(cfg.getModels, args)
-      if model then
-        local param = II.names[ret2 or "model"]
+      local success, model, argName = pcall(menu.chooseModel, cfg.getModels, args)
+      if not success then
+        far.Message(model, "Error fetching models", nil, "wl")
+      elseif model then
+        local param = II.names[argName or "model"]
         if not param then return end
         hDlg:send(F.DM_SETTEXT, param.idx, model)
         hDlg:send(F.DM_SETFOCUS, param.idx)
-      elseif ret2 then
-        far.Message(ret2, "Error fetching models", nil, "wl")
       end
     end,
     name="btnModels"
