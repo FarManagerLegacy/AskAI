@@ -63,12 +63,12 @@ class Plain
     else
       nil, status_code
 
-  request: (method, endpoint, payload, delta_callback) =>
+  request: (method, endpoint, payload, delta_callback, headers) =>
     if method\match"^[/?]"
-      endpoint, payload, delta_callback = method, endpoint, payload
+      endpoint, payload, delta_callback, headers = method, endpoint, payload, delta_callback
       method = payload and "POST" or "GET"
 
-    response, status_code, headers, statusline = @_request method, endpoint, payload, delta_callback
+    response, status_code, headers, statusline = @_request method, endpoint, payload, delta_callback, headers
     if not response
       nil, status_code
     elseif status_code<200 or status_code>299
@@ -76,8 +76,8 @@ class Plain
     else
       response, statusline, headers
 
-  generate: (endpoint, payload, delta_callback) =>
-    @request "POST", endpoint, payload, delta_callback
+  generate: (endpoint, payload, delta_callback, headers) =>
+    @request "POST", endpoint, payload, delta_callback, headers
 
   providers: {
     http: "socket.http"
@@ -154,10 +154,10 @@ class LinesStream extends Plain
 
   defaultEndpoint: "/chat"
 
-  generate: (endpoint, payload, delta_callback) =>
+  generate: (endpoint, payload, delta_callback, headers) =>
     if type(endpoint)~="string"
-      endpoint, payload, delta_callback = @defaultEndpoint, endpoint, payload
-    response, status_code, _, statusline = @_request "POST", endpoint, payload, delta_callback
+      endpoint, payload, delta_callback, headers = @defaultEndpoint, endpoint, payload, delta_callback
+    response, status_code, _, statusline = @_request "POST", endpoint, payload, delta_callback, headers
     if not response
       nil, status_code
     elseif status_code<200 or status_code>299
