@@ -233,7 +233,7 @@ _Функции:_
 ------------
 
 На данный момент наиболее сильные модели это `o1` и `gpt-4o` от [OpenAI], `gemini-1.5-pro` от [Google][Google Gemini],
-`claude-3.5-sonnet` от [Anthropic].  
+`claude-3.5-sonnet` от [Anthropic], `grok-2` от [xAI].  
 Из опенсорсных - все что побольше, например из серии [Llama] от __Meta AI__: `llama-3.1-405b`, `llama-3.2-90b`, ...
 
 Ориентироваться можно по рейтингу [ChatBot Arena](https://lmarena.ai/?leaderboard).
@@ -246,7 +246,7 @@ _Функции:_
   Новому пользователю предоставляется кредит $5, после исчерпания которого доступно только платное использование.  
   Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью "нативной" конфигурации,
   так и называющейся "_OpenAI-compatible_".
-- Другие _OpenAI_-совместимые: [Mistral AI], [AI21 labs] _Jamba_.  
+- Другие _OpenAI_-совместимые: [Mistral AI], [xAI] _Grok_, [AI21 labs] _Jamba_.  
   К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource
   моделям (например таким как [Llama], основанным на _Llama_, и др.).
 - Провайдеры с собственным API, такие как [Google Gemini], [Anthropic] _Claude_, [Cohere Command R+], и т.д.  
@@ -256,6 +256,7 @@ _Функции:_
 
 [OpenAI]: https://platform.openai.com/
 [Mistral AI]: https://mistral.ai/
+[xAI]: https://x.ai/grok
 [AI21 labs]: https://www.ai21.com
 [Llama]: https://www.llama.com/
 [Google Gemini]: https://ai.google.dev/
@@ -285,6 +286,7 @@ _Функции:_
    - [cloudflare] (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`)
    - [gemini] от Google
    - [github] (включая `gpt-4o`)
+   - [grok] от [xAI]
    - [groq] (модели до 90b)
    - [mistral], [codestral]
    - [sambanova] (Llama <= 405b)
@@ -324,6 +326,7 @@ _Функции:_
 [fireworks.ai]: https://fireworks.ai/models
 [gemini]: https://ai.google.dev/gemini-api/docs/openai
 [github]: https://github.com/marketplace/models/
+[grok]: https://console.x.ai/
 [groq]: https://console.groq.com/playground
 [huggingface]: https://huggingface.co/models?other=text-generation-inference&inference=warm
 [hyperbolic]: https://app.hyperbolic.xyz/models

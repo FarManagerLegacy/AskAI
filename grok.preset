@@ -1,0 +1,9 @@
+--https://x.ai/blog/api
+--https://console.x.ai/
+--https://docs.x.ai/docs
+
+--https://x.com/i/grok
+
+apikey=win.GetEnv"XAI_API_KEY" or "set XAI_API_KEY env variable!"
+apibase="https://api.x.ai/v1"
+model="grok-2-1212"

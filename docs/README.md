@@ -169,7 +169,7 @@
 ## Выбор модели
 
 На данный момент наиболее сильные модели это `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/), `gemini-1.5-pro` от [Google](https://ai.google.dev/),
-`claude-3.5-sonnet` от [Anthropic](https://www.anthropic.com/).  
+`claude-3.5-sonnet` от [Anthropic](https://www.anthropic.com/), `grok-2` от [xAI](https://x.ai/grok).  
 Из опенсорсных - все что побольше, например из серии [Llama](https://www.llama.com/) от **Meta AI**: `llama-3.1-405b`, `llama-3.2-90b`, …
 
 Ориентироваться можно по рейтингу [ChatBot Arena](https://lmarena.ai/?leaderboard).
@@ -180,7 +180,7 @@
   Новому пользователю предоставляется кредит \$5, после исчерпания которого доступно только платное использование.  
   Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью “нативной” конфигурации,
   так и называющейся “*OpenAI-compatible*”.
-- Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [AI21 labs](https://www.ai21.com) *Jamba*.  
+- Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [xAI](https://x.ai/grok) *Grok*, [AI21 labs](https://www.ai21.com) *Jamba*.  
   К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource
   моделям (например таким как [Llama](https://www.llama.com/), основанным на *Llama*, и др.).
 - Провайдеры с собственным API, такие как [Google Gemini](https://ai.google.dev/), [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere Command R+](https://cohere.com/command), и т.д.  
@@ -207,6 +207,7 @@
   - [cloudflare](https://developers.cloudflare.com/workers-ai/models/) (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от Google
   - [github](https://github.com/marketplace/models/) (включая `gpt-4o`)
+  - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
   - [groq](https://console.groq.com/playground) (модели до 90b)
   - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
   - [sambanova](https://cloud.sambanova.ai/pricing) (Llama \<= 405b)
