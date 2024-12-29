@@ -280,6 +280,7 @@ local function main (cfg, prompt, context)
             end
             if v~=hDlg:send(F.DM_GETTEXT, item.idx) then
               hDlg:send(F.DM_SETTEXT, item.idx, v)
+              hDlg:send(F.DM_ADDHISTORY, item.idx, v)
               processSetsHistories(hDlg, v, dependants)
             end
           else
@@ -297,9 +298,7 @@ local function main (cfg, prompt, context)
             if type(v)=="function" then v = _pcall(v) end
             if v then
               hDlg:send(F.DM_SETTEXT, item.idx, v)
-              if isHidden then
-                hDlg:send(F.DM_ADDHISTORY, item.idx, v)
-              end
+              hDlg:send(F.DM_ADDHISTORY, item.idx, v)
             end
           end
         end
