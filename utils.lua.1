@@ -178,7 +178,7 @@ end
 local json = json_module and require(json_module)
 local pretty_encode = json.encode
 
-local export
+local export, restapi
 if json and pcall(require, "ssl.https") then
   if json_module=="dkjson" then
     json = json.use_lpeg()
@@ -188,7 +188,7 @@ if json and pcall(require, "ssl.https") then
   end
   local _env = setmetatable({json=json},{__index=_G})
   local _path = pathjoin(Shared.cfgpath, "restapi.moon.1")
-  local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
+  restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
   local State = Shared.State
   local function getHistory (historyName)
     State[historyName] = State[historyName] or {}
@@ -457,4 +457,6 @@ return {
   synchro=synchro,
   open=open,
   readHistory=readHistory,
+  --optional
+  restapi=restapi,
 }

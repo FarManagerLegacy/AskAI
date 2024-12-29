@@ -1,8 +1,36 @@
 --https://cloud.cerebras.ai/
 --Try chat: from https://inference.cerebras.ai/
+local Shared = ...
 
 apibase="https://api.cerebras.ai/v1"
-apikey=win.GetEnv"CEREBRAS_API_KEY" or "set CEREBRAS_API_KEY env variable!" -- or demo key
+apikey=win.GetEnv"CEREBRAS_API_KEY" or function() -- get demo key
+  local id = win.Uuid"75297D85-1DAF-46AF-A9C4-1B66E959CAFB"
+  local COOKIENAME = "authjs.session-token"
+  local cookies 
+  repeat
+    cookies = far.InputBox(id, "Cerebras preset", "Enter cookies:", "AskAI/cerebras.preset/cookies")
+    if not cookies then
+      return -- Esc
+    elseif #cookies==36 then --uuid
+      cookies = COOKIENAME.."="..cookies
+      break
+    elseif cookies:find(COOKIENAME,1,"plain") then
+      break
+    end
+    far.Message(('"%s" cookie required'):format(COOKIENAME),"Cerebras preset",nil,"wl")
+  until false
+  local client = Shared.utils.restapi.Plain(nil, "https://inference.cerebras.ai/api", {cookie=cookies})
+  local resp = assert(client:request("/graphql", {
+    operationName="GetMyDemoApiKey",
+    variables={},
+    query="query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"
+  }))
+  if resp.errors then
+    far.Message(resp.errors[1].message,"Cerebras preset",nil,"wl")
+    return
+  end
+  return resp.data.GetMyDemoApiKey
+end
 model={
   "llama-3.3-70b",
   "llama3.1-70b",
