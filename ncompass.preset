@@ -1,0 +1,18 @@
+--https://www.ncompass.tech/about
+apibase="https://api.ncompass.tech/v1"
+apikey=win.GetEnv"NCOMPASS_API_KEY" or "set NCOMPASS_API_KEY env variable!"
+
+--https://console.ncompass.tech/public-models
+model={
+  "ai4bharat/hercule-hi",
+  "ai4bharat/hercule-te",
+  "akjindal53244/Llama-3.1-Storm-8B",
+  "meta-llama/Llama-3.1-70B-Instruct",
+  "meta-llama/Llama-3.1-8B-Instruct",
+  "meta-llama/Llama-3.3-70B-Instruct",
+  "mistralai/Mistral-7B-Instruct-v0.3",
+  "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+  "Qwen/Qwen2.5-72B-Instruct",
+  "Qwen/Qwen2.5-7B-Instruct",
+  "Qwen/QwQ-32B-Preview",
+}
