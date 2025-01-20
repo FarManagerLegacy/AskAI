@@ -1,4 +1,4 @@
---https://cloud.sambanova.ai/apis
+--https://cloud.sambanova.ai/
 --https://cloud.sambanova.ai/pricing
 --https://sambanova.ai/blog/fastest-inference-best-models
 
@@ -11,6 +11,7 @@ model={
   "Meta-Llama-3.1-405B-Instruct",
   "Meta-Llama-3.1-70B-Instruct",
   "Meta-Llama-3.1-8B-Instruct",
+  "Meta-Llama-Guard-3-8B",
 
   "Llama-3.2-90B-Vision-Instruct",
   "Llama-3.2-11B-Vision-Instruct",
@@ -18,21 +19,18 @@ model={
   "Meta-Llama-3.2-1B-Instruct",
 
   "Meta-Llama-3.3-70B-Instruct",
-  
-  "Meta-Llama-Guard-3-8B",
+
+  "DeepSeek-R1-Distill-Llama-70B",
 
   "Qwen2.5-72B-Instruct",
   "Qwen2.5-Coder-32B-Instruct",
   "QwQ-32B-Preview",
+  --"Qwen2-Audio-7B-Instruct",
 
   --old:
-  "Samba-CoE",
-  "macadeliccc/WestLake-7B-v2-laser-truthy-dpo",
-  "ar", "bg", "hu", "ru", "sr", "sl", "th", "tr", "ja",
-
-  "ignos/Mistral-T5-7B-v1",
-  --stop: {" [ALT", "[INST]"}
-
-  "v1olet/v1olet_merged_dpo_7B",
-  --stop: {"[QUESTION]"}
+  --"Samba-CoE",
+  --"macadeliccc/WestLake-7B-v2-laser-truthy-dpo",
+  --"ar", "bg", "hu", "ru", "sr", "sl", "th", "tr", "ja",
+  --"ignos/Mistral-T5-7B-v1",  --stop: {" [ALT", "[INST]"}
+  --"v1olet/v1olet_merged_dpo_7B",  --stop: {"[QUESTION]"}
 }
