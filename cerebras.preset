@@ -7,4 +7,5 @@ model={
   "llama-3.3-70b",
   "llama3.1-70b",
   "llama3.1-8b",
+  "deepseek-r1-distill-llama-70b",
 }
