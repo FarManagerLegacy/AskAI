@@ -3,9 +3,7 @@ apibase="https://{model}.lepton.run/api/v1"
 apikey=win.GetEnv"LEPTON_API_TOKEN" or "set LEPTON_API_TOKEN env variable!"
 
 model={
-  "llama3-1-405b",
   "llama3-3-70b",
-  "qwen-qwq-32b",
 
   --not in the list
   "mythomax-l2-13b",
