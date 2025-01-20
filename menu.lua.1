@@ -270,7 +270,7 @@ local function chooseModel (getModels, args)
     for i,model in ipairs(models) do
       local id = nameFn and nameFn(model) or not keyId and model or model[keyId] --not safe
       assert(type(id)=="string", "model id must be string")
-      local hidden = filterFn and not filterFn(model) or nil --not safe
+      local hidden = filterFn and not filterFn(model,models) or nil --not safe
       items[i] = {
         text=id,
         hidden=hidden,

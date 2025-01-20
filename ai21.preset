@@ -1,5 +1,6 @@
 --https://docs.ai21.com/reference/jamba-15-api-ref
 --https://studio.ai21.com/v2/chat
+--https://chat.ai21.com
 
 apibase="https://api.ai21.com/studio/v1"
 apikey=win.GetEnv"AI21_API_KEY" or "set AI21_API_KEY env variable!"

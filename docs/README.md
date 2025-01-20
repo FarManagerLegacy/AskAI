@@ -168,22 +168,30 @@
 
 ## Выбор модели
 
-На данный момент наиболее сильные модели это `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/), `gemini-1.5-pro` от [Google](https://ai.google.dev/),
-`claude-3.5-sonnet` от [Anthropic](https://www.anthropic.com/), `grok-2` от [xAI](https://x.ai/grok).  
-Из опенсорсных - все что побольше, например из серии [Llama](https://www.llama.com/) от **Meta AI**: `llama-3.1-405b`, `llama-3.2-90b`, …
+На данный момент наиболее сильные модели это:
+
+- `o3`, `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/);
+- `gemini-2.0-pro` от [Google](https://ai.google.dev/);
+- `claude-3.7-sonnet` от [Anthropic](https://www.anthropic.com/);
+- `grok-3` от [xAI](https://x.ai/grok);
+
+Из опенсорсных - все что побольше, например:
+
+- из серии [Llama](https://www.llama.com/) от **Meta AI**: `llama-3.1-405b`, `llama-3.2-90b`, `llama-3.3-70b`;
+- ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
+  [DeepSeek](https://www.deepseek.com/), [Qwen](https://qwenlm.github.io/), *Yi* от [01.AI](https://www.01.ai/), [MiniMax](https://www.minimaxi.com/en).
 
 Ориентироваться можно по рейтингу [ChatBot Arena](https://lmarena.ai/?leaderboard).
 
 ## Обзор провайдеров
 
-- [OpenAI](https://platform.openai.com/) – оригинальный разработчик ChatGPT, `gpt-4o`, `gpt-4o-mini`.  
+- [OpenAI](https://platform.openai.com/) – оригинальный разработчик *ChatGPT*.  
   Новому пользователю предоставляется кредит \$5, после исчерпания которого доступно только платное использование.  
   Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью “нативной” конфигурации,
   так и называющейся “*OpenAI-compatible*”.
 - Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [xAI](https://x.ai/grok) *Grok*, [AI21 labs](https://www.ai21.com) *Jamba*.  
-  К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource
-  моделям (например таким как [Llama](https://www.llama.com/), основанным на *Llama*, и др.).
-- Провайдеры с собственным API, такие как [Google Gemini](https://ai.google.dev/), [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere Command R+](https://cohere.com/command), и т.д.  
+  К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource-моделям.
+- Провайдеры с собственным API, такие как [Google](https://ai.google.dev/) *Gemini*, [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere](https://cohere.com/command) *Command R+*, и т.д.  
   Для поддержки в *AskAI* требуется или соответствующая “нативная” конфигурация, или специальный
   сервис-адаптер, который будет конвертировать API в совместисый с *OpenAI* формат.  
   Примеры таких сервисов: [openai-gemini](https://habr.com/ru/articles/798123/), [openai-github-copilot](https://habr.com/ru/articles/799215/), и др.
@@ -206,25 +214,25 @@
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
   - [cloudflare](https://developers.cloudflare.com/workers-ai/models/) (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от Google
-  - [github](https://github.com/marketplace/models/) (включая `gpt-4o`)
-  - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
+  - [github](https://github.com/marketplace/models/) (модели от *OpenAI*, *DeepSeek*, *Anthropic*, *Mistral*, *Meta*, *Cohere*, *AI21*, *Microsoft* и др.)
   - [groq](https://console.groq.com/playground) (модели до 90b)
   - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
   - [sambanova](https://cloud.sambanova.ai/pricing) (Llama \<= 405b)
 - На некоторых сервисах только часть моделей доступно бесплатно:
   - [huggingface](https://huggingface.co/models?other=text-generation-inference&inference=warm) (бесплатно в основном небольшие модели, но есть и такие как `CodeLlama-34b-Instruct-hf` и `Qwen2.5-72B-Instruct`)
-  - [openrouter](https://openrouter.ai/models?q=:free) (бесплатно в основном небольшие модели, но доступны и такие как `lfm-40b` и `llama-3.1-405b-instruct`)
-  - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно в основном небольшие модели, но доступна и `Qwen2-72B-Instruct`)
-  - [together.ai](https://api.together.xyz/models) (ограниченное время бесплатна `meta-llama/Llama-Vision-Free`)
+  - [openrouter](https://openrouter.ai/models?q=:free) (бесплатно в основном небольшие модели, но доступны и такие как `llama-3.1-405b-instruct`)
+  - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно - небольшие модели)
+  - [together.ai](https://api.together.xyz/models) (бесплатно - `meta-llama/Llama-3.3-70B-Instruct-Turbo-Free`, `meta-llama/Llama-Vision-Free`, `deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free`)
 - Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
   задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
-  - [cerebras](https://cloud.cerebras.ai/) (`llama3.1-8b`, `llama3.1-70b`)
+  - [cerebras](https://cloud.cerebras.ai/) (`llama-3.3-70b`, `llama3.1-70b`, `llama3.1-8b`, `deepseek-r1-distill-llama-70b`)
   - [featherless](https://featherless.ai/models) (бесплатно - небольшие модели)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
   - [lepton](https://www.lepton.ai/playground) (всевозможные OpenSource-модели)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
   - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial?
   - [deepbricks](https://deepbricks.ai/pricing) (o1/gpt-4o/3.5/claude-3.5-sonnet/llama): allows some usage with 0 balance
+  - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
   - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, Qwen): \$10 credit for free trial
   - [ncompass](https://www.ncompass.tech/about) (OpenSource-модели: Llama, Qwen, …): \$100 of credit
   - [novita.ai](https://novita.ai/model-api/product/llm-api) (OpenSource-модели): \$0.5 credit
