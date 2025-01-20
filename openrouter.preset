@@ -5,14 +5,6 @@ apibase="https://openrouter.ai/api/v1"
 apikey=win.GetEnv"OPENROUTER_API_KEY" or "set OPENROUTER_API_KEY env variable!"
 
 --https://openrouter.ai/models?q=:free
-model={
-  "meta-llama/llama-3.1-405b-instruct:free",
-
-  -- not in the list, but still working:
-  --https://lambdalabs.com/blog/unveiling-hermes-3-the-first-fine-tuned-llama-3.1-405b-model-is-on-lambdas-cloud
-  "nousresearch/hermes-3-llama-3.1-405b:free",
-  "mistralai/pixtral-12b:free",
-  "qwen/qwen-2-vl-7b-instruct:free",
-}
+model="deepseek/deepseek-r1:free"
 
 modelsMeta='filterFn: (model) -> model.id\\match":free$"'

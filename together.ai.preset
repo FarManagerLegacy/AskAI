@@ -5,4 +5,8 @@ apibase="https://api.together.xyz/v1"
 apikey=win.GetEnv"TOGETHER_API_KEY" or "set TOGETHER_API_KEY env variable!"
 
 --https://www.together.ai/blog/llama-3-2-vision-stack#:~:text=Free%20Llama%203.2%2011B%20Vision%20Model%20-%20Developers
-model="meta-llama/Llama-Vision-Free"
+--https://x.com/togethercompute/status/1879231968434684254
+--https://x.com/togethercompute/status/1885008864422264997
+model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+
+modelsMeta='filterFn: (model) -> model.type=="chat" and model.id\\match"-[Ff]ree$"'

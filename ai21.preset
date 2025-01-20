@@ -1,11 +1,14 @@
---https://docs.ai21.com/reference/jamba-15-api-ref
+--https://docs.ai21.com/reference
 --https://studio.ai21.com/v2/chat
+--https://chat.ai21.com
 
 apibase="https://api.ai21.com/studio/v1"
 apikey=win.GetEnv"AI21_API_KEY" or "set AI21_API_KEY env variable!"
+
+--https://docs.ai21.com/docs/jamba-foundation-models#api-versioning
 model={
-  "jamba-1.5-large",
-  "jamba-1.5-mini",
+  "jamba-large",
+  "jamba-mini",
 
   --deprecated:
   "jamba-instruct-preview",

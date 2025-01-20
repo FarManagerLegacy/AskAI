@@ -6,4 +6,4 @@
 apibase="https://api.hyperbolic.xyz/v1"
 apikey=win.GetEnv"HYPERBOLIC_API_KEY" or "set HYPERBOLIC_API_KEY env variable!"
 model="meta-llama/Meta-Llama-3.1-405B-Instruct"
-
+modelsMeta="" --"filterFn: (model) -> model.supports_chat"

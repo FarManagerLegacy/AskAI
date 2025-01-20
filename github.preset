@@ -13,10 +13,13 @@ apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 model={
   "gpt-4o", -- default
 
-  -- additionally scraped with curl "https://github.com/marketplace/models" | sed -n 's/"original_name":"[^"]*",/\n&\n/gp' | sed -n 's/"original_name"://p' | sed 's/[",]//g'
-  "AI21-Jamba-1.5-Large",
-  "AI21-Jamba-1.5-Mini",
-  --"Cohere-command-r-08-2024",
-  --"Cohere-command-r-plus-08-2024",
-  "Ministral-3B",
+  -- from https://models.inference.ai.azure.com/models
+  "AI21-Jamba-Instruct",
 }
+
+modelsMeta=[[{
+  dataFn: (data) ->
+    data.apibase = "https://github.com/marketplace"
+    data.headers = "x-requested-with": "XMLHttpRequest" --, cookie: "user_session=..."
+  filterFn: (model) -> model.task=="chat-completion"
+}]]
