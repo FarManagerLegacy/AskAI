@@ -1,0 +1,32 @@
+--https://chutes.ai/app
+apibase="https://chutes-{model-slug}.chutes.ai/v1"
+apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
+model="deepseek-ai/DeepSeek-R1"
+
+modelsMeta=[[modelsFn: ->
+  acc = {}
+  _, status_code, _, status_line = assert require"ssl.https".request
+    url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
+    headers:"Sec-Fetch-Site":"same-origin"
+    sink:require"ltn12".sink.table acc
+  assert status_code==200, status_line
+
+  l = package.loaded
+  json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  data = json.decode table.concat acc, "", 2
+
+  _data = (id) ->
+    type(id)=="number" and data.data[id+1] or id
+
+  map = (t) ->
+    mapped = {}
+    for k, key in pairs t
+      mapped[k] = _data key
+      if type(mapped[k])=="table"
+        mapped[k] = map mapped[k]
+    mapped
+
+  models = (map _data 0).items
+  models.keyId = "name"
+  models
+]]
