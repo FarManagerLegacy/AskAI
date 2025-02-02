@@ -303,6 +303,7 @@ _Функции:_
    - [mistral], [codestral]
    - [sambanova] (Llama <= 405b)
 - На некоторых сервисах только часть моделей доступно бесплатно:
+   - [chutes] (DeepSeek, Llama, Qwen, ...)
    - [huggingface] (бесплатно в основном небольшие модели, но есть и такие как `CodeLlama-34b-Instruct-hf` и `Qwen2.5-72B-Instruct`)
    - [openrouter] (бесплатно в основном небольшие модели, но доступны и такие как `llama-3.1-405b-instruct`)
    - [siliconflow] (бесплатно - небольшие модели)
@@ -332,6 +333,7 @@ _Функции:_
 [ai21]: https://www.ai21.com/jamba
 [anyai]: https://api.airforce/
 [cerebras]: https://cloud.cerebras.ai/
+[chutes]: https://chutes.ai/app
 [codestral]: https://console.mistral.ai/codestral
 [cloudflare]: https://developers.cloudflare.com/workers-ai/models/
 [deepbricks]: https://deepbricks.ai/pricing
