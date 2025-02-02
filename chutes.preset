@@ -1,0 +1,41 @@
+--https://chutes.ai/app
+apibase="https://chutes-{model-slug}.chutes.ai/v1"
+apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
+model="deepseek-ai/DeepSeek-R1"
+
+modelsMeta=function()
+  local ua = far.InputBox(nil, "Chutes preset", "Enter UserAgent:", "AskAI/chutes.preset/UserAgent")
+  if not ua then return end
+  local cf_clearance = far.InputBox(nil, "Chutes preset", "Enter cf_clearance cookie value:", "AskAI/chutes.preset/cf_clearance")
+  if not cf_clearance then return end
+
+  return ([[modelsFn: ->
+  acc = {}
+  _, status_code, _, status_line = assert require"ssl.https".request
+    url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
+    headers:
+      "Cookie":"cf_clearance=%s"
+      "User-Agent":"%s"
+    sink:require"ltn12".sink.table acc
+  assert status_code==200, status_line
+
+  l = package.loaded
+  json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  data = json.decode table.concat acc, "", 2
+
+  _data = (id) ->
+    type(id)=="number" and data.data[id+1] or id
+
+  map = (t) ->
+    mapped = {}
+    for k, key in pairs t
+      mapped[k] = _data key
+      if type(mapped[k])=="table"
+        mapped[k] = map mapped[k]
+    mapped
+
+  models = (map _data 0).items
+  models.keyId = "name"
+  models
+]]):format(cf_clearance,ua)
+end
