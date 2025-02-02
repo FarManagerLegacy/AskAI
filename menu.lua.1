@@ -269,6 +269,7 @@ local function chooseModel (getModels, args)
     local items = {}
     for i,model in ipairs(models) do
       local id = nameFn and nameFn(model) or not keyId and model or model[keyId] --not safe
+      assert(type(id)=="string", "model id must be string")
       local hidden = filterFn and not filterFn(model) or nil --not safe
       items[i] = {
         text=id,
@@ -289,7 +290,7 @@ local function chooseModel (getModels, args)
     if pcall(require,"le") then
       bkeys = bkeys.." F3"
     end
-    table.sort(items, function(a,b) return a.text:lower() < b.text:lower() end) --not safe
+    table.sort(items, function(a,b) return a.text:lower() < b.text:lower() end)
     repeat
       local ret,pos = far.Menu(props,items,bkeys)
       if ret then
