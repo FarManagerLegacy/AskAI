@@ -1,5 +1,5 @@
+--https://docs.mistral.ai/capabilities/code_generation/
 --https://console.mistral.ai/codestral
---https://codestral.mistral.ai/v1/fim/completions
 
 apibase="https://codestral.mistral.ai/v1"
 apikey=win.GetEnv"CODESTRAL_API_KEY" or "set CODESTRAL_API_KEY env variable!"
