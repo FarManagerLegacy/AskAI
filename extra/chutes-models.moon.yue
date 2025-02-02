@@ -1,0 +1,33 @@
+provider = require "ssl.https"
+ltn12 = require "ltn12"
+acc = {}
+success, status_code, response_headers, status_line = provider.request
+  url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
+  headers:"Sec-Fetch-Site":"same-origin"
+  sink:ltn12.sink.table acc
+
+assert status_code==200, status_line
+
+json = require "cjson"
+data = json.decode table.concat acc, "", 2
+
+_data = (id) ->
+  ret = nil
+  if type(id)=="number"
+    ret = data.data[id + 1]
+  ret or id
+
+map = (t) ->
+  mapped = {}
+  for k, key in pairs t
+    mapped[k] = _data key
+    if type(mapped[k])=="table"
+      mapped[k] = map mapped[k]
+  mapped
+
+models = [model.name for model in *(map _data 0).items]
+table.sort models, (a,b) -> a\lower! < b\lower!
+
+print "["
+print '  "'..model..'",' for model in *models
+print "]"
