@@ -1,2 +1,3 @@
 apibase="https://api.tmrace.net/v1"
 model="gpt-4o-mini"
+modelsMeta="none"
