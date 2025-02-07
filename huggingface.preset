@@ -44,7 +44,7 @@ model={
   "Qwen/QwQ-32B-Preview",
   "tiiuae/falcon-7b-instruct",
 }
-modelsMeta = "none"
+modelsMeta="none"
 
 local useCache = '"x-use-cache":"false"'
 headers = function()
