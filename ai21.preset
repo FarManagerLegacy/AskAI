@@ -13,4 +13,4 @@ model={
   --deprecated:
   "jamba-instruct-preview",
 }
-modelsMeta = "none"
+modelsMeta="none"
