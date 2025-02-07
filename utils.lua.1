@@ -388,7 +388,6 @@ if far.CreateSettings then
     local history = {}
     for _,item in ipairs(historyArr) do
       history[#history+1] = item.Name
-      history[item.Name] = true
     end
     return history
   end
@@ -400,7 +399,6 @@ else -- far2m
       local nlStart,nlEnd = string.find(s, '\n', pos)
       local line = string.sub(s, pos, (nlStart or 0)-1)
       lines[#lines+1] = line
-      lines[line] = true
       if not nlStart then break end
       pos = nlEnd+1
     end
