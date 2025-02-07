@@ -3,10 +3,10 @@
 # required user setting
 BASE:=D:\repo\HelpDown-scripts
 PANDOC:=C:\Apps\pandoc\pandoc.exe
-HTMLTOFARHELP:=$(FARPROFILE)\tools\HtmlToFarHelp\HtmlToFarHelp.exe
+HTMLTOFARHELP:="$(FARPROFILE)\tools\HtmlToFarHelp\HtmlToFarHelp.exe"
 
 # plug base Makefile
-include $(BASE)\Makefile
+include $(BASE)/Makefile
 .DEFAULT_GOAL:=hlf
 
 # optional local customization
@@ -18,5 +18,14 @@ README.md: askai.ru.md
 	@if exist $@ del $@
 	@ren $< $@
 
-.PHONY: all
+.PHONY: all post
 all: hlf forum README.md
+
+post: askai.ru.forum
+	@env \
+	  PASSWORD=$(shell KeePassCommand.cmd getfieldraw forum.farmanager.com Password) \
+	  USERNAME="John Doe" \
+	  POST_ID=178068 \
+	  FILE="$<" \
+	  CLEANUP=false \
+	  $(BASE)/update_post.sh
