@@ -7,3 +7,4 @@ apikey=win.GetEnv"NCOMPASS_API_KEY" or "set NCOMPASS_API_KEY env variable!"
 --https://console.ncompass.tech/public-models
 --https://console.backend.ncompass.tech/api/get-models
 model="meta-llama/Llama-3.3-70B-Instruct"
+
