@@ -90,7 +90,7 @@ local function populateHistory (self, hDlg, name, values, source)
     end
   end
   if added and history[1] then -- preserve lasthistory
-    hDlg:send(F.DM_ADDHISTORY, param.idx, history[1].Name)
+    hDlg:send(F.DM_ADDHISTORY, param.idx, history[#history])
   end
   if source=="init" and #history==0 then
     hDlg:send(F.DM_SETTEXT, param.idx, values[1] or "")
