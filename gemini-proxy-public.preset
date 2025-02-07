@@ -3,4 +3,4 @@
 
 apibase="https://my-openai-gemini-demo.vercel.app/v1"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
-model="gemini-1.5-pro-latest"
+model="gemini-2.0-flash"

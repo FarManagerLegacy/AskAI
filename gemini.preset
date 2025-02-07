@@ -5,13 +5,19 @@
 apibase="https://generativelanguage.googleapis.com/v1beta/openai"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
 model={
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-exp",
+  "gemini-2.0-flash-thinking-exp",
+  "gemini-2.0-flash-thinking-exp-1219",
+  "gemini-2.0-flash-lite",
+
+  "gemini-2.0-pro-exp",
+  "gemini-2.0-pro-exp-02-05",
+  "gemini-exp-1206",
+
+  "learnlm-1.5-pro-experimental",
+
   "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
   "gemini-1.5-flash-8b-latest",
-  "gemini-exp-1114",
-  "gemini-exp-1121",
-  "gemini-exp-1206",
-  "gemini-2.0-flash-exp",
-  "gemini-2.0-flash-thinking-exp",
-  "learnlm-1.5-pro-experimental",
 }
