@@ -76,15 +76,16 @@ local function populateHistory (self, hDlg, name, values, source)
   if type(values)~="table" then values = {values} end
   local param = self.names[name]
   if not param then return end
-  local histName = source=="presets" and hDlg:send(F.DM_GETDLGITEM, param.idx)[HISTORY] or param.History
-  local success, history = pcall(utils.readHistory, histName)
+  local success, history = pcall(utils.readHistory, param.History)
   if not success then
     far.Message(history, "Error", nil, "wl")
     return
   end
+  local inHistory = {}
+  for _,v in ipairs(history) do inHistory[v] = true end
   local added
   for i=#values,1,-1 do
-    if not history[values[i]] then
+    if not inHistory[values[i]] then
       hDlg:send(F.DM_ADDHISTORY, param.idx, values[i])
       added = true
     end
@@ -202,7 +203,9 @@ local function main (cfg, prompt, context)
       for _,item in ipairs(items) do
         local pos = item.idx
         hDlg:send(F.DM_SETTEXT, pos, "")
-        hDlg:send(F.DM_SETHISTORY, pos, makeHistoryName(nil, subparam..":"..text))
+        local History = makeHistoryName(nil, subparam..":"..text)
+        II.names[item.name].History = History
+        hDlg:send(F.DM_SETHISTORY, pos, History)
         hDlg:send(F.DM_EDITUNCHANGEDFLAG, pos, 1)
       end
     end
@@ -289,7 +292,7 @@ local function main (cfg, prompt, context)
         end
         for item,v in pairs(secondary) do
           if type(v)=="table" then
-            populateHistory(II, hDlg, item.name, v, "presets")
+            populateHistory(II, hDlg, item.name, v)
             v = v[1]
           end
           local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
