@@ -260,7 +260,7 @@ local function choosePreset (itemsNames, cfgInfo)
   until false
 end
 
-local function chooseModel (getModels, args)
+local function chooseModel (getModels, args, fromHistory)
   local models, argName = getModels(args) --not safe
   if models and models[1] then
     local keyId = type(models[1])=="table" and models.keyId
@@ -280,7 +280,7 @@ local function chooseModel (getModels, args)
       }
     end
     local props = {
-      Title="Available models",
+      Title=fromHistory and "Models {from history}" or "Available models",
       Bottom="Enter to choose",
       HelpTopic=utils.HelpTopic"",
       Id=win.Uuid "2E982903-4E60-4A44-8E78-2543ED869A63",
