@@ -5,7 +5,7 @@ local menu = Shared.menu
 local O = Shared.O
 
 local F = far.Flags
-F.DIF_HOMEITEM = F.DIF_HOMEITEM or 0 -- far2m
+local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 -- far2m
 local isFar3 = F.ACTL_GETFARMANAGERVERSION
 local newDlgInfo do --> begin of Dlg helper <-- v0.1
 local function norm (arg, base, align)
@@ -147,7 +147,7 @@ local function main (cfg, prompt, context)
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
   II:add {F.DI_EDIT, prompt, {[X2]=-1},
-    F.DIF_HOMEITEM +F.DIF_FOCUS
+    DIF_HOMEITEM +F.DIF_FOCUS
     +F.DIF_HISTORY +F.DIF_USELASTHISTORY, History="AskAI prompt",
     name="prompt"
   }
