@@ -320,6 +320,14 @@ local function main (cfg, prompt, context)
         end
       end
       if args.modelsMeta=="none" then
+        utils.synchro(function()
+          local hLst = actl.GetWindowInfo().Id
+          hLst:send(F.DM_ENABLEREDRAW, 0)
+          hLst:send(F.DM_LISTSORT, 1)
+          local pos = hLst:send(F.DM_LISTFINDSTRING, 1, {Pattern=args.model or "", Flags=F.LIFIND_EXACTMATCH})
+          hLst:send(F.DM_LISTSETCURPOS, 1, {SelectPos=pos})
+          hLst:send(F.DM_ENABLEREDRAW, 1)
+        end)
         hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
         return
       end
