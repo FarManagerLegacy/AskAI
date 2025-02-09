@@ -11,7 +11,7 @@ include $(BASE)/Makefile
 
 # optional local customization
 %.hlfhtml: FLAGS+=--lua-filter addRefs.lua
-%: FLAGS+= --toc
+%: FLAGS+= --toc --lua-filter TitleH1LevelDown.lua --shift-heading-level-by=1
 
 README.md: askai.ru.md
 	@echo $@
