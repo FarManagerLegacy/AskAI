@@ -236,7 +236,7 @@ local function main (cfg, prompt, context)
       local value = win.GetEnv(var)
       local col2 = math.max(x2, var:len()+1)
       II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
-      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_MANUALADDHISTORY,
+      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY,
         History=makeHistoryName(k),
         name=var
       }
@@ -443,11 +443,30 @@ local function main (cfg, prompt, context)
         end
       elseif key=="PgUp" then
         hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
+      elseif key=="Del" then -- restore Env var value if Del pressed in empty edit field
+        if II[idx].History and II[idx][DATA] and hDlg:send(F.DM_GETTEXT, idx)=="" then
+          hDlg:send(F.DM_ENABLEREDRAW, 0)
+          hDlg:send(F.DM_SETTEXT, idx, II[idx][DATA])
+          hDlg:send(F.DM_EDITUNCHANGEDFLAG, idx, 1)
+          hDlg:send(F.DM_ENABLEREDRAW, 1)
+          return true
+        end
       end
     elseif msg==F.DN_CTLCOLORDLGITEM then
       if II[idx].isTitle then
         local HiText = Param2[2]
         Param2[1] = HiText
+        return Param2
+      end
+      local Next = II[idx+1]
+      if Next and Next.History and Next[DATA] and #Next[DATA]>0
+         and Next[DATA]~=hDlg:send(F.DM_GETTEXT, idx+1) then
+        local Title = Param2[1]
+        if Title.Flags then
+          Title.Flags = bit64.bor(Title.Flags, F.FCF_FG_ITALIC)
+        else -- far2m
+          Param2[1] = bit64.bor(Param2[1], F.COMMON_LVB_REVERSE_VIDEO)
+        end
         return Param2
       end
     end
