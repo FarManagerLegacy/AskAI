@@ -152,7 +152,7 @@ local function main (cfg, prompt, context)
     name="prompt"
   }
   II:ln() -- -- -- --
-  II:add {F.DI_TEXT, cfg.info.name, {}, F.DIF_SEPARATOR +F.DIF_CENTERGROUP}
+  II:add {F.DI_TEXT, cfg.info.name, {}, F.DIF_SEPARATOR +F.DIF_CENTERGROUP, isTitle=true}
   II:ln() -- -- -- --
   II:add {F.DI_CHECKBOX, "&Session", nil, canSession and F.DIF_3STATE or F.DIF_DISABLE,
     canSession and State.useSession or 0,
@@ -443,6 +443,12 @@ local function main (cfg, prompt, context)
         end
       elseif key=="PgUp" then
         hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
+      end
+    elseif msg==F.DN_CTLCOLORDLGITEM then
+      if II[idx].isTitle then
+        local HiText = Param2[2]
+        Param2[1] = HiText
+        return Param2
       end
     end
   end
