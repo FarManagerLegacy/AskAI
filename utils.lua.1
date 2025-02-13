@@ -367,6 +367,7 @@ local HK = {
   iter=function(self,skip)
     if skip or self.finished then return self.spc end
     self.i = self.i+1
+    if self.i==36 then self.finished = true end
     local _hk = self.i==10 and "0" or self.i<10 and self.i or string.char(self.i + string.byte"a" - 11)
     _hk = "&".._hk
     return _hk..self.fmt
