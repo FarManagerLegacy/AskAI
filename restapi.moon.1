@@ -125,9 +125,9 @@ class LinesStream extends Plain
               if @process_line line, delta_callback, ctx
                 acc_buffer = rest
                 streamed = true
-              elseif streamed
-                delta_callback nil, "Unable to parse line", line
-                return nil, "Unable to parse line"
+              --elseif streamed
+              --  delta_callback nil, "Unable to parse line", line
+              --  return nil, "Unable to parse line"
               else
                 accumulate_only = true
                 break
