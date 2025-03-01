@@ -2,7 +2,51 @@
 --Try chat: from https://inference.cerebras.ai/
 
 apibase="https://api.cerebras.ai/v1"
-apikey=win.GetEnv"CEREBRAS_API_KEY" or "set CEREBRAS_API_KEY env variable!" -- or demo key
+apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
+  if not oldkey:match"^demo%-" then return end
+
+  local id = win.Uuid"75297D85-1DAF-46AF-A9C4-1B66E959CAFB"
+  local COOKIENAME = "authjs.session-token"
+  local cookies
+  repeat
+    cookies = far.InputBox(id, "Cerebras preset", "Enter cookies:", "AskAI/cerebras.preset/cookies")
+    if not cookies then
+      return -- Esc
+    elseif #cookies==36 then --uuid
+      cookies = COOKIENAME.."="..cookies
+      break
+    elseif cookies:find(COOKIENAME,1,"plain") then
+      break
+    end
+    far.Message(('"%s" cookie required'):format(COOKIENAME),"Cerebras preset",nil,"wl")
+  until false
+
+  local l = package.loaded
+  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  local ltn12 = require"ltn12"
+
+  local acc = {}
+  local _, status_code, _, status_line = assert(require"ssl.https".request {
+    method="POST",
+    url="https://inference.cerebras.ai/api/graphql",
+    headers={["content-type"]="application/json", cookie=cookies},
+    sink=ltn12.sink.table(acc),
+    source=ltn12.source.string(json.encode{
+      operationName="GetMyDemoApiKey",
+      variables={},
+      query="query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"
+    })
+  })
+  assert(status_code==200, status_line) --todo
+
+  local resp = json.decode(table.concat(acc))
+  if resp.errors then
+    far.Message(resp.errors[1].message,"Cerebras preset",nil,"wl")
+    return
+  end
+  return resp.data.GetMyDemoApiKey
+end
+
 model={
   "llama-3.3-70b",
   "llama3.1-70b",
