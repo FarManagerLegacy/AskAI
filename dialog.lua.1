@@ -292,19 +292,23 @@ local function main (cfg, prompt, context)
           end
         end
         for item,v in pairs(secondary) do
+          local exV = hDlg:send(F.DM_GETTEXT, item.idx)
+          local isFn = type(v)=="function"
+          if isFn then
+            v = _pcall(v, exV)
+            if not v then goto continue end
+          end
           if type(v)=="table" then
             populateHistory(II, hDlg, item.name, v)
             v = v[1]
+            isFn = false
           end
           local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
-          local exV = not isHidden and hDlg:send(F.DM_GETTEXT, item.idx)
-          if isHidden or exV=="" or exV:match" env variable!$" then
-            if type(v)=="function" then v = _pcall(v) end
-            if v then
-              hDlg:send(F.DM_SETTEXT, item.idx, v)
-              hDlg:send(F.DM_ADDHISTORY, item.idx, v)
-            end
+          if isHidden or isFn or exV=="" or exV:match" env variable!$" then
+            hDlg:send(F.DM_SETTEXT, item.idx, v)
+            hDlg:send(F.DM_ADDHISTORY, item.idx, v)
           end
+          ::continue::
         end
         ::exitPresets::
         hDlg:send(F.DM_ENABLEREDRAW,1)
