@@ -21,6 +21,6 @@ modelsMeta=[[{
 --[[
 local id = win.Uuid"270C9C4D-F46A-4870-9494-6C2FD94C2492"
 headers=function()
-  return far.InputBox(id, "Lepton preset", "Enter headers:", "AskAI/lepton.preset/headers")
+  return far.InputBox(id, "Lepton preset", "Enter headers:", "AskAI param headers:"..apibase)
 end
 --]]
