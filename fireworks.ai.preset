@@ -5,6 +5,14 @@
 apibase="https://api.fireworks.ai/inference/v1"
 apikey=win.GetEnv"FIREWORKS_API_KEY" or "set FIREWORKS_API_KEY env variable!" -- or internal key from playground
 model="accounts/fireworks/models/llama-v3p1-405b-instruct"
-headers='{["fireworks-playground"]="true", origin="https://fireworks.ai"}'
+
+--headers='{["fireworks-playground"]="true", origin="https://fireworks.ai"}'
+
+--[[
+local id = win.Uuid"0E4FE3D5-FEF1-406B-9FA6-519D9B3718B6"
+headers=function()
+  return far.InputBox(id, "Fireworks AI preset", "Enter headers:", "AskAI param headers:"..apibase)
+end
+--]]
 
 modelsMeta="filterFn: (model) -> model.supports_chat"
