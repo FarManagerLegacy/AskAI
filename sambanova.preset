@@ -6,29 +6,82 @@ apibase="https://api.sambanova.ai/v1"
 apikey=win.GetEnv"SAMBANOVA_API_KEY" or "set SAMBANOVA_API_KEY env variable!"
 
 --https://cloud.sambanova.ai/apis
---https://community.sambanova.ai/t/supported-models/193
-model={
-  "Llama-3.1-Tulu-3-405B",
-  "Llama-3.1-Swallow-70B-Instruct-v0.3",
-  "Llama-3.1-Swallow-8B-Instruct-v0.3",
+--https://docs.sambanova.ai/cloud/docs/get-started/supported-models
+local default = "Llama-3.1-Tulu-3-405B"
+model=function()
+  local LIMIT = 20000
 
-  "Meta-Llama-3.1-405B-Instruct",
-  "Meta-Llama-3.1-70B-Instruct",
-  "Meta-Llama-3.1-8B-Instruct",
-  "Meta-Llama-Guard-3-8B",
+  local request = require("ssl.https").request
+  local l = package.loaded
+  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
 
-  "Llama-3.2-90B-Vision-Instruct",
-  "Llama-3.2-11B-Vision-Instruct",
-  "Meta-Llama-3.2-3B-Instruct",
-  "Meta-Llama-3.2-1B-Instruct",
+  local function fetchModels (url)
+    local body, code, _, status_line = assert(request(url))
+    assert(code==200, status_line)
+    return body:match("MODEL_NAME_KEY_MAP:(%b{})")
+  end
 
-  "Meta-Llama-3.3-70B-Instruct",
+  local function decodeModels (json_str)
+    local list = {}
+    for _,v in pairs(assert(json.decode(json_str))) do
+      table.insert(list, v==default and 1 or #list+1, v)
+    end
+    return list
+  end
 
-  "DeepSeek-R1-Distill-Llama-70B",
+  local name = "Ask AI - SambaNova - models - url"
+  --mf.mdelete("jd", name)
+  do
+    local script = mf.mload("jd", name)
+    if script then
+      local success, json_str = pcall(fetchModels, script)
+      if success and json_str then
+        return decodeModels(json_str)
+      end
+    end
+  end
 
-  "Qwen2.5-72B-Instruct",
-  "Qwen2.5-Coder-32B-Instruct",
-  "QwQ-32B-Preview",
-  --"Qwen2-Audio-7B-Instruct",
-}
-modelsMeta="none"
+  local function checkSize (url)
+    local _, code, headers, status_line = assert(request {url=url, method="HEAD" })
+    assert(code==200, status_line)
+    return tonumber(headers["content-length"]) < LIMIT
+  end
+
+  local host = "https://cloud.sambanova.ai/"
+  local prefix = host.."_next/"
+
+  local title = "SambaNova: fetching models list..."
+  far.Message("... ", title, "")
+
+  local index_page, code, _, status_line = assert(request(host))
+  assert(code==200, status_line)
+  for item in index_page:gmatch("static/chunks/%d+%-[a-fA-F0-9]+%.js") do
+    far.Message(item, title, "")
+    local script = prefix..item
+    if checkSize(script) then
+      local json_str = fetchModels(script)
+      if json_str then
+        mf.msave("jd", name, script)
+        far.Message("Found models list!", title, "")
+        mf.sleep(500)
+        return decodeModels(json_str)
+      end
+    end
+  end
+  far.Message("Error: models not found!", title, nil, "w")
+end
+
+modelsMeta=[[modelsFn: ->
+  name = "Ask AI - SambaNova - models - url"
+  script = assert (mf.mload "jd", name), "No saved data"
+  body, code, _, status_line = assert require"ssl.https".request script
+  unless code==200
+    mf.mdelete "jd", name
+    error status_line
+  if json_str = body\match "MODEL_NAME_KEY_MAP:(%b{})"
+    json = nil
+    with package.loaded
+      json = .cjson or .rsjson or .ljson or .dkjson or .lunajson or .json
+    decoded = assert json.decode json_str
+    [v for _, v in pairs decoded]
+]]
