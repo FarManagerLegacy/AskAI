@@ -403,8 +403,8 @@ local function main (cfg, prompt, context)
         item.onclick(hDlg,idx)
       end
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
-      local key = far.KeyToName and far.KeyToName(Param2) --luacheck: globals far.KeyToName -- far2m
-               or far.InputRecordToName(Param2)
+      local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName -- far2m
+      local key = KeyToName(Param2)
       if key=="F3" and item.name=="chkUseSession" then
         if cfg.info.showSession then
           cfg.info.showSession()
