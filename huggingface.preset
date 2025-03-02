@@ -1,54 +1,97 @@
---https://huggingface.co/playground
+﻿--https://huggingface.co/playground
 --https://huggingface.co/docs/api-inference/index
 
 apibase="https://api-inference.huggingface.co/models/{model}/v1"
-apikey=win.GetEnv"HF_API_TOKEN" or "set HF_API_TOKEN env variable!"
+
+local title = "🤗 Hugging Face"
+apikey=win.GetEnv"HF_API_TOKEN" or far.InputBox(nil, title, "Enter apikey:", "AskAI param apikey:"..apibase)
+
+local Shared = ...
+local check = Shared.utils.check
+local datafile = Shared.utils.pathjoin(Shared.cfgpath, "huggingface-models.json")
 
 -- https://huggingface.co/models?other=text-generation-inference&inference=warm
 -- https://huggingface.co/models?other=text-generation-inference&inference=cold
-model={
-  "01-ai/Yi-1.5-34B-Chat",
-  "codellama/CodeLlama-34b-Instruct-hf",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-  "google/gemma-1.1-7b-it",
-  "google/gemma-2-27b-it",
-  "google/gemma-2-2b-it",
-  "google/gemma-2-9b-it",
-  "HuggingFaceH4/starchat2-15b-v0.1",
-  "HuggingFaceH4/zephyr-7b-alpha",
-  "HuggingFaceH4/zephyr-7b-beta",
-  --"meta-llama/Llama-2-7b-chat-hf",
-  --"meta-llama/Llama-3.1-70B-Instruct",
-  --"meta-llama/Llama-3.1-8B-Instruct",
-  "meta-llama/Llama-3.2-11B-Vision-Instruct",
-  "meta-llama/Llama-3.2-1B-Instruct",
-  "meta-llama/Llama-3.2-3B-Instruct",
-  --"meta-llama/Llama-3.3-70B-Instruct",
-  --"meta-llama/Meta-Llama-3-70B-Instruct",
-  "meta-llama/Meta-Llama-3-8B-Instruct",
-  "microsoft/DialoGPT-large",
-  "microsoft/Phi-3-mini-4k-instruct",
-  "microsoft/Phi-3.5-mini-instruct",
-  "mistralai/Mistral-7B-Instruct-v0.2",
-  "mistralai/Mistral-7B-Instruct-v0.3",
-  "mistralai/Mistral-Nemo-Instruct-2407",
-  "mistralai/Mixtral-8x7B-Instruct-v0.1",
-  "NousResearch/Hermes-3-Llama-3.1-8B",
-  "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
-  "Qwen/Qwen2-VL-7B-Instruct",
-  "Qwen/Qwen2.5-0.5B-Instruct",
-  "Qwen/Qwen2.5-1.5B-Instruct",
-  "Qwen/Qwen2.5-72B-Instruct",
-  "Qwen/Qwen2.5-Coder-32B-Instruct",
-  "Qwen/Qwen2.5-Coder-3B-Instruct",
-  "Qwen/QwQ-32B-Preview",
-  "tiiuae/falcon-7b-instruct",
-}
-modelsMeta="none"
+local default = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+model=function()
+  if not apikey then return default end
 
-local useCache = '"x-use-cache":"false"'
-headers = function()
-  local ans = far.Message("Wait for model?","HuggingFace preset","No;Yes")
-  local waitModel = ans==2 and '"x-wait-for-model":"true"' or nil
-  return table.concat({useCache,waitModel},",")
+  local request = require("ssl.https").request
+  local ltn12 = require("ltn12")
+  local l = package.loaded
+  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+
+  local function test (model)
+    local id = model.id
+    local url = ("https://api-inference.huggingface.co/models/%s/v1/chat/completions"):format(id)
+    local body = json.encode {
+      messages={{content="", role="user"}},
+      max_tokens=1,
+    }
+    local out = {}
+    local _, code = assert(request{
+      url=url,
+      sink=ltn12.sink.table(out),
+      source=ltn12.source.string(body),
+      method="POST",
+      headers={
+        authorization="Bearer "..apikey,
+        ["content-type"] = "application/json",
+      }
+    })
+    if code~=200 then
+      local response = table.concat(out)
+      model.error = response:match"^{" and json.decode(response).error or code
+    end
+    return model
+  end
+
+  local function status (msg)
+    actl.RedrawAll()
+    far.Message(msg, title, "")
+  end
+
+  local page,list, tested = 0, {}, {}
+  repeat
+    status("Fetching warm models list, page "..(page+1))
+    local url = "https://huggingface.co/models?other=text-generation-inference&sort=trending&inference=warm&p="..page
+    local response, code, _, status_line = assert(request(url))
+    assert(code==200, status_line)
+    if check"Esc" then error("break",0) end
+
+    local data_props = assert(response:match('data%-target="ModelList".-data%-props="([^"]+)"'), "Unexpected format")
+    local data = json.decode((data_props:gsub("&quot;", '"')))
+    local models = data.initialValues and data.initialValues.models
+    if not models or #models==0 then break end
+
+    for _, model in ipairs(models) do
+      list[#list+1] = test(model)
+      if check"Esc" then error("break",0) end
+      if not model.error then
+        table.insert(tested, model.id==default and 1 or #list+1, model.id)
+      end
+      status(model.id..": "..(model.error and "Error" or "OK!"))
+    end
+    page = page+1
+  until #models<30
+
+  local file = assert(io.open(datafile, "w"))
+  file:write(json.encode(list))
+  file:close()
+  return tested
 end
+
+modelsMeta=([[{
+filterFn: (model) -> not model.error
+modelsFn: ->
+  file = assert io.open %q
+  data = file\read "*all"
+  file\close!
+  json = nil
+  with package.loaded
+    json = .cjson or .rsjson or .ljson or .dkjson or .lunajson or .json
+  with json.decode data
+    .keyId = "id"
+}]]):format(datafile)
+
+--headers='"x-use-cache":"false", "x-wait-for-model":"true"'
