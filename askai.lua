@@ -2,7 +2,7 @@
 local nfo = Info { _filename or ...,
   name        = "Ask AI";
   description = "bring ChatGPT to Far";
-  version     = "1.6"; --https://semver.org/lang/ru/
+  version     = "1.7"; --https://semver.org/lang/ru/
   author      = "jd";
   url         = "https://forum.farmanager.com/viewtopic.php?t=13447";
   id          = "4618DD57-B187-441D-BFE2-B3C7CAD37B39";
