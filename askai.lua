@@ -219,11 +219,11 @@ local function askAI (prompt, cfgname)
         editor.SetTitle(Id, ("Fetching response [%s s]"):format(before1stToken))
         if hDlg then
           if stream then
-            hDlg:send(F.DM_SETTEXT, 2, "Streaming data..")
+            hDlg:SetText(2, "Streaming data..")
           end
           if _title then
             title = _title
-            hDlg:send(F.DM_SETTEXT, 1, title)
+            hDlg:SetText(1, title)
           end
         end
         started = true
@@ -255,7 +255,7 @@ local function askAI (prompt, cfgname)
     if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
     editor.UndoRedo(Id, F.EUR_END)
     editor.SaveFile(Id)
-    if hDlg then hDlg:send(F.DM_CLOSE) end
+    if hDlg then hDlg:Close() end
     title = (title and "["..title.."] " or "").."AI assistant response: "
     local status = total and total.." s" or "Error!"
     editor.SetTitle(Id, title..status)

@@ -87,15 +87,15 @@ local function populateHistory (self, hDlg, name, values, source)
   local added
   for i=#values,1,-1 do
     if not inHistory[values[i]] then
-      hDlg:send(F.DM_ADDHISTORY, param.idx, values[i])
+      hDlg:AddHistory(param.idx, values[i])
       added = true
     end
   end
   if added and history[1] then -- preserve lasthistory
-    hDlg:send(F.DM_ADDHISTORY, param.idx, history[#history])
+    hDlg:AddHistory(param.idx, history[#history])
   end
   if source=="init" and #history==0 then
-    hDlg:send(F.DM_SETTEXT, param.idx, values[1] or "")
+    hDlg:SetText(param.idx, values[1] or "")
   end
 end
 
@@ -167,9 +167,9 @@ local function main (cfg, prompt, context)
   II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(hDlg,idx)
       utils.clearSession(cfg.info, SESSION)
-      local item = hDlg:send(F.DM_GETDLGITEM, idx)
+      local item = hDlg:GetDlgItem(idx)
       item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
-      hDlg:send(F.DM_SETDLGITEM, idx, item)
+      hDlg:SetDlgItem(idx, item)
     end, name="btnClrSession"
   }
   local x2 = 18
@@ -178,7 +178,7 @@ local function main (cfg, prompt, context)
   }
   II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
     onclick=function (hDlg,idx)
-      hDlg:send(F.DM_ENABLE, idx+1, hDlg:send(F.DM_GETCHECK, idx)==0 and 0 or 1)
+      hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
     end, name="chkWrap"
   }
   II:add {F.DI_FIXEDIT, State.wrapAt, {-3, nil, -1},
@@ -203,11 +203,11 @@ local function main (cfg, prompt, context)
       items[#items+1] = env and env[subparam] and II.names[env[subparam]]
       for _,item in ipairs(items) do
         local pos = item.idx
-        hDlg:send(F.DM_SETTEXT, pos, "")
+        hDlg:SetText(pos, "")
         local History = makeHistoryName(nil, subparam..":"..text)
         II.names[item.name].History = History
-        hDlg:send(F.DM_SETHISTORY, pos, History)
-        hDlg:send(F.DM_EDITUNCHANGEDFLAG, pos, 1)
+        hDlg:SetHistory(pos, History)
+        hDlg:EditUnchangedFlag(pos, 1)
       end
     end
   end
@@ -258,7 +258,7 @@ local function main (cfg, prompt, context)
   II:add {F.DI_BUTTON, "Def&inition", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
     onclick=function(hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
-        hDlg:send(F.DM_CLOSE, idx)
+        hDlg:Close(idx)
         utils.synchro(Shared.askAI, prompt)
       end
     end,
@@ -272,7 +272,7 @@ local function main (cfg, prompt, context)
     onclick=function(hDlg)
       local preset = menu.choosePreset(II.names, cfg.info)
       if preset then
-        hDlg:send(F.DM_ENABLEREDRAW,0)
+        hDlg:EnableRedraw(0)
         local secondary = {}
         for k,v in pairs(preset) do
           local item = II.names[k]
@@ -282,9 +282,9 @@ local function main (cfg, prompt, context)
               v = _pcall(v)
               if not v then goto exitPresets end
             end
-            if v~=hDlg:send(F.DM_GETTEXT, item.idx) then
-              hDlg:send(F.DM_SETTEXT, item.idx, v)
-              hDlg:send(F.DM_ADDHISTORY, item.idx, v)
+            if v~=hDlg:GetText(item.idx) then
+              hDlg:SetText(item.idx, v)
+              hDlg:AddHistory(item.idx, v)
               processSetsHistories(hDlg, v, dependants)
             end
           else
@@ -292,7 +292,7 @@ local function main (cfg, prompt, context)
           end
         end
         for item,v in pairs(secondary) do
-          local exV = hDlg:send(F.DM_GETTEXT, item.idx)
+          local exV = hDlg:GetText(item.idx)
           local isFn = type(v)=="function"
           if isFn then
             v = _pcall(v, exV)
@@ -305,13 +305,13 @@ local function main (cfg, prompt, context)
           end
           local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
           if isHidden or isFn or exV=="" or exV:match" env variable!$" then
-            hDlg:send(F.DM_SETTEXT, item.idx, v)
-            hDlg:send(F.DM_ADDHISTORY, item.idx, v)
+            hDlg:SetText(item.idx, v)
+            hDlg:AddHistory(item.idx, v)
           end
           ::continue::
         end
         ::exitPresets::
-        hDlg:send(F.DM_ENABLEREDRAW,1)
+        hDlg:EnableRedraw(1)
       end
     end,
     name="btnPreset"
@@ -323,7 +323,7 @@ local function main (cfg, prompt, context)
         local param = cfg.params[i]
         local ii = II.names[param] and II.names[param].idx
         if ii then
-          local value = hDlg:send(F.DM_GETTEXT,ii)
+          local value = hDlg:GetText(ii)
           args[param] = value~="" and value or nil
         end
       end
@@ -335,13 +335,13 @@ local function main (cfg, prompt, context)
         if isFar3 then
           utils.synchro(function()
             local hLst = actl.GetWindowInfo().Id
-            hLst:send(F.DM_ENABLEREDRAW, 0)
-            hLst:send(F.DM_LISTSORT, 1)
-            local pos = hLst:send(F.DM_LISTFINDSTRING, 1, {Pattern=args.model or "", Flags=F.LIFIND_EXACTMATCH})
-            hLst:send(F.DM_LISTSETCURPOS, 1, {SelectPos=pos})
-            hLst:send(F.DM_ENABLEREDRAW, 1)
+            hLst:EnableRedraw(0)
+            hLst:ListSort(1)
+            local pos = hLst:ListFindString(1, {Pattern=args.model or "", Flags=F.LIFIND_EXACTMATCH})
+            hLst:ListSetCurPos(1, {SelectPos=pos})
+            hLst:EnableRedraw(1)
           end)
-          hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
+          hDlg:SetDropdownOpened(II.names.model.idx, 1)
           return
         end
         fromHistory = true
@@ -355,8 +355,8 @@ local function main (cfg, prompt, context)
       elseif model then
         local param = II.names[argName or "model"]
         if not param then return end
-        hDlg:send(F.DM_SETTEXT, param.idx, model)
-        hDlg:send(F.DM_SETFOCUS, param.idx)
+        hDlg:SetText(param.idx, model)
+        hDlg:SetFocus(param.idx)
       end
     end,
     name="btnModels"
@@ -380,7 +380,7 @@ local function main (cfg, prompt, context)
       if sets then
         for param, dependants in pairs(sets) do
           if II.names[param] then
-            local text = hDlg:send(F.DM_GETTEXT, II.names[param].idx)
+            local text = hDlg:GetText(II.names[param].idx)
             processSetsHistories(hDlg, text, dependants)
           end
         end
@@ -391,9 +391,9 @@ local function main (cfg, prompt, context)
         for param, dependants in pairs(sets) do
           if II[idx].name==param then
             local text = Param2[DATA]
-            hDlg:send(F.DM_ENABLEREDRAW,0)
+            hDlg:EnableRedraw(0)
             processSetsHistories(hDlg, text, dependants)
-            hDlg:send(F.DM_ENABLEREDRAW,1)
+            hDlg:EnableRedraw(1)
             return
           end
         end
@@ -417,17 +417,17 @@ local function main (cfg, prompt, context)
         return
       end
       if key==O.key then
-        hDlg:send(F.DM_CLOSE, II.names.btnSwitch.idx)
+        hDlg:Close(II.names.btnSwitch.idx)
       elseif key=="AltSubtract" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
       elseif key=="ShiftF4" then
         if II.names.headers then
-          local d_item = hDlg:send(F.DM_GETDLGITEM, II.names.headers.idx)
+          local d_item = hDlg:GetDlgItem(II.names.headers.idx)
           local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
           local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):",
                                        d_item[HISTORY], d_item[DATA])
           if headers then
-            hDlg:send(F.DM_SETTEXT, II.names.headers.idx, headers)
+            hDlg:SetText(II.names.headers.idx, headers)
           end
         end
       elseif key=="F5" then
@@ -435,7 +435,7 @@ local function main (cfg, prompt, context)
       elseif key=="ShiftF5" then
         local apibase = II.names.apibase or II.names.api_base or II.names.api or II.names.provider
         if apibase then
-          hDlg:send(F.DM_SETDROPDOWNOPENED, apibase.idx, 1)
+          hDlg:SetDropdownOpened(apibase.idx, 1)
         end
       elseif key=="F6" then
         hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
@@ -443,16 +443,16 @@ local function main (cfg, prompt, context)
         if isFar3 then
           hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
         elseif II.names.model then
-          hDlg:send(F.DM_SETDROPDOWNOPENED, II.names.model.idx, 1)
+          hDlg:SetDropdownOpened(II.names.model.idx, 1)
         end
       elseif key=="PgUp" then
-        hDlg:send(F.DM_SETFOCUS, II.names.prompt.idx)
+        hDlg:SetFocus(II.names.prompt.idx)
       elseif key=="Del" then -- restore Env var value if Del pressed in empty edit field
-        if II[idx].History and II[idx][DATA] and hDlg:send(F.DM_GETTEXT, idx)=="" then
-          hDlg:send(F.DM_ENABLEREDRAW, 0)
-          hDlg:send(F.DM_SETTEXT, idx, II[idx][DATA])
-          hDlg:send(F.DM_EDITUNCHANGEDFLAG, idx, 1)
-          hDlg:send(F.DM_ENABLEREDRAW, 1)
+        if II[idx].History and II[idx][DATA] and hDlg:GetText(idx)=="" then
+          hDlg:EnableRedraw(0)
+          hDlg:SetText(idx, II[idx][DATA])
+          hDlg:EditUnchangedFlag(idx, 1)
+          hDlg:EnableRedraw(1)
           return true
         end
       end
@@ -464,7 +464,7 @@ local function main (cfg, prompt, context)
       end
       local Next = II[idx+1]
       if Next and Next.History and Next[DATA] and #Next[DATA]>0
-         and Next[DATA]~=hDlg:send(F.DM_GETTEXT, idx+1) then
+         and Next[DATA]~=hDlg:GetText(idx+1) then
         local Title = Param2[1]
         if Title.Flags then
           Title.Flags = bit64.bor(Title.Flags, F.FCF_FG_ITALIC)
