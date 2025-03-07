@@ -109,8 +109,8 @@ local function getEnvValues (list)
 end
 
 local function isOpened (filename)
-  for i=1,far.AdvControl"ACTL_GETWINDOWCOUNT" do
-    if far.AdvControl("ACTL_GETWINDOWINFO", i).Name==filename then
+  for i=1,actl.GetWindowCount() do
+    if actl.GetWindowInfo(i).Name==filename then
       return true
     end
   end
