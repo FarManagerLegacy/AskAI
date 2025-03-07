@@ -3,19 +3,15 @@ apibase="https://chutes-{model-slug}.chutes.ai/v1"
 apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
 model="deepseek-ai/DeepSeek-R1"
 
-modelsMeta=function()
-  local ua = far.InputBox(nil, "Chutes preset", "Enter UserAgent:", "AskAI/chutes.preset/UserAgent")
-  if not ua then return end
-  local cf_clearance = far.InputBox(nil, "Chutes preset", "Enter cf_clearance cookie value:", "AskAI/chutes.preset/cf_clearance")
-  if not cf_clearance then return end
-
-  return ([[modelsFn: ->
+modelsMeta=[[modelsFn: ->
   acc = {}
   _, status_code, _, status_line = assert require"ssl.https".request
     url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
     headers:
-      "Cookie":"cf_clearance=%s"
-      "User-Agent":"%s"
+      "referer": "https://chutes.ai/app"
+      "sec-fetch-dest":"empty"
+      "sec-fetch-mode":"cors"
+      "sec-fetch-site":"same-origin"
     sink:require"ltn12".sink.table acc
   assert status_code==200, status_line
 
@@ -37,5 +33,4 @@ modelsMeta=function()
   models = (map _data 0).items
   models.keyId = "name"
   models
-]]):format(cf_clearance,ua)
-end
+]]
