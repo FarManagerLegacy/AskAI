@@ -166,7 +166,7 @@
 - [bito](https://bito.ai/) - настройка описана [тут](https://forum.farmanager.com/viewtopic.php?t=13283).  
   Недостаток: бесплатный лимит 75 сообщений в день, доступ только к BASIC-модели (gpt-4o-mini).
 - [gh models](https://github.com/github/gh-models) - GitHub Models extension.  
-  Инструкуции по установке см. на домашней странице.
+  Инструкции по установке см. на домашней странице.
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
 - [tgpt](https://github.com/aandrew-me/tgpt), [pytgpt](https://github.com/Simatwa/python-tgpt) - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
