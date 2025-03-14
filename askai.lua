@@ -375,7 +375,7 @@ if Macro then
       local n = 0
       for i=1, ei.TotalLines do
         local line = editor.GetString(id,i,0)
-        if line.StringText:match"%S[ -]$" then
+        if line.StringText:match"%S $" or line.StringText:match"%a%-$" then
           editor.SetString(id, i, line.StringText, "")
           n = n+1
         end
