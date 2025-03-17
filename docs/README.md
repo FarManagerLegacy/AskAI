@@ -205,7 +205,7 @@
   так и называющейся “*OpenAI-compatible*”.
 - Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [xAI](https://x.ai/grok) *Grok*, [AI21 labs](https://www.ai21.com) *Jamba*.  
   К этой же категории относится целый ряд провайдеров, предоставляющие доступ к OpenSource-моделям.
-- Провайдеры с собственным API, такие как [Google](https://ai.google.dev/) *Gemini*, [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere](https://cohere.com/command) *Command R+*, и т.д.  
+- Провайдеры с собственным API, такие как [Google](https://ai.google.dev/) *Gemini*, [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere](https://cohere.com/command) *Command*, и т.д.  
   Для поддержки в *AskAI* требуется или соответствующая “нативная” конфигурация, или специальный
   сервис-адаптер, который будет конвертировать API в совместисый с *OpenAI* формат.  
   Примеры таких сервисов: [openai-gemini](https://habr.com/ru/articles/798123/), [openai-github-copilot](https://habr.com/ru/articles/799215/), и др.
@@ -228,6 +228,7 @@
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
   - [cloudflare](https://developers.cloudflare.com/workers-ai/models/) (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`,
     `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b`)
+  - [cohere](https://cohere.com/command) (серии `command-*` и `c4ai-aya-*`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от Google
   - [github](https://github.com/marketplace/models/) (модели от *OpenAI*, *DeepSeek*, *Anthropic*, *Mistral*, *Meta*, *Cohere*, *AI21*, *Microsoft* и др.)
   - [groq](https://console.groq.com/playground) (модели до 90b)
