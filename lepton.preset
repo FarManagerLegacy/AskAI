@@ -11,7 +11,7 @@ model={
 --modelsMeta="none"
 modelsMeta=[[{
   endpoint: "/inferences?listable_in=inference"
-  dataFn: (data) -> data.apibase = "https://portal.lepton.ai/api"
+  apibase: "https://portal.lepton.ai/api"
   filterFn: (model) -> model.type=="chat" or model.type=="completion"
   nameFn: (model) -> model.api\match"//(.-)%.lepton"
 }]]

@@ -18,8 +18,7 @@ model={
 }
 
 modelsMeta=[[{
-  dataFn: (data) ->
-    data.apibase = "https://github.com/marketplace"
-    data.headers = "x-requested-with": "XMLHttpRequest" --, cookie: "user_session=..."
+  apibase: "https://github.com/marketplace"
+  headers: "x-requested-with": "XMLHttpRequest" --, cookie: "user_session=..."
   filterFn: (model) -> model.task=="chat-completion"
 }]]
