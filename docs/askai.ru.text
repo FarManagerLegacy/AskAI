@@ -312,6 +312,7 @@ __Кнопки__:
    - [anyai]\: контекст лимитирован
    - `tmrace`: лимит 50 сообщений в сутки
    - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
+   - [pollinations.ai] (OpenAI, Gemini, DeepSeek, Qwen, Mistral, Llama, [...](https://text.pollinations.ai/models))
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
    - [cloudflare] (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`,
@@ -374,6 +375,7 @@ __Кнопки__:
 [ncompass]: https://www.ncompass.tech/about
 [novita.ai]: https://novita.ai/model-api/product/llm-api
 [openrouter]: https://openrouter.ai/models?q=:free
+[pollinations.ai]: https://pollinations.ai/
 [sambanova]: https://cloud.sambanova.ai/pricing
 [siliconflow]: https://docs.siliconflow.cn/reference/chat-completions-1
 [together.ai]: https://api.together.xyz/models
