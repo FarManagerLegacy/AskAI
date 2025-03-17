@@ -365,7 +365,7 @@ __Кнопки__:
 [featherless]: https://featherless.ai/models
 [fireworks.ai]: https://fireworks.ai/models
 [gemini]: https://ai.google.dev/gemini-api/docs/openai
-[github]: https://github.com/marketplace/models/
+[github]: https://github.com/marketplace?type=models&task=chat-completion
 [grok]: https://console.x.ai/
 [groq]: https://console.groq.com/playground
 [huggingface]: https://huggingface.co/models?other=text-generation-inference&inference=warm
