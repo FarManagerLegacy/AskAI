@@ -1,6 +1,5 @@
 --https://developers.cloudflare.com/workers-ai/get-started/rest-api/#1-get-api-token-and-account-id
 --https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/
---https://developers.cloudflare.com/workers-ai/models/
 
 local id = win.Uuid"528DAB50-5BAE-4C28-99A4-C5605996B567"
 apibase=function()
@@ -16,9 +15,10 @@ end
 
 apikey=win.GetEnv"CF_API_TOKEN" or "set CF_API_TOKEN env variable!"
 
---https://developers.cloudflare.com/api/operations/workers-ai-search-model
+--https://developers.cloudflare.com/workers-ai/models/
 model="@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
+--https://developers.cloudflare.com/api/resources/ai/subresources/models/methods/list/
 modelsMeta=[[{
   endpoint: "/models/search?task=text+generation"
   dataFn: (data) -> data.apibase = data.apibase\match"^(.-)/v1$"
