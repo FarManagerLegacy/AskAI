@@ -2,7 +2,7 @@
 
 # required user setting
 BASE:=D:\repo\HelpDown-scripts
-PANDOC:=C:\Apps\pandoc\pandoc.exe
+#PANDOC:=C:\Apps\pandoc\pandoc.exe
 HTMLTOFARHELP:="$(FARPROFILE)\tools\HtmlToFarHelp\HtmlToFarHelp.exe"
 
 # plug base Makefile
@@ -20,6 +20,7 @@ README.md: askai.ru.md
 
 .PHONY: all post
 all: hlf forum README.md
+	@move *.hlf ..>nul
 
 post: askai.ru.forum
 	@env \
