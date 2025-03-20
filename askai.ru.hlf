@@ -131,7 +131,7 @@ $ #Установка#
  #•# §¦Для работы с сетью непосредственно, через “нативные” конфигурации, такие как #openai.lua.cfg#,
 необходимы следующие модули:
      #•# §¦#LuaSocket#, #LuaSec#: ~https://github.com/FarManagerLegacy/LuaBinaries/releases~@https://github.com/FarManagerLegacy/LuaBinaries/releases@
-       §¦и их зависимости: ~OpenSSL~@https://slproweb.com/products/Win32OpenSSL.html@, ~MS Visual C++ Redist~@https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170##latest-microsoft-visual-c-redistributable-version@.
+       §¦и их зависимости: ~OpenSSL~@https://github.com/FarManagerLegacy/LuaBinaries/blob/main/OpenSSL.md@, ~MS Visual C++ Redist~@https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170##latest-microsoft-visual-c-redistributable-version@.
      #•# §¦Практически любой JSON модуль, предоставляющий функции #encode#/#decode#.
          #•# §¦По умолчанию ищется модуль с одним из имён: #cjson#, #rsjson#, #ljson#, #dkjson#, #lunajson#, или просто ~json~@https://luarocks.org/search?q=json@
 (см. также ~lua-users wiki~@http://lua-users.org/wiki/JsonModules@).
