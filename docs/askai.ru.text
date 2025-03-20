@@ -172,7 +172,7 @@ __Кнопки__:
 [Настройка]: #Install
 [LuaShell]: https://forum.farmanager.com/viewtopic.php?f=15&t=10907
 [`io.popen`]: https://www.lua.org/manual/5.1/manual.html#pdf-io.popen
-[OpenSSL]: https://slproweb.com/products/Win32OpenSSL.html
+[OpenSSL]: https://github.com/FarManagerLegacy/LuaBinaries/blob/main/OpenSSL.md
 [MS Visual C++ Redist]: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
 [ScriptsBrowser]: https://forum.farmanager.com/viewtopic.php?f=15&t=10418
 [LuaBinaries]: https://github.com/FarManagerLegacy/LuaBinaries/
