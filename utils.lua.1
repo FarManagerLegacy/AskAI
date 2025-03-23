@@ -231,8 +231,8 @@ if json and pcall(require, "ssl.https") then
     return wrapCode(pretty_encode(data), "json")
   end
 
-  local function formatJsonMsg (response,getMsgText)
-    local msg = getMsgText(response)
+  local function formatJsonMsg (data,getMsgText)
+    local msg = getMsgText(data)
     if type(msg)=="string" then
       if select(2, msg:gsub("\n","\n"))>2 then
         msg = wrapCode(msg, "error")
@@ -241,16 +241,19 @@ if json and pcall(require, "ssl.https") then
     else
       msg = ""
     end
-    return msg..formatJson(response)
+    return msg..formatJson(data)
   end
 
-  local function formatErrMsg (statusline,errResponse,sep,getMsgText)
-    if type(errResponse)=="table" then
-      errResponse = formatJsonMsg(errResponse,getMsgText)
-    elseif type(errResponse)=="string" and statusline:find(errResponse,1,"plain") then
-      errResponse = nil
+  local function formatErrMsg (meta,sep,getMsgText)
+    local data = meta.data
+    if not data then
+      return meta.status_code or meta.statusline
+    elseif type(data)=="table" then
+      data = formatJsonMsg(data,getMsgText)
+    elseif meta.statusline:find(data,1,"plain") then
+      return meta.statusline
     end
-    return table.concat({statusline, errResponse}, sep)
+    return table.concat({meta.statusline, data}, sep)
   end
 
   export = {
@@ -301,7 +304,13 @@ local function _readLines (args, filter, field)
   end
 end
 
+local function assert (success, ...) -- to prevent "error object is not a string"
+  if success then return success, ... end
+  error(...==nil and "assertion failed!" or tostring(...), 2)
+end
+
 local mt = setmetatable({
+  assert=assert,
   _import=_import,
   _isWindows=_isWindows,
   _optional=_optional,
