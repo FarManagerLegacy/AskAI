@@ -9,9 +9,9 @@ modelsMeta=[[modelsFn: ->
     url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
     headers:
       "referer": "https://chutes.ai/app"
-      "sec-fetch-dest":"empty"
-      "sec-fetch-mode":"cors"
-      "sec-fetch-site":"same-origin"
+      "sec-fetch-dest": "empty"
+      "sec-fetch-mode": "cors"
+      "sec-fetch-site": "same-origin"
     sink:require"ltn12".sink.table acc
   assert status_code==200, status_line
 
@@ -23,14 +23,10 @@ modelsMeta=[[modelsFn: ->
     type(id)=="number" and data.data[id+1] or id
 
   map = (t) ->
-    mapped = {}
-    for k, key in pairs t
-      mapped[k] = _data key
-      if type(mapped[k])=="table"
-        mapped[k] = map mapped[k]
-    mapped
+    unless type(t)=="table"
+      return t
+    {k, map _data key for k,key in pairs t}
 
-  models = (map _data 0).items
-  models.keyId = "name"
-  models
+  with (map _data 0).items
+    .keyId = "name"
 ]]
