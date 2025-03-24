@@ -8,7 +8,6 @@ model={
   --not in the list
   "mythomax-l2-13b",
 }
---modelsMeta="none"
 modelsMeta=[[{
   endpoint: "/inferences?listable_in=inference"
   apibase: "https://portal.lepton.ai/api"
@@ -17,10 +16,3 @@ modelsMeta=[[{
 }]]
 
 --headers = 'Origin:"https://www.lepton.ai"'
-
---[[
-local id = win.Uuid"270C9C4D-F46A-4870-9494-6C2FD94C2492"
-headers=function()
-  return far.InputBox(id, "Lepton preset", "Enter headers:", "AskAI param headers:"..apibase)
-end
---]]
