@@ -309,10 +309,10 @@ __Кнопки__:
 конфигурации некоторых утилит (кроме тех, которые хранят эти значения в собственных файлах настроек).
 
 - Не требуют ключа (`apikey`) только эти пресеты:
-   - [anyai]\: контекст лимитирован
-   - `tmrace`: лимит 50 сообщений в сутки
-   - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
    - [pollinations.ai] (OpenAI, Gemini, DeepSeek, Qwen, Mistral, Llama, [...](https://text.pollinations.ai/models))
+   - `tmrace` (`gpt-4o-mini`): лимит 50 сообщений в сутки
+   - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
+   - `anyai`: (OpenSource модели небольшого размера): контекст лимитирован
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
    - [cloudflare] (в основном небольшие модели, но есть и `@cf/meta/llama-3.3-70b-instruct-fp8-fast`,
@@ -355,7 +355,6 @@ __Кнопки__:
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 
 [ai21]: https://www.ai21.com/jamba
-[anyai]: https://api.airforce/
 [cerebras]: https://cloud.cerebras.ai/
 [chutes]: https://chutes.ai/app
 [codestral]: https://console.mistral.ai/codestral
