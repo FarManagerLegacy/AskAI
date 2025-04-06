@@ -11,7 +11,7 @@ apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 --https://github.com/marketplace/models/azure-openai/gpt-4o/playground
 --https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
 model={
-  "gpt-4o", -- default
+  "gpt-4.1", -- default
 
   -- from https://models.inference.ai.azure.com/models
   "AI21-Jamba-Instruct",
@@ -21,4 +21,5 @@ modelsMeta=[[{
   apibase: "https://github.com/marketplace"
   headers: "x-requested-with": "XMLHttpRequest" --, cookie: "user_session=..."
   filterFn: (model) -> model.task=="chat-completion"
+  nameFn: (model) -> model.original_name
 }]]

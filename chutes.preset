@@ -6,7 +6,7 @@ model="deepseek-ai/DeepSeek-R1"
 modelsMeta=[[modelsFn: ->
   acc = {}
   _, status_code, _, status_line = assert require"ssl.https".request
-    url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=001"
+    url:"https://chutes.ai/app/__data.json?tab=vllm&x-sveltekit-invalidated=011"
     headers:
       "referer": "https://chutes.ai/app"
       "sec-fetch-dest": "empty"
@@ -17,7 +17,8 @@ modelsMeta=[[modelsFn: ->
 
   l = package.loaded
   json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
-  data = json.decode table.concat acc, "", 2
+  data = json.decode (table.concat acc, "", 2)\match "(.-)\n"
+  assert(data.id==1)
 
   _data = (id) ->
     type(id)=="number" and data.data[id+1] or id
