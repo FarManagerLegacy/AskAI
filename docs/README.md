@@ -184,8 +184,8 @@
 
 На данный момент наиболее сильные модели это:
 
-- `o3`, `o1` и `gpt-4o` от [OpenAI](https://platform.openai.com/);
-- `gemini-2.0-pro` от [Google](https://ai.google.dev/);
+- `o4`, `o3`, `o1`, `gpt-4.1` и `gpt-4o` (а также модели с суффиксами `-mini`) от [OpenAI](https://platform.openai.com/);
+- `gemini-2.5-pro` от [Google](https://ai.google.dev/);
 - `claude-3.7-sonnet` от [Anthropic](https://www.anthropic.com/);
 - `grok-3` от [xAI](https://x.ai/grok);
 
@@ -238,20 +238,20 @@
   - [chutes](https://chutes.ai/app) (DeepSeek, Llama, Qwen, …)
   - [huggingface](https://huggingface.co/models?other=text-generation-inference&inference=warm) (бесплатно в основном небольшие модели, но есть и такие как `Qwen2.5-72B-Instruct`,
     `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B`, `CodeLlama-34b-Instruct-hf`)
-  - [openrouter](https://openrouter.ai/models?q=:free) (доступны такие модели как `deepseek/deepseek-r1:free`, `meta-llama/llama-3.3-70b-instruct:free`,
-    ряд моделей от Google, а также множество опенсорсных моделей размером поменьше)
+  - [openrouter](https://openrouter.ai/models?q=:free) (бесплатно все модели с суффиксом `:free`, в том числе ряд моделей от Google,
+    серии `llama`, `deepseek`, `qwen`, и др. опенсорсные модели)
   - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно - небольшие модели)
   - [together.ai](https://api.together.xyz/models) (бесплатно - `meta-llama/Llama-3.3-70B-Instruct-Turbo-Free`, `meta-llama/Llama-Vision-Free`,
     `deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free`)
 - Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
   задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
   - [cerebras](https://cloud.cerebras.ai/) (`llama-3.3-70b`, `llama3.1-70b`, `llama3.1-8b`, `deepseek-r1-distill-llama-70b`)
-  - [featherless](https://featherless.ai/models) (бесплатно - небольшие модели)
+  - [featherless](https://featherless.ai/models) (бесплатно - `featherless-ai/Qwerky-72B`, а также огромное количество моделей \<15B)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
-  - [lepton](https://www.lepton.ai/playground) (всевозможные OpenSource-модели)
+  - [lepton](https://www.lepton.ai/playground) (`llama3-3-70`, …, `mixtral-8x7b` и др.)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
   - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial
-  - [deepbricks](https://deepbricks.ai/pricing) (o1/gpt-4o/3.5/claude-3.5-sonnet/llama): allows some usage with 0 balance
+  - [deepbricks](https://deepbricks.ai/pricing) (o1/o3/gpt-4o/3.5/claude-3.5-sonnet/llama): allows some usage with 0 balance
   - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
   - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, Qwen): \$10 credit for free trial
   - [ncompass](https://www.ncompass.tech/about) (OpenSource-модели: Llama, Qwen, …): \$1 free credits

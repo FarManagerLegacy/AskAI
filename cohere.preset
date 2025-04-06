@@ -9,4 +9,7 @@ model="command-a-03-2025"
 modelsMeta=[[{
   endpoint: "/models?endpoint=chat"
   apibase: "https://api.cohere.ai/v1"
+  filterFn_: (model)->
+    for v in *model.endpoints
+      return true if v=="chat"
 }]]

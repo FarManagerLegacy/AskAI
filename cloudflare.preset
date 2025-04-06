@@ -22,4 +22,9 @@ model="@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 modelsMeta=[[{
   endpoint: "/models/search?task=text+generation"
   dataFn: (data) -> data.apibase = data.apibase\match"^(.-)/v1$"
+  nameFn: (model) ->
+    model.properties = {property_id, value for {:property_id, :value} in *model.properties}
+    model.name
+  filterFn: (model) -> not model.properties.beta
+  -- more props: .async_queue, .lora, .function_calling
 }]]

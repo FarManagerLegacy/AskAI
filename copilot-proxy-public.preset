@@ -11,11 +11,13 @@ end
 apibase="https://copilot-demo.publicaffairs.workers.dev/v1"
 apikey=win.GetEnv"GHU_TOKEN" --or fromFile(win.GetEnv"USERPROFILE".."/.copilot-cli-access-token")
 model={
-  "gpt-4o-2024-08-06",
+  "gpt-4.1",
+  "gpt-4o",
   "gpt-4o-mini",
   "o1",
   "o1-mini",
   "o3-mini",
+  "o4-mini",
   "claude-3.7-sonnet",
   "claude-3.7-sonnet-thought",
 }

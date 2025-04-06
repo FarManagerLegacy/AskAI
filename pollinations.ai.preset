@@ -2,7 +2,7 @@
 --https://github.com/pollinations/pollinations/blob/master/APIDOCS.md
 
 apibase="https://text.pollinations.ai/openai"
-model="deepseek-reasoner"
+model="deepseek-reasoning-large"
 
 --https://text.pollinations.ai/models
 modelsMeta='apibase: "https://text.pollinations.ai"'
