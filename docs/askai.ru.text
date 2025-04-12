@@ -259,7 +259,7 @@ __Кнопки__:
 
 Из опенсорсных - все что побольше, например:
 
-- из серии [Llama] от __Meta AI__: `llama-3.1-405b`, `llama-3.2-90b`, `llama-3.3-70b`;
+- из серии [Llama] от __Meta AI__: `llama-4-maverick`, `llama-3.1-405b`, `llama-3.2-90b`, `llama-3.3-70b`;
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
   [DeepSeek], [Qwen], _Yi_ от [01.AI], [MiniMax].
 
@@ -333,7 +333,7 @@ __Кнопки__:
      `deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free`)
 - Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
   задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
-   - [cerebras] (`llama-3.3-70b`, `llama3.1-70b`, `llama3.1-8b`, `deepseek-r1-distill-llama-70b`)
+   - [cerebras] (`llama-4-scout-17b-16e-instruct`, `llama-3.3-70b`, ..., `deepseek-r1-distill-llama-70b`)
    - [featherless] (бесплатно - `featherless-ai/Qwerky-72B`, а также огромное количество моделей <15B)
    - [fireworks.ai] (всевозможные OpenSource-модели)
    - [lepton] (`llama3-3-70`, ..., `mixtral-8x7b` и др.)

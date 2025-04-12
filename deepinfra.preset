@@ -4,5 +4,5 @@
 
 apibase="https://api.deepinfra.com/v1/openai"
 apikey=win.GetEnv"DEEPINFRA_TOKEN" -- some anonymous usage allowed
-model="meta-llama/Meta-Llama-3.1-405B-Instruct"
+model="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
 
