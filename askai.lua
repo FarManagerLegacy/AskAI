@@ -228,6 +228,8 @@ local function askAI (prompt, cfgname)
         end
         started = true
       end
+      total = clockwatch()
+      editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
       for space,word in _words(chunk) do
         editor.InsertText(Id, space:gsub("\r\n","\n")
                                    :gsub("\r$","")) -- partial
@@ -235,8 +237,6 @@ local function askAI (prompt, cfgname)
           editor.InsertString(Id)
         end
         editor.InsertText(Id, word)
-        total = clockwatch()
-        editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
         if linewrap then
           local backticks = space:match"\n" and word:match("^```")
                          or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
