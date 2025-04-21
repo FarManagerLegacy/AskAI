@@ -212,7 +212,7 @@ local function askAI (prompt, cfgname)
     local code = false
     buf = ""
     local before1stToken,total,started,title
-    local _,err = pcall(processStream, function (chunk, _title)
+    local _,err = pcall(processStream, function (chunk, _title, nowrap)
       if not started then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
         before1stToken = clockwatch()
@@ -230,6 +230,9 @@ local function askAI (prompt, cfgname)
       end
       total = clockwatch()
       editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
+      if nowrap then
+        nowrap,chunk = chunk,nil
+      end
       for space,word in _words(chunk) do
         editor.InsertText(Id, space:gsub("\r\n","\n")
                                    :gsub("\r$","")) -- partial
@@ -242,6 +245,9 @@ local function askAI (prompt, cfgname)
                          or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
           if backticks then code = not code end
         end
+      end
+      if nowrap then
+        editor.InsertText(Id, nowrap)
       end
       if isFar3 then
         editor.Redraw(Id)
