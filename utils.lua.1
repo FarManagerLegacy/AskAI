@@ -1,5 +1,40 @@
 local Shared = ... -- State, _tmp, name, cfgpath + O (transit)
 
+local function mload (profile, key)
+  local s, err = mf.mload("jd", Shared.name)
+  if err then return nil, err end
+  assert(type(s)=="table", "Error in settings")
+  if not profile then return s end
+  s = s[profile]
+  if s and key then
+    assert(type(s)=="table", "Error in profile")
+    return s[key]
+  end
+  return s
+end
+
+local function msave (profile, key, value)
+  local s
+  if type(profile)~="string" then
+    assert(type(profile)=="table")
+    s = profile
+  else
+    s = mf.mload("jd", Shared.name) or {}
+    if type(key)~="string" then
+      assert(key==nil or type(key)=="table")
+      s[profile] = key
+    else
+      local p = s[assert(profile)]
+      if not p then
+        p = {}
+        s[profile] = p
+      end
+      p[key] = value
+    end
+  end
+  assert(mf.msave("jd", Shared.name, s), "Error writing settings")
+end
+
 local path_sep = package.config:sub(1,1)
 local function pathjoin (...) --same as win.JoinPath since Luafar 857
   local args = {...}
@@ -43,19 +78,6 @@ local function _optional (...)
   return key.." ".._quote(value)
 end
 
-local function readFile (pathname)
-  local fp = assert(io.open(pathname, "r"))
-  local content = fp:read()
-  fp:close()
-  return content
-end
-
-local function writeFile (pathname, content)
-  local fp = assert(io.open(pathname, "w"))
-  fp:write(content)
-  fp:close()
-end
-
 local todel = {}
 local function cleanup()
   for _, pathname in ipairs(todel) do
@@ -64,6 +86,11 @@ local function cleanup()
   todel = {}
 end
 
+local function writeFile (pathname, content)
+  local fp = assert(io.open(pathname, "w"))
+  fp:write(content)
+  fp:close()
+end
 local function _tmpfile (filename, content)
   local pathname = pathjoin(Shared._tmp, filename)
   writeFile(pathname, content)
@@ -458,9 +485,9 @@ local synchro = pcall(actl.Synchro, function()end) and actl.Synchro or function(
 end
 
 return {
+  mload=mload,
+  msave=msave,
   pathjoin=pathjoin,
-  readFile=readFile,
-  writeFile=writeFile,
   loadCfg=loadCfg,
   clearSession=clearSession,
   HelpTopic=HelpTopic,

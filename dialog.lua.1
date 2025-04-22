@@ -119,7 +119,7 @@ end
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
-local function main (cfg, prompt, context)
+local function main (profile, cfg, prompt, context)
   if State.isDlgOpened then return end
   cfg.params = {}
   for i=1,debug.getinfo(cfg.applyParamsFn, "u").nparams do
@@ -259,7 +259,7 @@ local function main (cfg, prompt, context)
     onclick=function(hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:Close(idx)
-        utils.synchro(Shared.askAI, prompt)
+        utils.synchro(Shared.askAI, prompt, profile)
       end
     end,
   }
@@ -528,7 +528,7 @@ local function main (cfg, prompt, context)
            linewrap,
            cfg.params.stream and State.useStream==1
   elseif II[res].name=="btnSwitch" then
-    menu.chooseCfg(prompt)
+    menu.chooseCfg(profile,prompt)
     return
   end
 end

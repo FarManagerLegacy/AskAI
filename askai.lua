@@ -121,20 +121,24 @@ local function _words (chunk)
   end
 end
 
-local menu, dialog, utils, default --fwd decl.
-local function getCfg (cfgname)
+local menu, dialog, utils --fwd decl.
+local function getCfg (profile, cfgname)
   if not cfgname then
-    local success, filename = pcall(utils.readFile, default)
-    local pathname = success and utils.pathjoin(cfgpath, filename)
+    local filename = utils.mload(profile, "cfgfile")
+    local pathname = filename and utils.pathjoin(cfgpath, filename)
     local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
     return cfg and cfg.reachable and cfg
   elseif type(cfgname)=="string" then
     if cfgname=="" then return end -- use chooseCfg menu
     local pathname
-    if cfgname:match"[\\/]" or cfgname:match"%.lua%.cfg$" then
+    if cfgname:match"[\\/]" then
       pathname = far.ConvertPath(cfgname)
     else
-      pathname = utils.pathjoin(cfgpath, cfgname..".lua.cfg")
+      local filename = cfgname
+      if not cfgname:match"%.lua%.cfg$" then
+        filename = filename..".lua.cfg"
+      end
+      pathname = utils.pathjoin(cfgpath,filename)
     end
     local cfg = utils.loadCfg(pathname)
     if not cfg.reachable then
@@ -166,10 +170,10 @@ local setBigCursor; if jit.os=="Windows" then
   end
 end
 
-local function askAI (prompt, cfgname)
-  local cfg = getCfg(cfgname) or cfgname
-  if not cfg then return menu.chooseCfg(prompt) end
-  local processStream, prompt, linewrap, stream = dialog(cfg, prompt, Editor.SelValue)
+local function askAI (prompt, profile, cfgname)
+  local cfg = getCfg(profile,cfgname) or cfgname
+  if not cfg then return menu.chooseCfg(profile,prompt) end
+  local processStream, prompt, linewrap, stream = dialog(profile, cfg, prompt, Editor.SelValue)
   if not processStream then return end
   utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
@@ -277,12 +281,11 @@ utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
-default = utils.pathjoin(cfgpath, "default")
 outputFilename = utils.pathjoin(_tmp, "Ask AI.md")
 
 menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, utils=utils, askAI=askAI,
-  cfgpath=cfgpath, default=default, name=nfo.name,
+  cfgpath=cfgpath, name=nfo.name,
 }
 dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
   State=State, O=O, utils=utils, menu=menu, askAI=askAI,
