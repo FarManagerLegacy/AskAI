@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, outputFilename, utils, askAI, cfgpath
+﻿local Shared = ... -- name, utils, askAI, _tmp
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
 local menu = Shared.menu
@@ -108,9 +108,9 @@ local function getEnvValues (list)
   return t
 end
 
-local function isOpened (filename)
+local function isOpened (pathname)
   for i=1,actl.GetWindowCount() do
-    if actl.GetWindowInfo(i).Name==filename then
+    if actl.GetWindowInfo(i).Name==pathname then
       return true
     end
   end
@@ -148,7 +148,7 @@ local function main (profile, cfg, prompt, context)
   II:ln() -- -- -- --
   II:add {F.DI_EDIT, prompt, {[X2]=-1},
     DIF_HOMEITEM +F.DIF_FOCUS
-    +F.DIF_HISTORY +F.DIF_USELASTHISTORY, History="AskAI prompt",
+    +F.DIF_HISTORY +F.DIF_USELASTHISTORY, History=("AskAI%s prompt"):format(profile~="default" and ":"..profile or ""),
     name="prompt"
   }
   II:ln() -- -- -- --
@@ -163,6 +163,7 @@ local function main (profile, cfg, prompt, context)
     sessionExists = win.GetFileAttr(cfg.info.sessionFile:format(SESSION))
   elseif cfg.info.historyName then
     sessionExists = State[cfg.info.historyName]
+    sessionExists = sessionExists and next(sessionExists)
   end
   II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(hDlg,idx)
@@ -189,7 +190,8 @@ local function main (profile, cfg, prompt, context)
 
   local function makeHistoryName (param, name)
     name = name or cfg.info.histories and cfg.info.histories[param]
-    local history = "AskAI param "..(name or param)
+    local prefix = ("AskAI%s"):format(profile~="default" and ":"..profile or "")
+    local history = prefix.." param "..(name or param)
     if not (name or O.sharedParams[param]) then
       local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
       history = history.." - "..baseName
@@ -259,7 +261,7 @@ local function main (profile, cfg, prompt, context)
     onclick=function(hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:Close(idx)
-        utils.synchro(Shared.askAI, prompt, profile)
+        utils.synchro(Shared.askAI, prompt, profile, cfg.pathname)
       end
     end,
   }
@@ -494,7 +496,9 @@ local function main (profile, cfg, prompt, context)
     State.useStream = II.names.chkStream[SELECTED]
     State.useWrap = II.names.chkWrap[SELECTED]
     State.wrapAt = II.names.edtWrap[DATA]
-    if State.useSession==2 and not isOpened(Shared.outputFilename) then
+    local outputFilename = utils.pathjoin(Shared._tmp, ("Ask AI%s.md")
+                                          :format(profile=="default" and "" or "."..profile))
+    if State.useSession==2 and not isOpened(outputFilename) then
       utils.clearSession(cfg.info, SESSION)
     end
     if not cfg.params.prompt then
@@ -526,9 +530,10 @@ local function main (profile, cfg, prompt, context)
     return cfg.applyParamsFn(unpack(args,1,#cfg.params)),
            II.names.prompt[DATA],
            linewrap,
-           cfg.params.stream and State.useStream==1
+           cfg.params.stream and State.useStream==1,
+           outputFilename
   elseif II[res].name=="btnSwitch" then
-    menu.chooseCfg(profile,prompt)
+    menu.chooseCfg(profile, prompt, cfg.filename)
     return
   end
 end

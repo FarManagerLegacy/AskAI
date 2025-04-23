@@ -347,7 +347,7 @@ local mt = setmetatable({
   _readLines=_readLines,
   _tmpfile=_tmpfile,
 }, { __index=_G })
-local function loadCfg (pathname)
+local function loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
   local applyParamsFn, getModels = setfenv(fn, env)(export or Shared)
@@ -374,6 +374,7 @@ local function loadCfg (pathname)
     applyParamsFn = applyParamsFn,
     getModels = getModels,
     info = env,
+    filename = filename,
     pathname = pathname,
     reachable = isReachable(env.exe, pathname)
   }

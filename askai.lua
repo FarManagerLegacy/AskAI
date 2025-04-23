@@ -42,8 +42,6 @@ local F = far.Flags
 local cfgpath = (_filename or ...):match"^(.*)[\\/]"
 local _tmp = far.InMyConfig and far.InMyConfig() --luacheck: globals far.InMyConfig -- far2m
                              or win.GetEnv("FARLOCALPROFILE")
-local outputFilename --fwd decl.
-
 local State do
   local sh = sh or pcall(require,"sh") and require"sh" --LuaShell
   local _shared = sh and sh._shared or {}
@@ -65,7 +63,7 @@ local function progress (text, title)
   return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL +(title and 0 or F.FDLG_KEEPCONSOLETITLE))
 end
 
-local function openOutput (mode)
+local function openOutput (outputFilename, mode)
   local CP = 65001
   local curModal = bit64.band(actl.GetWindowInfo().Flags, F.WIF_MODAL)==F.WIF_MODAL
   local opened
@@ -126,21 +124,24 @@ local function getCfg (profile, cfgname)
   if not cfgname then
     local filename = utils.mload(profile, "cfgfile")
     local pathname = filename and utils.pathjoin(cfgpath, filename)
-    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname)
+    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname,filename)
     return cfg and cfg.reachable and cfg
   elseif type(cfgname)=="string" then
     if cfgname=="" then return end -- use chooseCfg menu
-    local pathname
+    local pathname, filename
     if cfgname:match"[\\/]" then
       pathname = far.ConvertPath(cfgname)
+      if string.sub(pathname,1,#cfgpath)==cfgpath then
+        filename = string.sub(pathname,#cfgpath+2)
+      end
     else
-      local filename = cfgname
+      filename = cfgname
       if not cfgname:match"%.lua%.cfg$" then
         filename = filename..".lua.cfg"
       end
       pathname = utils.pathjoin(cfgpath,filename)
     end
-    local cfg = utils.loadCfg(pathname)
+    local cfg = utils.loadCfg(pathname,filename)
     if not cfg.reachable then
       error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
     end
@@ -170,14 +171,17 @@ local setBigCursor; if jit.os=="Windows" then
   end
 end
 
+local lastOutputFilename --fwd decl.
 local function askAI (prompt, profile, cfgname)
+  profile = profile or "default"
   local cfg = getCfg(profile,cfgname) or cfgname
   if not cfg then return menu.chooseCfg(profile,prompt) end
-  local processStream, prompt, linewrap, stream = dialog(profile, cfg, prompt, Editor.SelValue)
+  local processStream, prompt, linewrap, stream, outputFilename = dialog(profile, cfg, prompt, Editor.SelValue)
   if not processStream then return end
   utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
+    lastOutputFilename = outputFilename
     local Id = wi.Id
     editor.UndoRedo(Id, F.EUR_BEGIN)
     local ei = editor.GetInfo(Id)
@@ -274,14 +278,13 @@ local function askAI (prompt, profile, cfgname)
     editor.SetTitle(Id, title..status)
   end)
 
-  openOutput()
+  openOutput(outputFilename)
 end
 
 utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
-outputFilename = utils.pathjoin(_tmp, "Ask AI.md")
 
 menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
   State=State, utils=utils, askAI=askAI,
@@ -289,10 +292,10 @@ menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
 }
 dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
   State=State, O=O, utils=utils, menu=menu, askAI=askAI,
-  name=nfo.name, outputFilename=outputFilename,
+  name=nfo.name, _tmp=_tmp,
 }
 
-nfo.config  = function () mf.acall(menu.chooseCfg) end;
+nfo.config  = function () mf.acall(menu.chooseCfg, "default") end;
 nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;
 nfo.execute = function () mf.acall(askAI) end;
 
@@ -305,12 +308,13 @@ if Macro then
       mf.acall(askAI)
     end;
   }
+  lastOutputFilename = utils.pathjoin(_tmp, "Ask AI.md") --default
   Macro { description=nfo.name..": reopen output";
     area="Common"; key=O.keyOutput or O.key..":Double";
     id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      openOutput("existing")
+      openOutput(lastOutputFilename, "existing")
     end;
   }
   Macro { description=nfo.name..": choose cfg";
@@ -318,7 +322,7 @@ if Macro then
     id="FD155A5E-3415-4A9A-BD91-1D7BA91097F0";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      mf.acall(menu.chooseCfg)
+      mf.acall(menu.chooseCfg, "default")
     end;
   }
   local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"
