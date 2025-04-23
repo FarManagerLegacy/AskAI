@@ -73,7 +73,10 @@ local function openOutput (mode)
     local wi = actl.GetWindowInfo(i)
     if wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename then
       opened = true
-      if curModal then editor.Quit(wi.Id) end
+      if curModal then
+        editor.SaveFile(wi.Id)
+        editor.Quit(wi.Id)
+      end
       break
     end
   end
