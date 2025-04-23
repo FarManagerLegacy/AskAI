@@ -388,6 +388,11 @@ local function main (profile, cfg, prompt, context)
           end
         end
       end
+      for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
+        if item.History then
+          hDlg:SetEditPosition(idx,{CurPos=1})
+        end
+      end
     elseif msg==F.DN_EDITCHANGE then
       local sets = cfg.info.sets
       if sets then
