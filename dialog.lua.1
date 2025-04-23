@@ -5,7 +5,7 @@ local menu = Shared.menu
 local O = Shared.O
 
 local F = far.Flags
-local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 -- far2m
+local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 --far2m
 local isFar3 = F.ACTL_GETFARMANAGERVERSION
 local newDlgInfo do --> begin of Dlg helper <-- v0.1
 local function norm (arg, base, align)
@@ -143,12 +143,13 @@ local function main (profile, cfg, prompt, context)
     HelpTopic=utils.HelpTopic"Dialog",
   }
   local II = newDlgInfo(data)
+  local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
   II:add {F.DI_EDIT, prompt, {[X2]=-1},
     DIF_HOMEITEM +F.DIF_FOCUS
-    +F.DIF_HISTORY +F.DIF_USELASTHISTORY, History=("AskAI%s prompt"):format(profile~="default" and ":"..profile or ""),
+    +F_HISTORY, History=("AskAI%s prompt"):format(profile~="default" and ":"..profile or ""),
     name="prompt"
   }
   II:ln() -- -- -- --
@@ -178,7 +179,7 @@ local function main (profile, cfg, prompt, context)
     name="chkStream"
   }
   II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
-    onclick=function (hDlg,idx)
+    onclick=function(hDlg,idx)
       hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
     end, name="chkWrap"
   }
@@ -204,12 +205,12 @@ local function main (profile, cfg, prompt, context)
       local items = {II.names[subparam]}
       items[#items+1] = env and env[subparam] and II.names[env[subparam]]
       for _,item in ipairs(items) do
-        local pos = item.idx
-        hDlg:SetText(pos, "")
+        local idx = item.idx
+        hDlg:SetText(idx, "")
         local History = makeHistoryName(nil, subparam..":"..text)
         II.names[item.name].History = History
-        hDlg:SetHistory(pos, History)
-        hDlg:EditUnchangedFlag(pos, 1)
+        hDlg:SetHistory(idx, History)
+        hDlg:EditUnchangedFlag(idx, 1)
       end
     end
   end
@@ -224,7 +225,7 @@ local function main (profile, cfg, prompt, context)
       local col2 = math.max(x2, param:len()+1)
       local visibility = cfg.info.hidden and cfg.info.hidden[param] and F.DIF_HIDDEN or F.DIF_NONE
       II:add {F.DI_TEXT, hk:iter(visibility==F.DIF_HIDDEN)..param, {"-1", [X2]=col2-1}, visibility}
-      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY + visibility,
+      II:add {F.DI_EDIT, nil, {col2, nil, -1}, F_HISTORY + visibility,
         History=makeHistoryName(param),
         name=param
       }
@@ -238,7 +239,7 @@ local function main (profile, cfg, prompt, context)
       local value = win.GetEnv(var)
       local col2 = math.max(x2, var:len()+1)
       II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
-      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F.DIF_HISTORY +F.DIF_USELASTHISTORY,
+      II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F_HISTORY,
         History=makeHistoryName(k),
         name=var
       }
@@ -391,7 +392,7 @@ local function main (profile, cfg, prompt, context)
       local sets = cfg.info.sets
       if sets then
         for param, dependants in pairs(sets) do
-          if II[idx].name==param then
+          if item.name==param then
             local text = Param2[DATA]
             hDlg:EnableRedraw(0)
             processSetsHistories(hDlg, text, dependants)
@@ -405,7 +406,7 @@ local function main (profile, cfg, prompt, context)
         item.onclick(hDlg,idx)
       end
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
-      local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName -- far2m
+      local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
       if key=="F3" and item.name=="chkUseSession" then
         if cfg.info.showSession then
@@ -450,16 +451,16 @@ local function main (profile, cfg, prompt, context)
       elseif key=="PgUp" then
         hDlg:SetFocus(II.names.prompt.idx)
       elseif key=="Del" then -- restore Env var value if Del pressed in empty edit field
-        if II[idx].History and II[idx][DATA] and hDlg:GetText(idx)=="" then
+        if item.History and item[DATA] and hDlg:GetText(idx)=="" then
           hDlg:EnableRedraw(0)
-          hDlg:SetText(idx, II[idx][DATA])
+          hDlg:SetText(idx, item[DATA])
           hDlg:EditUnchangedFlag(idx, 1)
           hDlg:EnableRedraw(1)
           return true
         end
       end
     elseif msg==F.DN_CTLCOLORDLGITEM then
-      if II[idx].isTitle then
+      if item.isTitle then
         local HiText = Param2[2]
         Param2[1] = HiText
         return Param2

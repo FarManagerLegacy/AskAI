@@ -123,7 +123,7 @@ local menu, dialog, utils --fwd decl.
 local function getCfg (profile, cfgname)
   if not cfgname then
     local filename = utils.mload(profile, "cfgfile")
-    local pathname = filename and utils.pathjoin(cfgpath, filename)
+    local pathname = filename and utils.pathjoin(cfgpath,filename)
     local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname,filename)
     return cfg and cfg.reachable and cfg
   elseif type(cfgname)=="string" then
@@ -149,7 +149,7 @@ local function getCfg (profile, cfgname)
   end
 end
 
-local setBigCursor; if jit.os=="Windows" then
+local setBigCursor; if jit and jit.os=="Windows" then
   local ffi = require"ffi"
   pcall(ffi.cdef, [[
   //https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str

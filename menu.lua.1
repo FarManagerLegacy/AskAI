@@ -8,7 +8,7 @@ F.FMENU_SHOWSINGLEBOX = F.FMENU_SHOWSINGLEBOX or 0
 
 local function toggleHidden (items)
   for _,item in ipairs(items) do
-    if item.hidden or item.hidden==false then
+    if item.hidden~=nil then
       item.hidden = not item.hidden
     end
   end
