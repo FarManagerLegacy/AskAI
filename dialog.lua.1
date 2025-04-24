@@ -83,6 +83,15 @@ local function main (profile, cfg, prompt, context)
   local II = newDlgInfo(data)
   local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
+
+  assert(loadfile(utils.pathjoin(Shared.cfgpath, "profiles.lua.1"))) {
+    II=II, utils=utils, cfg=cfg, name=Shared.name, profile=profile,
+    setProfile=function (self,name)
+      self.profile = name
+      profile = name
+    end
+  }
+
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
   II:add {F.DI_EDIT, prompt, {[X2]=-1},
@@ -430,7 +439,7 @@ local function main (profile, cfg, prompt, context)
         elseif II.model then
           hDlg:SetDropdownOpened(II.model.idx, 1)
         end
-      elseif key=="PgUp" then
+      elseif key=="PgUp" or key=="CtrlHome" then
         hDlg:SetFocus(II.prompt.idx)
       end
     end
@@ -493,7 +502,9 @@ local function main (profile, cfg, prompt, context)
   elseif II[res].name=="btnSwitch" then
     prompt = II.prompt[DATA]
     menu.chooseCfg(profile, prompt, cfg.filename)
-    return
+  elseif II[res].name=="profile" then
+    prompt = II.prompt[DATA]
+    Shared.askAI(prompt, profile) --switch profile
   end
 end
 
