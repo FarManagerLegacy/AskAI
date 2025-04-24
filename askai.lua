@@ -292,7 +292,7 @@ menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
 }
 dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
   State=State, O=O, utils=utils, menu=menu, askAI=askAI,
-  name=nfo.name, _tmp=_tmp,
+  cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
 nfo.config  = function () mf.acall(menu.chooseCfg, "default") end;

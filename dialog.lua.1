@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, utils, askAI, _tmp
+﻿local Shared = ... -- name, utils, askAI, _tmp, cfgpath
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
 local menu = Shared.menu
@@ -7,75 +7,14 @@ local O = Shared.O
 local F = far.Flags
 local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 --far2m
 local isFar3 = F.ACTL_GETFARMANAGERVERSION
-local newDlgInfo do --> begin of Dlg helper <-- v0.1
-local function norm (arg, base, align)
-  if not arg or arg==0 then
-    return base
-  elseif type(arg)=="string" then
-    return base + tonumber(arg)
-  end
-  return base + arg + (arg<0 and align or 0)
-end
-local function add (self,item)
-  item[6] = item[5] or item.Selected or item.ListItems or 0
-  item[7] = item.History
-  item[8] = item.Mask
-  item[9] = item[4] or item.Flags
-  item[10] = item[2] or item.Data
-  item[11] = item.MaxLength
-  item[12] = item.UserData
-  local c = item[3] or item.coords or {}
-  local coords = {}
-  coords[1] = norm(c[1], self.x0, self.width) -- X1
-  coords[2] = norm(c[2], self.y0+self.y)      -- Y1
-  coords[3] = norm(c[3], self.x0, self.width) -- X2
-  coords[4] = not c[4] and coords[2]          -- Y2==Y1
-           or norm(c[4], self.y0+self.y)
-  item[1] = item[1] or item.Type
-  for i=2,5 do item[i] = coords[i-1] end
-  local i = #self+1; item.idx = i; self[i] = item;
-  if i==1 and (item[1]==F.DI_SINGLEBOX or item[1]==F.DI_DOUBLEBOX) then
-    self.x0, self.y0, self.width = self.x0+2, self.y0+1, self.width-2*2 -- accomodate "working area" params
-  end
-  if item.name then
-    if self.names[item.name] then
-      far.Message("Duplicated item name: "..item.name, "Error in config", nil ,"lw")
-    else
-      self.names[item.name] = item
-    end
-  end
-  return i
-end
-function newDlgInfo (data)
-  data.Flags = data.Flags or 0
-  assert(type(data.Flags)=="number")
-  local function params (self) -- method; returns all arguments required for far.Dialog[Init]
-    self.dlgHeight = self.y0*2 + self.y+1
-    local item = self[1] -- 1st item
-    if item[1]==F.DI_SINGLEBOX or item[1]==F.DI_DOUBLEBOX then
-      item[5] = self.dlgHeight-self.y0 -- set Y2
-    end
-    return data.Guid,-1,-1, self.dlgWidth, self.dlgHeight, data.HelpTopic, self, data.Flags, data.DlgProc, data.Param
-  end
-  local function ln (self) -- method; "current" line++
-    self.y = self.y+1
-  end
-  local self = {add=add, ln=ln, names={}, params=params }
-  self.y = 0 -- offset - relative to y0
-  local small = bit64.band(data.Flags, F.FDLG_SMALLDIALOG)~=0
-  self.x0 = small and 0 or 3 -- working area start
-  self.y0 = small and 0 or 1 --
-  self.small = small
-  self.width = assert(data.width, "width is required")
-  self.dlgWidth = self.width + self.x0*2 -- width + margins
-  return self
-end
-end--> end of Dlg helper <--
-local X2, SELECTED, HISTORY, FLAGS, DATA = 3,6,7,9,10
+
+local newDlgInfo = assert(loadfile(utils.pathjoin(Shared.cfgpath, "DlgHelper.lua.1")))()
+local X2 = 3 -- coords indices
+local SELECTED, HISTORY, FLAGS, DATA = 6,7,9,10
 
 local function populateHistory (self, hDlg, name, values, source)
   if type(values)~="table" then values = {values} end
-  local param = self.names[name]
+  local param = self[name]
   if not param then return end
   local success, history = pcall(utils.readHistory, param.History)
   if not success then
@@ -166,7 +105,7 @@ local function main (profile, cfg, prompt, context)
     sessionExists = State[cfg.info.historyName]
     sessionExists = sessionExists and next(sessionExists)
   end
-  II:add {F.DI_BUTTON, "‹&-›", {12}, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
+  II:add {F.DI_BUTTON, "‹&-›", nil, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(hDlg,idx)
       utils.clearSession(cfg.info, SESSION)
       local item = hDlg:GetDlgItem(idx)
@@ -183,7 +122,7 @@ local function main (profile, cfg, prompt, context)
       hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
     end, name="chkWrap"
   }
-  II:add {F.DI_FIXEDIT, State.wrapAt, {-3, nil, -1},
+  II:add {F.DI_FIXEDIT, State.wrapAt, {[X2]=-1},
     (State.useWrap~=0 and 0 or F.DIF_DISABLE) +F.DIF_MASKEDIT, Mask="999",
     name="edtWrap"
   }
@@ -202,13 +141,13 @@ local function main (profile, cfg, prompt, context)
   local function processSetsHistories (hDlg, text, dependants)
     local env = cfg.info.env
     for _,subparam in ipairs(dependants) do
-      local items = {II.names[subparam]}
-      items[#items+1] = env and env[subparam] and II.names[env[subparam]]
+      local items = {II[subparam]}
+      items[#items+1] = env and env[subparam] and II[env[subparam]]
       for _,item in ipairs(items) do
         local idx = item.idx
         hDlg:SetText(idx, "")
         local History = makeHistoryName(nil, subparam..":"..text)
-        II.names[item.name].History = History
+        II[item.name].History = History
         hDlg:SetHistory(idx, History)
         hDlg:EditUnchangedFlag(idx, 1)
       end
@@ -273,12 +212,12 @@ local function main (profile, cfg, prompt, context)
   end
   II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
     onclick=function(hDlg)
-      local preset = menu.choosePreset(II.names, cfg.info)
+      local preset = menu.choosePreset(II, cfg.info)
       if preset then
         hDlg:EnableRedraw(0)
         local secondary = {}
         for k,v in pairs(preset) do
-          local item = II.names[k]
+          local item = II[k]
           local dependants = cfg.info.sets and cfg.info.sets[k]
           if dependants then
             if type(v)=="function" then
@@ -324,7 +263,7 @@ local function main (profile, cfg, prompt, context)
       local args = {}
       for i=1,#cfg.params do
         local param = cfg.params[i]
-        local ii = II.names[param] and II.names[param].idx
+        local ii = II[param] and II[param].idx
         if ii then
           local value = hDlg:GetText(ii)
           args[param] = value~="" and value or nil
@@ -334,7 +273,7 @@ local function main (profile, cfg, prompt, context)
       local SHIFT = 16 -- invert action (also for F6/ShiftF6)
       local invert = isFar3 and win.GetKeyState(SHIFT)
       if not cfg.getModels or (args.modelsMeta=="none" ~= invert) then
-        if not II.names.model then return end
+        if not II.model then return end
         if isFar3 then
           utils.synchro(function()
             local hLst = actl.GetWindowInfo().Id
@@ -344,19 +283,19 @@ local function main (profile, cfg, prompt, context)
             hLst:ListSetCurPos(1, {SelectPos=pos})
             hLst:EnableRedraw(1)
           end)
-          hDlg:SetDropdownOpened(II.names.model.idx, 1)
+          hDlg:SetDropdownOpened(II.model.idx, 1)
           return
         end
         fromHistory = true
         function getModels ()
-          return utils.readHistory(II.names.model.History)
+          return utils.readHistory(II.model.History)
         end
       end
       local success, model, argName = pcall(menu.chooseModel, getModels, args, fromHistory)
       if not success then
         far.Message(model, "Error fetching models", nil, "wl")
       elseif model then
-        local param = II.names[argName or "model"]
+        local param = II[argName or "model"]
         if not param then return end
         hDlg:SetText(param.idx, model)
         hDlg:SetFocus(param.idx)
@@ -382,8 +321,8 @@ local function main (profile, cfg, prompt, context)
       local sets = cfg.info.sets
       if sets then
         for param, dependants in pairs(sets) do
-          if II.names[param] then
-            local text = hDlg:GetText(II.names[param].idx)
+          if II[param] then
+            local text = hDlg:GetText(II[param].idx)
             processSetsHistories(hDlg, text, dependants)
           end
         end
@@ -425,36 +364,36 @@ local function main (profile, cfg, prompt, context)
         return
       end
       if key==O.key then
-        hDlg:Close(II.names.btnSwitch.idx)
+        hDlg:Close(II.btnSwitch.idx)
       elseif key=="AltSubtract" then
-        hDlg:send(F.DN_BTNCLICK, II.names.btnClrSession.idx)
+        hDlg:send(F.DN_BTNCLICK, II.btnClrSession.idx)
       elseif key=="ShiftF4" then
-        if II.names.headers then
-          local d_item = hDlg:GetDlgItem(II.names.headers.idx)
+        if II.headers then
+          local d_item = hDlg:GetDlgItem(II.headers.idx)
           local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
           local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):",
                                        d_item[HISTORY], d_item[DATA])
           if headers then
-            hDlg:SetText(II.names.headers.idx, headers)
+            hDlg:SetText(II.headers.idx, headers)
           end
         end
       elseif key=="F5" then
-        hDlg:send(F.DN_BTNCLICK, II.names.btnPreset.idx)
+        hDlg:send(F.DN_BTNCLICK, II.btnPreset.idx)
       elseif key=="ShiftF5" then
-        local apibase = II.names.apibase or II.names.api_base or II.names.api or II.names.provider
+        local apibase = II.apibase or II.api_base or II.api or II.provider
         if apibase then
           hDlg:SetDropdownOpened(apibase.idx, 1)
         end
       elseif key=="F6" then
-        hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
+        hDlg:send(F.DN_BTNCLICK, II.btnModels.idx)
       elseif key=="ShiftF6" then
         if isFar3 then
-          hDlg:send(F.DN_BTNCLICK, II.names.btnModels.idx)
-        elseif II.names.model then
-          hDlg:SetDropdownOpened(II.names.model.idx, 1)
+          hDlg:send(F.DN_BTNCLICK, II.btnModels.idx)
+        elseif II.model then
+          hDlg:SetDropdownOpened(II.model.idx, 1)
         end
       elseif key=="PgUp" then
-        hDlg:SetFocus(II.names.prompt.idx)
+        hDlg:SetFocus(II.prompt.idx)
       elseif key=="Del" then -- restore Env var value if Del pressed in empty edit field
         if item.History and item[DATA] and hDlg:GetText(idx)=="" then
           hDlg:EnableRedraw(0)
@@ -492,23 +431,23 @@ local function main (profile, cfg, prompt, context)
   if II[res].name=="btnGo" then
     if cfg.info.env then
       for _,var in pairs(cfg.info.env) do
-        local v = II.names[var][DATA]
+        local v = II[var][DATA]
         win.SetEnv(var, v~="" and v or nil)
       end
     end
     if canSession then
-      State.useSession = II.names.chkUseSession[SELECTED]
+      State.useSession = II.chkUseSession[SELECTED]
     end
-    State.useStream = II.names.chkStream[SELECTED]
-    State.useWrap = II.names.chkWrap[SELECTED]
-    State.wrapAt = II.names.edtWrap[DATA]
+    State.useStream = II.chkStream[SELECTED]
+    State.useWrap = II.chkWrap[SELECTED]
+    State.wrapAt = II.edtWrap[DATA]
     local outputFilename = utils.pathjoin(Shared._tmp, ("Ask AI%s.md")
                                           :format(profile=="default" and "" or "."..profile))
     if State.useSession==2 and not isOpened(outputFilename) then
       utils.clearSession(cfg.info, SESSION)
     end
     if not cfg.params.prompt then
-      local p = II.names.prompt[DATA]
+      local p = II.prompt[DATA]
       if context~="" then
         local n
         p,n = p:gsub("{{%input%}}", context)
@@ -526,15 +465,15 @@ local function main (profile, cfg, prompt, context)
     local args = {}
     for i=1,#cfg.params do
       local param = cfg.params[i]
-      local value = base[param]==nil and II.names[param][DATA] or base[param]
+      local value = base[param]==nil and II[param][DATA] or base[param]
       args[i] = value~="" and value or nil
     end
     if context~="" and not cfg.params.context then
       cfg.info._context = context
     end
-    local linewrap = ({[0]=nil, tonumber(II.names.edtWrap[DATA]), "dynamic"})[State.useWrap]
+    local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
     return cfg.applyParamsFn(unpack(args,1,#cfg.params)),
-           II.names.prompt[DATA],
+           II.prompt[DATA],
            linewrap,
            cfg.params.stream and State.useStream==1,
            outputFilename
