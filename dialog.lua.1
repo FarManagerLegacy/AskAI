@@ -30,7 +30,7 @@ local function add (self,item)
   coords[2] = norm(c[2], self.y0+self.y)      -- Y1
   coords[3] = norm(c[3], self.x0, self.width) -- X2
   coords[4] = not c[4] and coords[2]          -- Y2==Y1
-           or norm(self, c[4], self.y0+self.y)
+           or norm(c[4], self.y0+self.y)
   item[1] = item[1] or item.Type
   for i=2,5 do item[i] = coords[i-1] end
   local i = #self+1; item.idx = i; self[i] = item;
