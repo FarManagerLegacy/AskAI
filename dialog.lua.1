@@ -91,7 +91,13 @@ local function main (profile, cfg, prompt, context)
     name="prompt"
   }
   II:ln() -- -- -- --
-  II:add {F.DI_TEXT, cfg.info.name, {}, F.DIF_SEPARATOR +F.DIF_CENTERGROUP, isTitle=true}
+  II:add {F.DI_TEXT, cfg.info.name, {}, F.DIF_SEPARATOR +F.DIF_CENTERGROUP,
+    oncolor=function(_,_,_,Param2)
+      local HiText = Param2[2]
+      Param2[1] = HiText
+      return Param2
+    end
+  }
   II:ln() -- -- -- --
   II:add {F.DI_CHECKBOX, "&Session", nil, canSession and F.DIF_3STATE or F.DIF_DISABLE,
     canSession and State.useSession or 0,
@@ -185,6 +191,18 @@ local function main (profile, cfg, prompt, context)
     end
   end
   if cfg.info.env then
+    local function colorLabel (_,hDlg,idx,Param2)
+      local Next = II[idx+1][DATA]
+      if Next~="" and Next~=hDlg:GetText(idx+1) then
+        local Title = Param2[1]
+        if Title.Flags then
+          Title.Flags = bit64.bor(Title.Flags, F.FCF_FG_ITALIC)
+        else -- far2m
+          Param2[1] = bit64.bor(Param2[1], F.COMMON_LVB_REVERSE_VIDEO)
+        end
+        return Param2
+      end
+    end
     local function resetEnvValue (self,hDlg,idx,key)
       if key=="Del" then
         if self[DATA]~="" and hDlg:GetText(idx)=="" then
@@ -202,7 +220,9 @@ local function main (profile, cfg, prompt, context)
     for k,var in pairs(cfg.info.env) do
       local value = win.GetEnv(var)
       local col2 = math.max(x2, var:len()+1)
-      II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
+      II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1},
+        oncolor=colorLabel,
+      }
       II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F_HISTORY,
         History=makeHistoryName(k),
         onkey=resetEnvValue,
@@ -419,22 +439,7 @@ local function main (profile, cfg, prompt, context)
         hDlg:SetFocus(II.prompt.idx)
       end
     elseif msg==F.DN_CTLCOLORDLGITEM then
-      if item.isTitle then
-        local HiText = Param2[2]
-        Param2[1] = HiText
-        return Param2
-      end
-      local Next = II[idx+1]
-      if Next and Next.History and Next[DATA] and #Next[DATA]>0
-         and Next[DATA]~=hDlg:GetText(idx+1) then
-        local Title = Param2[1]
-        if Title.Flags then
-          Title.Flags = bit64.bor(Title.Flags, F.FCF_FG_ITALIC)
-        else -- far2m
-          Param2[1] = bit64.bor(Param2[1], F.COMMON_LVB_REVERSE_VIDEO)
-        end
-        return Param2
-      end
+      return run("oncolor",item,hDlg,idx,Param2)
     end
   end
 
