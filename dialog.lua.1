@@ -105,7 +105,7 @@ local function main (profile, cfg, prompt, context)
     sessionExists = sessionExists and next(sessionExists)
   end
   II:add {F.DI_BUTTON, "‹&-›", nil, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
-    onclick=function(hDlg,idx)
+    onclick=function(_,hDlg,idx)
       utils.clearSession(cfg.info, SESSION)
       local item = hDlg:GetDlgItem(idx)
       item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
@@ -117,7 +117,7 @@ local function main (profile, cfg, prompt, context)
     name="chkStream"
   }
   II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
-    onclick=function(hDlg,idx)
+    onclick=function(_,hDlg,idx)
       hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
     end, name="chkWrap"
   }
@@ -149,6 +149,7 @@ local function main (profile, cfg, prompt, context)
         II[item.name].History = History
         hDlg:SetHistory(idx, History)
         hDlg:EditUnchangedFlag(idx, 1)
+        item[DATA] = hDlg:GetText(idx)
       end
     end
   end
@@ -197,7 +198,7 @@ local function main (profile, cfg, prompt, context)
     }
   end
   II:add {F.DI_BUTTON, "Def&inition", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
-    onclick=function(hDlg,idx)
+    onclick=function(_,hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:Close(idx)
         utils.synchro(Shared.askAI, prompt, profile, cfg.pathname)
@@ -210,7 +211,7 @@ local function main (profile, cfg, prompt, context)
     far.Message(res,"Error in preset",nil,"wl")
   end
   II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
-    onclick=function(hDlg)
+    onclick=function(_,hDlg)
       local preset = menu.choosePreset(II, cfg.info)
       if preset then
         hDlg:EnableRedraw(0)
@@ -258,7 +259,7 @@ local function main (profile, cfg, prompt, context)
     name="btnPreset"
   }
   II:add {F.DI_BUTTON, "&Models - F6", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.getModels and 0 or F.DIF_DISABLE),
-    onclick=function(hDlg)
+    onclick=function(_,hDlg)
       local args = {}
       for i=1,#cfg.params do
         local param = cfg.params[i]
@@ -309,6 +310,12 @@ local function main (profile, cfg, prompt, context)
     name="btnGo"
   }
   data.DlgProc=function (hDlg,msg,idx,Param2)
+    local function run (name, ...)
+      local self = ...
+      if self[name] then
+        return self[name](...)
+      end
+    end
     local item = II[idx]
     if msg==F.DN_INITDIALOG then
       for param,list in pairs(cfg.info.predefined or {}) do
@@ -345,9 +352,7 @@ local function main (profile, cfg, prompt, context)
         end
       end
     elseif msg==F.DN_BTNCLICK then
-      if item.onclick then
-        item.onclick(hDlg,idx)
-      end
+      return run("onclick",item,hDlg,idx)
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
       local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
