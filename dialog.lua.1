@@ -95,6 +95,19 @@ local function main (profile, cfg, prompt, context)
   II:ln() -- -- -- --
   II:add {F.DI_CHECKBOX, "&Session", nil, canSession and F.DIF_3STATE or F.DIF_DISABLE,
     canSession and State.useSession or 0,
+    onkey=function(_,_,_,key)
+      if key=="F3" then
+        if cfg.info.showSession then
+          cfg.info.showSession()
+        elseif cfg.info.sessionFile then
+          local pathname = cfg.info.sessionFile:format(SESSION)
+          if win.GetFileAttr(pathname) then
+            viewer.Viewer(pathname)
+          end
+        end
+        return true
+      end
+    end,
     name="chkUseSession"
   }
   local sessionExists = cfg.info.clearSession
@@ -172,6 +185,18 @@ local function main (profile, cfg, prompt, context)
     end
   end
   if cfg.info.env then
+    local function resetEnvValue (self,hDlg,idx,key)
+      if key=="Del" then
+        if self[DATA]~="" and hDlg:GetText(idx)=="" then
+          hDlg:EnableRedraw(0)
+          hDlg:SetText(idx, self[DATA])
+          hDlg:EditUnchangedFlag(idx, 1)
+          hDlg:EnableRedraw(1)
+          return true
+        end
+        return false
+      end
+    end
     II:add {F.DI_TEXT, "Environment &variables", {[X2]=-1}, F.DIF_SEPARATOR +F.DIF_CENTERTEXT}
     II:ln() -- -- -- --
     for k,var in pairs(cfg.info.env) do
@@ -180,6 +205,7 @@ local function main (profile, cfg, prompt, context)
       II:add {F.DI_TEXT, hk:iter()..var, {"-1", [X2]=col2-1}}
       II:add {F.DI_EDIT, value or "", {col2, nil, -1}, F_HISTORY,
         History=makeHistoryName(k),
+        onkey=resetEnvValue,
         name=var
       }
       II:ln() -- -- -- --
@@ -356,16 +382,9 @@ local function main (profile, cfg, prompt, context)
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
       local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
-      if key=="F3" and item.name=="chkUseSession" then
-        if cfg.info.showSession then
-          cfg.info.showSession()
-        elseif cfg.info.sessionFile then
-          local pathname = cfg.info.sessionFile:format(SESSION)
-          if win.GetFileAttr(pathname) then
-            viewer.Viewer(pathname)
-          end
-        end
-        return
+      if idx~=-1 then
+        local ret = run("onkey",item,hDlg,idx,key)
+        if ret~=nil then return ret end
       end
       if key==O.key then
         hDlg:Close(II.btnSwitch.idx)
@@ -398,14 +417,6 @@ local function main (profile, cfg, prompt, context)
         end
       elseif key=="PgUp" then
         hDlg:SetFocus(II.prompt.idx)
-      elseif key=="Del" then -- restore Env var value if Del pressed in empty edit field
-        if item.History and item[DATA] and hDlg:GetText(idx)=="" then
-          hDlg:EnableRedraw(0)
-          hDlg:SetText(idx, item[DATA])
-          hDlg:EditUnchangedFlag(idx, 1)
-          hDlg:EnableRedraw(1)
-          return true
-        end
       end
     elseif msg==F.DN_CTLCOLORDLGITEM then
       if item.isTitle then
