@@ -173,7 +173,8 @@ local function main (profile, cfg, prompt, context)
     end
   end
 
-  local function processSetsDependants (self, hDlg, _, text)
+  local function processSetsDependants (self, hDlg, idx, text)
+    text = text or hDlg:GetText(idx)
     local dependants = cfg.info.sets[self.name]
     hDlg:EnableRedraw(0)
     processSetsHistories(hDlg, text, dependants)
@@ -192,6 +193,7 @@ local function main (profile, cfg, prompt, context)
       local dependants = cfg.info.sets and cfg.info.sets[param]
       II:add {F.DI_EDIT, nil, {col2, nil, -1}, F_HISTORY + visibility,
         History=makeHistoryName(param),
+        oninit=dependants and processSetsDependants,
         onedit=dependants and processSetsDependants,
         name=param
       }
@@ -378,19 +380,11 @@ local function main (profile, cfg, prompt, context)
       for param,list in pairs(O.stdEnvs) do
         populateHistory(II[param], hDlg, getEnvValues(list))
       end
-      local sets = cfg.info.sets
-      if sets then
-        for param, dependants in pairs(sets) do
-          if II[param] then
-            local text = hDlg:GetText(II[param].idx)
-            processSetsHistories(hDlg, text, dependants)
-          end
-        end
-      end
       for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
         if item.History then
           hDlg:SetEditPosition(idx,{CurPos=1})
         end
+        run("oninit",item,hDlg,idx)
       end
     elseif msg==F.DN_EDITCHANGE then
       return run("onedit", item, hDlg, idx, Param2[DATA])
