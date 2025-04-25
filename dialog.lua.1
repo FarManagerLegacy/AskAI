@@ -12,11 +12,10 @@ local newDlgInfo = assert(loadfile(utils.pathjoin(Shared.cfgpath, "DlgHelper.lua
 local X2 = 3 -- coords indices
 local SELECTED, HISTORY, FLAGS, DATA = 6,7,9,10
 
-local function populateHistory (self, hDlg, name, values, source)
+local function populateHistory (item, hDlg, values, source)
+  if not item then return end
   if type(values)~="table" then values = {values} end
-  local param = self[name]
-  if not param then return end
-  local success, history = pcall(utils.readHistory, param.History)
+  local success, history = pcall(utils.readHistory, item.History)
   if not success then
     far.Message(history, "Error", nil, "wl")
     return
@@ -26,15 +25,15 @@ local function populateHistory (self, hDlg, name, values, source)
   local added
   for i=#values,1,-1 do
     if not inHistory[values[i]] then
-      hDlg:AddHistory(param.idx, values[i])
+      hDlg:AddHistory(item.idx, values[i])
       added = true
     end
   end
   if added and history[1] then -- preserve lasthistory
-    hDlg:AddHistory(param.idx, history[#history])
+    hDlg:AddHistory(item.idx, history[#history])
   end
   if source=="init" and #history==0 then
-    hDlg:SetText(param.idx, values[1] or "")
+    hDlg:SetText(item.idx, values[1] or "")
   end
 end
 
@@ -241,7 +240,7 @@ local function main (profile, cfg, prompt, context)
             if not v then goto continue end
           end
           if type(v)=="table" then
-            populateHistory(II, hDlg, item.name, v)
+            populateHistory(item, hDlg, v)
             v = v[1]
             isFn = false
           end
@@ -313,10 +312,10 @@ local function main (profile, cfg, prompt, context)
     local item = II[idx]
     if msg==F.DN_INITDIALOG then
       for param,list in pairs(cfg.info.predefined or {}) do
-        populateHistory(II, hDlg, param, list, "init")
+        populateHistory(II[param], hDlg, list, "init")
       end
       for param,list in pairs(O.stdEnvs) do
-        populateHistory(II, hDlg, param, getEnvValues(list))
+        populateHistory(II[param], hDlg, getEnvValues(list))
       end
       local sets = cfg.info.sets
       if sets then
