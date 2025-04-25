@@ -173,6 +173,12 @@ local function main (profile, cfg, prompt, context)
     end
   end
 
+  local function processSetsDependants (self, hDlg, _, text)
+    local dependants = cfg.info.sets[self.name]
+    hDlg:EnableRedraw(0)
+    processSetsHistories(hDlg, text, dependants)
+    hDlg:EnableRedraw(1)
+  end
   local hk = utils.HK.new("")
   for _,param in ipairs(cfg.params) do
     if not ({context=1, prompt=1, session=1, stream=1})[param] then
@@ -183,8 +189,10 @@ local function main (profile, cfg, prompt, context)
       local col2 = math.max(x2, param:len()+1)
       local visibility = cfg.info.hidden and cfg.info.hidden[param] and F.DIF_HIDDEN or F.DIF_NONE
       II:add {F.DI_TEXT, hk:iter(visibility==F.DIF_HIDDEN)..param, {"-1", [X2]=col2-1}, visibility}
+      local dependants = cfg.info.sets and cfg.info.sets[param]
       II:add {F.DI_EDIT, nil, {col2, nil, -1}, F_HISTORY + visibility,
         History=makeHistoryName(param),
+        onedit=dependants and processSetsDependants,
         name=param
       }
       if visibility~=F.DIF_HIDDEN then II:ln() end -- -- -- --
@@ -385,18 +393,7 @@ local function main (profile, cfg, prompt, context)
         end
       end
     elseif msg==F.DN_EDITCHANGE then
-      local sets = cfg.info.sets
-      if sets then
-        for param, dependants in pairs(sets) do
-          if item.name==param then
-            local text = Param2[DATA]
-            hDlg:EnableRedraw(0)
-            processSetsHistories(hDlg, text, dependants)
-            hDlg:EnableRedraw(1)
-            return
-          end
-        end
-      end
+      return run("onedit", item, hDlg, idx, Param2[DATA])
     elseif msg==F.DN_BTNCLICK then
       return run("onclick",item,hDlg,idx)
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
