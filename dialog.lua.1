@@ -386,10 +386,12 @@ local function main (profile, cfg, prompt, context)
         end
         run("oninit",item,hDlg,idx)
       end
-    elseif msg==F.DN_EDITCHANGE then
-      return run("onedit", item, hDlg, idx, Param2[DATA])
     elseif msg==F.DN_BTNCLICK then
       return run("onclick",item,hDlg,idx)
+    elseif msg==F.DN_CTLCOLORDLGITEM then
+      return run("oncolor",item,hDlg,idx,Param2)
+    elseif msg==F.DN_EDITCHANGE then
+      return run("onedit", item, hDlg, idx, Param2[DATA])
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
       local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
@@ -429,8 +431,6 @@ local function main (profile, cfg, prompt, context)
       elseif key=="PgUp" then
         hDlg:SetFocus(II.prompt.idx)
       end
-    elseif msg==F.DN_CTLCOLORDLGITEM then
-      return run("oncolor",item,hDlg,idx,Param2)
     end
   end
 
