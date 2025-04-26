@@ -365,6 +365,36 @@ local function main (profile, cfg, prompt, context)
   II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
     name="btnGo"
   }
+
+  local function prepActions (Items)
+    local Keys,Exec = {},{}
+    for _,item in ipairs(Items) do
+      if item.keys then
+        for key, action in pairs(item.keys) do
+          if type(assert(action))=="string" then
+            item.keys[key] = assert(item[action])
+          end
+          Keys[#Keys+1] = item
+        end
+      end
+      if item.onexec then Exec[#Exec+1] = item end
+    end
+    return {
+      processKey=function(curitem,hDlg,idx,key)
+        for _,item in ipairs(Keys) do
+          local action = item.keys[key]
+          if action then
+            local ret = action(curitem,hDlg,idx,key)
+            if ret~=nil then
+              return ret
+            end
+          end
+        end
+      end
+    }
+  end
+  local acts = prepActions(II)
+
   data.DlgProc=function (hDlg,msg,idx,Param2)
     local function run (name, ...)
       local self = ...
@@ -395,8 +425,10 @@ local function main (profile, cfg, prompt, context)
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
       local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
+      local ret = acts.processKey(item,hDlg,idx,key)
+      if ret~=nil then return ret end
       if idx~=-1 then
-        local ret = run("onkey",item,hDlg,idx,key)
+        ret = run("onkey",item,hDlg,idx,key)
         if ret~=nil then return ret end
       end
       if key==O.key then
