@@ -261,58 +261,9 @@ local function main (profile, cfg, prompt, context)
       end
     end,
   }
-  local function _pcall (fn, ...)
-    local success, res = pcall(fn, ...)
-    if success then return res end
-    far.Message(res,"Error in preset",nil,"wl")
-  end
-  II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
-    onclick=function(_,hDlg)
-      local preset = menu.choosePreset(II, cfg.info)
-      if preset then
-        hDlg:EnableRedraw(0)
-        local secondary = {}
-        for k,v in pairs(preset) do
-          local item = II[k]
-          local dependants = cfg.info.sets and cfg.info.sets[k]
-          if dependants then
-            if type(v)=="function" then
-              v = _pcall(v)
-              if not v then goto exitPresets end
-            end
-            if v~=hDlg:GetText(item.idx) then
-              hDlg:SetText(item.idx, v)
-              hDlg:AddHistory(item.idx, v)
-              processSetsHistories(hDlg, v, dependants)
-            end
-          else
-            secondary[item] = v
-          end
-        end
-        for item,v in pairs(secondary) do
-          local exV = hDlg:GetText(item.idx)
-          local isFn = type(v)=="function"
-          if isFn then
-            v = _pcall(v, exV)
-            if not v then goto continue end
-          end
-          if type(v)=="table" then
-            populateHistory(item, hDlg, v)
-            v = v[1]
-            isFn = false
-          end
-          local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
-          if isHidden or isFn or exV=="" or exV:match" env variable!$" then
-            hDlg:SetText(item.idx, v)
-            hDlg:AddHistory(item.idx, v)
-          end
-          ::continue::
-        end
-        ::exitPresets::
-        hDlg:EnableRedraw(1)
-      end
-    end,
-    name="btnPreset"
+  assert(loadfile(utils.pathjoin(Shared.cfgpath, "presets.lua.1"))) {
+    II=II, utils=utils, cfg=cfg, name=Shared.name, State=State, cfgpath=Shared.cfgpath,
+    processSetsHistories=processSetsHistories, populateHistory=populateHistory,
   }
   II:add {F.DI_BUTTON, "&Models - F6", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.getModels and 0 or F.DIF_DISABLE),
     onclick=function(_,hDlg)
