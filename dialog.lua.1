@@ -422,6 +422,18 @@ local function main (profile, cfg, prompt, context)
       return run("oncolor",item,hDlg,idx,Param2)
     elseif msg==F.DN_EDITCHANGE then
       return run("onedit", item, hDlg, idx, Param2[DATA])
+    elseif msg==F.DN_GOTFOCUS or msg==F.DN_KILLFOCUS then
+      return run("onfocus", item, hDlg, idx, msg==F.DN_GOTFOCUS)
+    elseif msg==F.DN_HELP then
+      return run("onhelp", item, hDlg, idx, Param2)
+    elseif msg==F.DN_CLOSE then
+      for pos,self in ipairs(II) do
+        if self.onclose then
+          if self:onclose(hDlg,pos,item)==false then
+            return false
+          end
+        end
+      end
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
       local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
       local key = KeyToName(Param2)
