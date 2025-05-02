@@ -418,7 +418,7 @@ function HK.new (fmt)
   return setmetatable({ i=0, fmt=fmt, spc=string.rep(" ",fmt:len()+1) }, _hkmt)
 end
 
-local readHistory
+local readHistory, cleanHistory
 if far.CreateSettings then
   function readHistory (name)
     --https://forum.farmanager.com/viewtopic.php?t=13407
@@ -431,6 +431,15 @@ if far.CreateSettings then
       history[#history+1] = item.Name
     end
     return history
+  end
+  function cleanHistory (profile)
+    if pcall(require, "lsqlite3") then
+      local sqlite3  = require "lsqlite3"
+      local db,_,errmsg = sqlite3.open(pathjoin(win.GetEnv"FARLOCALPROFILE", "history.db"), sqlite3.OPEN_READWRITE)
+      if not db then return nil,errmsg end
+      db:exec(("DELETE FROM history WHERE kind = 3 AND key LIKE 'AskAI:%s %%';"):format(profile))
+      db:close()
+    end
   end
 else -- far2m
   local function splitLines (s,lines)
@@ -452,9 +461,9 @@ else -- far2m
     ["\\0"]="\0",
     ["\\\\"]="\\",
   }
+  local historypath = far.InMyConfig("history/dialogs.hst") --luacheck: globals far.InMyConfig
   function readHistory (name)
-    local fullpath = far.InMyConfig("history/dialogs.hst") --luacheck: globals far.InMyConfig
-    local file = assert(io.open(fullpath, "r"))
+    local file = assert(io.open(historypath, "r"))
     if file then
       local history = {}
       local section = "[SavedDialogHistory/"..name.."]"
@@ -474,6 +483,30 @@ else -- far2m
       file:close()
       return history
     end
+  end
+  function cleanHistory (profile)
+    local file,errmsg = io.open(historypath, "r")
+    if not file then return nil,errmsg end
+    local tmppath = far.InMyConfig("history/dialogs.hst.tmp") --luacheck: globals far.InMyConfig
+    local tmpfile,errmsg2 = io.open(tmppath, "w")
+    if not tmpfile then
+      file:close()
+      return nil,errmsg2
+    end
+    local section = "[SavedDialogHistory/AskAI:"..profile.." "
+    local len = #section
+    local skip
+    for line in file:lines() do
+      if string.sub(line,1,len)==section then
+        skip = true
+      elseif skip then
+        skip = #line~=0
+      else
+        tmpfile:write(line.."\n")
+      end
+    end
+    file:close(); tmpfile:close()
+    win.MoveFile(tmppath,historypath,"r")
   end
 end
 
@@ -496,5 +529,6 @@ return {
   synchro=synchro,
   open=open,
   readHistory=readHistory,
+  cleanHistory=cleanHistory,
   check=check,
 }

@@ -129,6 +129,10 @@ local function deleteProfile (self,hDlg,idx)
     table.remove(self.ListItems, curpos)
     settings[name] = nil
     utils.msave(settings)
+    local _, err = utils.cleanHistory(name)
+    if err then
+      far.Message(err, Shared.name, nil, "w")
+    end
     if switchToDefault then
       loadProfile(hDlg, idx, "default")
     end

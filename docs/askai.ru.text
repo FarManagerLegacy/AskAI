@@ -157,6 +157,9 @@ __Кнопки__:
     с созданием временных файлов, и перенаправлением их в стандартный ввод посредством команд shell.
   - В `%PATH%` должны быть __утилиты__, соответствующие имеющимся файлам __определений__ (\*.lua.cfg),
     см. раздел [Обзор утилит].
+- При работе с [профилями][профили], чтобы при удалении профиля очищалась и связанная с ним история,
+  опционально можно установить модуль [LuaSQLite3](https://lua.sqlite.org/),
+  который присутствует например в дистрибутиве плагина [Polygon].
 
 
 Настройка
@@ -179,6 +182,7 @@ __Кнопки__:
 [`dkjson`]: http://dkolf.de/dkjson-lua/
 [`json`]: https://luarocks.org/search?q=json
 [lua-users wiki]: http://lua-users.org/wiki/JsonModules
+[Polygon]: https://github.com/shmuz/far_plugins/releases?q=Polygon&expanded=true
 
 
 Меню выбора конфигурации {#UtilitiesMenu}
