@@ -81,7 +81,7 @@ local function main (profile, cfg, prompt, context)
     HelpTopic=utils.HelpTopic"Dialog",
   }
   local II = newDlgInfo(data)
-  local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY
+  local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
@@ -427,11 +427,18 @@ local function main (profile, cfg, prompt, context)
     elseif msg==F.DN_HELP then
       return run("onhelp", item, hDlg, idx, Param2)
     elseif msg==F.DN_CLOSE then
+      II.prompt[DATA] = hDlg:GetText(II.prompt.idx)
       for pos,self in ipairs(II) do
         if self.onclose then
           if self:onclose(hDlg,pos,item)==false then
             return false
           end
+        end
+      end
+      if item~=II.btnGo then return end
+      for pos,self in ipairs(II) do
+        if self.History then
+          hDlg:AddHistory(pos, hDlg:GetText(pos))
         end
       end
     elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
@@ -533,6 +540,7 @@ local function main (profile, cfg, prompt, context)
            cfg.params.stream and State.useStream==1,
            outputFilename
   elseif II[res].name=="btnSwitch" then
+    prompt = II.prompt[DATA]
     menu.chooseCfg(profile, prompt, cfg.filename)
     return
   end
