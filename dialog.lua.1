@@ -427,7 +427,7 @@ local function main (profile, cfg, prompt, context)
       local key = KeyToName(Param2)
       local ret = acts.processKey(item,hDlg,idx,key)
       if ret~=nil then return ret end
-      if idx~=-1 then
+      if item then
         ret = run("onkey",item,hDlg,idx,key)
         if ret~=nil then return ret end
       end
