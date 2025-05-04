@@ -7,6 +7,48 @@ local function changeHistoryProfile (historyName, profile)
   return historyName:gsub("^(AskAI)(:?%S*)","%1"..(profile~="default" and ":"..profile or ""))
 end
 
+local Id = win.Uuid"DF9BB829-3E76-47F3-9680-95327588111E"
+local HelpText = "Select from 'default' profile history"
+local function selectFromHistory (item,hDlg,idx)
+  if item.History then
+    local from = "default"
+    local hName = changeHistoryProfile(item.History, from)
+    local history = utils.readHistory(hName)
+    if history[1] then
+      local text = hDlg:GetText(idx)
+      local items = far.MakeMenuItems(unpack(history))
+      local curidx = #items
+      for i=#items,1,-1 do
+        if items[i].arg==text then
+          curidx = i
+          break
+        end
+      end
+      local ret = far.Menu({Title=hName, Bottom=HelpText, SelectIndex=curidx, Id=Id}, items)
+      if ret then
+        hDlg:EnableRedraw(0)
+        hDlg:SetText(idx, ret.arg)
+        local sets = Shared.cfg.info.sets
+        if sets and sets[item.name] then
+          for _,subparam in ipairs(sets[item.name]) do
+            local pos = II[subparam].idx
+            if hDlg:GetText(pos)=="" then
+              hName = changeHistoryProfile(II[subparam].History, from)
+              history = utils.readHistory(hName)
+              local text = history[#history] --newest
+              if text then
+                hDlg:SetText(pos,text)
+              end
+            end
+          end
+        end
+        hDlg:EnableRedraw(1)
+      end
+    end
+    return true
+  end
+end
+
 local function setHistories (hDlg, profile, opt)
   hDlg:EnableRedraw(0)
   for idx,item in ipairs(II) do
@@ -225,6 +267,12 @@ II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGH
   end,
 
   keys={
+    CtrlUp=function(...)
+      if opts.profile~="default" then
+        return selectFromHistory(...)
+      end
+    end,
+
     CtrlHome=function(item,hDlg,idx)
       if item~=II.profile then
         II.profile._from = idx
