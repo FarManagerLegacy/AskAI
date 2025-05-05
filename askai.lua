@@ -52,15 +52,6 @@ local State do
   end
 end
 
-
-local dialog --fwd decl.
-local function askAI (opts)
-  opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
-  opts.profile = opts.profile or "default"
-  opts.context = opts.context or Editor.SelValue
-  dialog(opts)
-end
-
 local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
@@ -68,10 +59,17 @@ local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) 
 
 local output = utils.load"output.lua.1" {utils=utils}
 
-dialog = utils.load"dialog.lua.1" {
-  State=State, O=O, utils=utils, askAI=askAI, output=output,
+local dialog = utils.load"dialog.lua.1" {
+  State=State, O=O, utils=utils, output=output,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
+
+local function askAI (opts)
+  opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
+  opts.profile = opts.profile or "default"
+  opts.context = opts.context or Editor.SelValue
+  dialog(opts)
+end
 
 nfo.config  = function () mf.acall(askAI, {cfg=""}) end;
 nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;

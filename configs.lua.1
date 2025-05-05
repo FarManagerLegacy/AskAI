@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, askAI, O
+﻿local Shared = ... -- name, dialog, O
 local State = Shared.State
 local utils = Shared.utils
 local cfgpath = Shared.cfgpath
@@ -435,7 +435,7 @@ local function chooseCfg (opts)
             utils.msave(opts.profile, "cfgfile", item.FileName)
           end
           opts.cfg = item.cfg
-          return Shared.askAI(opts)
+          return Shared.dialog(opts)
         end
       elseif bk=="CtrlH" then
         toggleHidden(items)
