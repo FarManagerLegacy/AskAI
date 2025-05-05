@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, utils, askAI, _tmp, cfgpath
+﻿local Shared = ... -- name, utils, askAI, _tmp, cfgpath, output
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
 local O = Shared.O
@@ -338,11 +338,14 @@ local function main (opts)
       cfg.info._context = context
     end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
-    return cfg.applyParamsFn(unpack(args,1,#cfg.params)),
-           II.prompt[DATA],
-           linewrap,
-           cfg.params.stream and State.useStream==1,
-           outputFilename
+    Shared.output (
+      outputFilename,
+      cfg.applyParamsFn(unpack(args,1,#cfg.params)),
+      II.prompt[DATA],
+      linewrap,
+      cfg.params.stream and State.useStream==1
+    )
+    State.lastOutputFilename = outputFilename
   elseif II[res].name=="btnSwitch" then
     opts.prompt = II.prompt[DATA]
     configs.chooseCfg(opts)

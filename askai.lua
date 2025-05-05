@@ -52,214 +52,24 @@ local State do
   end
 end
 
-local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
-local function progress (text, title)
-  local MINLEN = 22
-  local len = math.max(text:len(), title and title:len() or 0, MINLEN)
-  local items = {
-    {F.DI_SINGLEBOX,0,  0,len+4,3,0,0,0,F.DIF_NONE,        title},
-    {F.DI_TEXT,     0,  1,0,    1,0,0,0,F.DIF_CENTERGROUP, text},
-  }
-  return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL +(title and 0 or F.FDLG_KEEPCONSOLETITLE))
-end
 
-local function openOutput (outputFilename, mode)
-  local CP = 65001
-  local curModal = bit64.band(actl.GetWindowInfo().Flags, F.WIF_MODAL)==F.WIF_MODAL
-  local opened
-  for i=actl.GetWindowCount(),1,-1 do
-    local wi = actl.GetWindowInfo(i)
-    if wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename then
-      opened = true
-      if curModal then
-        editor.SaveFile(wi.Id)
-        editor.Quit(wi.Id)
-      end
-      break
-    end
-  end
-  if mode=="existing" then
-    if not (opened or win.GetFileAttr(outputFilename)) then
-      mf.beep(); return
-    end
-  elseif not opened then
-    win.DeleteFile(outputFilename)
-  end
-  local res
-  if not curModal then
-    local tryNotModal = F.EF_DISABLEHISTORY +F.EF_NONMODAL +F.EF_IMMEDIATERETURN +F.EF_OPENMODE_USEEXISTING
-    res = editor.Editor(outputFilename, nil, nil, nil, nil, nil, tryNotModal, nil, nil, CP)
-  end
-  if curModal or res==F.EEC_LOADING_INTERRUPTED then
-    editor.Editor(outputFilename, nil, nil, nil, nil, nil, F.EF_DISABLEHISTORY +F.EF_OPENMODE_NEWIFOPEN, nil, nil, CP)
-  end
-end
-
-local buf
-local function _words (chunk)
-  --if chunk=="" then return function() end end
-  if chunk then
-    buf = buf..chunk
-  end
-  local eof = not chunk
-  return function()
-    if buf=="" then return nil end
-    local space, word, other = string.match(buf, "^(%s*)(%S+%-)(.*)") --hyphen
-    if not word then
-      space, word, other = string.match(buf, "^(%s*)(%S+)(%s.*)")
-    end
-    if word then
-      buf = other
-      return space, word
-    elseif eof then
-      space, word = string.match(buf, "(%s*)(.*)") -- will always match
-      buf = ""
-      return space, word
-    end
-  end
-end
-
-local dialog, utils --fwd decl.
-
-local setBigCursor; if jit and jit.os=="Windows" then
-  local ffi = require"ffi"
-  pcall(ffi.cdef, [[
-  //https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str
-  typedef struct _CONSOLE_CURSOR_INFO {
-    DWORD dwSize;
-    BOOL  bVisible;
-  } CONSOLE_CURSOR_INFO, *PCONSOLE_CURSOR_INFO;
-  //https://learn.microsoft.com/en-us/windows/console/setconsolecursorinfo
-  BOOL SetConsoleCursorInfo(
-          HANDLE              hConsoleOutput,
-    const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo
-  );
-  ]])
-  local C = ffi.C
-  local hConsoleOutput = C.GetStdHandle(-11)
-  local ConsoleCursorInfo = ffi.new("CONSOLE_CURSOR_INFO",99,1)
-  function setBigCursor()
-    C.SetConsoleCursorInfo(hConsoleOutput, ConsoleCursorInfo)
-  end
-end
-
-local lastOutputFilename --fwd decl.
+local dialog --fwd decl.
 local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
   opts.context = opts.context or Editor.SelValue
-  local processStream, prompt, linewrap, stream, outputFilename = dialog(opts)
-  if not processStream then return end
-  utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
-    local wi = actl.GetWindowInfo()
-    assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
-    lastOutputFilename = outputFilename
-    local Id = wi.Id
-    editor.UndoRedo(Id, F.EUR_BEGIN)
-    local ei = editor.GetInfo(Id)
-    if linewrap=="dynamic" then
-      linewrap = ei.WindowSizeX - 5
-    end
-    local s = editor.GetString(Id, ei.TotalLines)
-    editor.SetPosition(Id, ei.TotalLines, s.StringLength+1)
-    local i = ei.TotalLines
-    if s.StringLength>0 then
-      editor.InsertString(Id)
-    end
-    if i>1 then
-      if string.len(editor.GetString(Id, i-1, 3))>0 then
-        editor.InsertString(Id)
-      end
-      editor.InsertString(Id)
-    end
-    local autowrap = bit64.band(ei.Options, F.EOPT_AUTOINDENT)~=0
-    if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 0) end
-    editor.InsertText(Id, "> "..prompt.."\n\n")
-    local modal = bit64.band(F.WIF_MODAL, wi.Flags)~=0
-    local hDlg = not modal and progress("Waiting for data..")
-    local isFar3 = F.ACTL_GETFARMANAGERVERSION
-    if isFar3 then
-      editor.Redraw(Id)
-      setBigCursor()
-    end
-    if modal then
-      far.Message("Waiting for data..", "", "", "")
-    end
-    editor.SetTitle(Id, "Fetching response...")
-
-    local start = Far.UpTime
-    local function clockwatch ()
-      return math.ceil((Far.UpTime-start)/100)/10
-    end
-
-    local code = false
-    buf = ""
-    local before1stToken,total,started,title
-    local _,err = pcall(processStream, function (chunk, _title, nowrap)
-      if not started then
-        repeat until not win.ExtractKeyEx() -- clean kbd buffer
-        before1stToken = clockwatch()
-        editor.SetTitle(Id, ("Fetching response [%s s]"):format(before1stToken))
-        if hDlg then
-          if stream then
-            hDlg:SetText(2, "Streaming data..")
-          end
-          if _title then
-            title = _title
-            hDlg:SetText(1, title)
-          end
-        end
-        started = true
-      end
-      total = clockwatch()
-      editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
-      if nowrap then
-        nowrap,chunk = chunk,nil
-      end
-      for space,word in _words(chunk) do
-        editor.InsertText(Id, space:gsub("\r\n","\n")
-                                   :gsub("\r$","")) -- partial
-        if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
-          editor.InsertString(Id)
-        end
-        editor.InsertText(Id, word)
-        if linewrap then
-          local backticks = space:match"\n" and word:match("^```")
-                         or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
-          if backticks then code = not code end
-        end
-      end
-      if nowrap then
-        editor.InsertText(Id, nowrap)
-      end
-      if isFar3 then
-        editor.Redraw(Id)
-        setBigCursor()
-      end
-    end)
-    editor.InsertString(Id)
-    if err and err~="interrupted" then
-      far.Message(err:gsub("\t", "   "), "Error", nil, "wl")
-    end
-    if autowrap then editor.SetParam(Id, F.ESPT_AUTOINDENT, 1) end
-    editor.UndoRedo(Id, F.EUR_END)
-    editor.SaveFile(Id)
-    if hDlg then hDlg:Close() end
-    title = (title and "["..title.."] " or "").."AI assistant response: "
-    local status = total and total.." s" or "Error!"
-    editor.SetTitle(Id, title..status)
-  end)
-
-  openOutput(outputFilename)
+  dialog(opts)
 end
 
-utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
+local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
+local output = utils.load"output.lua.1" {utils=utils}
+
 dialog = utils.load"dialog.lua.1" {
-  State=State, O=O, utils=utils, askAI=askAI,
+  State=State, O=O, utils=utils, askAI=askAI, output=output,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
@@ -276,13 +86,13 @@ if Macro then
       mf.acall(askAI)
     end;
   }
-  lastOutputFilename = utils.pathjoin(_tmp, "Ask AI.md") --default
+  State.lastOutputFilename = utils.pathjoin(_tmp, "Ask AI.md") --default
   Macro { description=nfo.name..": reopen output";
     area="Common"; key=O.keyOutput or O.key..":Double";
     id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      openOutput(lastOutputFilename, "existing")
+      output(State.lastOutputFilename)
     end;
   }
   Macro { description=nfo.name..": choose cfg";
