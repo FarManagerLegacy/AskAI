@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, utils, askAI, _tmp, cfgpath, output
+﻿local Shared = ... -- name, utils, _tmp, cfgpath, output
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
 local O = Shared.O
@@ -43,15 +43,11 @@ local function isOpened (pathname)
   end
 end
 
-local configs = utils.load"configs.lua.1" {
-  State=State, O=O, utils=utils, askAI=Shared.askAI,
-  cfgpath=Shared.cfgpath, name=Shared.name,
-}
-
+local configs --fwd decl.
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
-local function main (opts)
+local function dialog (opts)
   if State.isDlgOpened then return end
 
   local function fmtProfile (fmt)
@@ -267,7 +263,7 @@ local function main (opts)
     onclick=function(_,hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:Close(idx)
-        utils.synchro(Shared.askAI, opts)
+        utils.synchro(dialog, opts)
       end
     end,
   }
@@ -351,8 +347,13 @@ local function main (opts)
     configs.chooseCfg(opts)
   elseif II[res].name=="profile" then
     opts.prompt = II.prompt[DATA]
-    Shared.askAI(opts) --switch profile
+    dialog(opts) --switch profile
   end
 end
 
-return main
+configs = utils.load"configs.lua.1" {
+  State=State, O=O, utils=utils, dialog=dialog,
+  cfgpath=Shared.cfgpath, name=Shared.name,
+}
+
+return dialog
