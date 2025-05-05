@@ -1,0 +1,494 @@
+﻿local Shared = ... -- name, askAI, O
+local State = Shared.State
+local utils = Shared.utils
+local cfgpath = Shared.cfgpath
+local F = far.Flags
+
+local _isWindows = package.config:sub(1,1)=="\\"
+
+local expandEnv
+if _isWindows then
+  function expandEnv (path)
+    return (path:gsub("%%([%w_]-)%%", win.GetEnv))
+  end
+else
+  function expandEnv (path)
+    if path:sub(1,1)=="~" then
+      return win.GetEnv"HOME"..path:sub(2)
+    end
+    return path
+  end
+end
+
+local function _quote (str)
+  return '"'..str..'"'
+end
+
+local function _optional (...)
+  if select("#", ...)==1 then
+    return ... or ""
+  end
+  local key, value, arg = ...
+  if not value then return "" end
+  if arg then -- see bito.lua.cfg
+    if type(arg)=="function" then
+      value = arg(select(4, ...))
+    else--if arg~='"' then??
+      value = arg:format(value)
+    end
+  end
+  return key.." ".._quote(value)
+end
+
+local todel = {}
+local function cleanup()
+  for _, pathname in ipairs(todel) do
+    win.DeleteFile(pathname)
+  end
+  todel = {}
+end
+
+local function writeFile (pathname, content)
+  local fp = assert(io.open(pathname, "w"))
+  fp:write(content)
+  fp:close()
+end
+local function _tmpfile (filename, content)
+  local pathname = utils.pathjoin(Shared._tmp, filename)
+  writeFile(pathname, content)
+  table.insert(todel, pathname)
+  return '"'..pathname..'"'
+end
+
+local function _pipeOut (exe, context)
+  return function (args)
+    args[0] = _quote(exe)
+    local cmd = table.concat(args, " ", 0)
+    if context then -- env
+      cmd = (_isWindows and "type %s|" or "cat %s|"):format(_tmpfile("file.input", context))..cmd
+    end
+    return function (cb)
+      if _isWindows then cmd = _quote(cmd) end
+      local pipe = io.popen(cmd.." 2>&1", "r")
+      repeat
+        if utils.check"Esc" then break end
+        local chunk = pipe:read(5)
+        if not chunk then break end
+        while not chunk:isvalid() do --ensure valid utf-8
+          local extra = pipe:read(1)
+          if extra then chunk = chunk..extra; else break; end
+        end
+        cb(chunk)
+      until false
+      cb()
+      pipe:close()
+      cleanup()
+    end
+  end
+end
+
+if pcall(require, "piper") then
+  local STILL_ACTIVE = 259
+  local _shell = win.GetEnv"ComSpec".." /c"
+  function _pipeOut (exe, context)
+    return function (args)
+      args[0] = _quote(exe)
+      local cmd = table.concat(args, " ", 0)
+      return function (cb)
+        local prc = require"piper"(_shell.._quote(cmd), {input=context})
+        if not prc then return end
+        if prc.ExitCode==STILL_ACTIVE or prc.ExitCode==0 then
+          for chunk in prc.utf8chunks do
+            if utils.check"Esc" then break end
+            cb(chunk)
+          end
+          cb()
+        else -- debug
+          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all:gsub("\r\n","\n"), Shared.name, nil, "wl")
+        end
+        cleanup()
+      end
+    end
+  end
+end
+
+local function isReachable (fname, source)
+  if fname==nil or type(fname)=="boolean" then return fname end
+  local _type = type(fname)
+  if _type~="string" then
+    far.Message("exe: string or boolean expected, got ".._type, source, nil, "w")
+    return
+  end
+  if not _isWindows then
+    return 0==os.execute("which "..fname)
+  end
+  for ext in win.GetEnv("PATHEXT"):gmatch"%.[^;]+" do
+    --https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-searchpathw
+    local filename = win.SearchPath(nil,fname,ext)
+    if filename then
+      return not win.GetFileAttr(filename):find"d"
+    end
+  end
+end
+
+local open; do
+  if win.ShellExecute then
+    function open (url)
+      win.ShellExecute(nil,nil,url)
+    end
+  else
+    for _,fname in ipairs{"xdg-open","explorer.exe","open"} do
+      if 0==os.execute("which "..fname) then
+        function open (url)
+          os.execute(("%s '%s'"):format(fname,url))
+        end
+        break
+      end
+    end
+    open = open or function (url)
+      far.Message(url,"")
+    end
+  end
+end
+
+local json_module = Shared.O.json_module
+if not json_module then
+  for _,name in ipairs {"cjson", "rsjson", "ljson", "dkjson", "lunajson", "json"} do
+    if pcall(require, name) then json_module = name; break end
+  end
+end
+local json = json_module and require(json_module)
+local pretty_encode = json.encode
+
+local export
+if json and pcall(require, "ssl.https") then
+  if json_module=="dkjson" then
+    json = json.use_lpeg()
+    function pretty_encode (data)
+      return json.encode(data, {indent=true})
+    end
+  end
+  local _env = setmetatable({json=json},{__index=_G})
+  local _path = utils.pathjoin(Shared.cfgpath, "restapi.moon.1")
+  local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
+  local function getHistory (historyName)
+    State[historyName] = State[historyName] or {}
+    return State[historyName]
+  end
+  local function setHistory (historyName,t)
+    State[historyName] = t
+  end
+
+  local function boolean (str, default)
+    if type(str)=="number" then
+      return str==1
+    elseif type(str)=="boolean" then
+      return str
+    elseif str=="null" then
+      return nil
+    elseif str=="false" then
+      return false
+    else
+      return str=="true" or default
+    end
+  end
+  local function number (str)
+    return str and tonumber(str) or str
+  end
+  local function obj (str)
+    if type(str)=="string" then
+      local fn = require("moonscript").loadstring(str)
+      fn = fn or assert(loadstring("return "..str))
+      str = setfenv(fn,{})()
+    end
+    return str
+  end
+
+  local function wrapCode (code, codetype)
+    return ("```%s\n%s\n```"):format(codetype or "", code)
+  end
+
+  local function formatJson (data)
+    return wrapCode(pretty_encode(data), "json")
+  end
+
+  local function formatJsonMsg (data,getMsgText)
+    local msg = getMsgText(data)
+    if type(msg)=="string" then
+      if select(2, msg:gsub("\n","\n"))>2 then
+        msg = wrapCode(msg, "error")
+      end
+      msg = msg.."\n"
+    else
+      msg = ""
+    end
+    return msg..formatJson(data)
+  end
+
+  local function formatErrMsg (meta,sep,getMsgText)
+    local data = meta.data
+    if not data then
+      return meta.status_code or meta.statusline
+    elseif type(data)=="table" then
+      data = formatJsonMsg(data,getMsgText)
+    elseif meta.statusline:find(data,1,"plain") then
+      return meta.statusline
+    end
+    return table.concat({meta.statusline, data}, sep)
+  end
+
+  export = {
+    restapi=restapi,
+    getHistory=getHistory,
+    setHistory=setHistory,
+    boolean=boolean,
+    number=number,
+    obj=obj,
+    formatJson=formatJson,
+    formatJsonMsg=formatJsonMsg,
+    formatErrMsg=formatErrMsg,
+    check=utils.check,
+    json=json,
+    cfgpath=Shared.cfgpath, -- for presets-openai.lua.cfg
+    open=open,
+  }
+end
+
+local function _import (filename, env, ...)
+  local fn = utils.load(filename)
+  env = env or getfenv(2) -- parent _ENV
+  local name = env.name
+  local ret1,ret2 = setfenv(fn,env)(export or Shared, ...)
+  if name and name~=env.name then
+    env.name = ("%s [%s]"):format(name, env.name)
+  end
+  return ret1,ret2
+end
+
+local function _readLines (args, filter, field)
+  return function (data) -- getModels
+    local args = args --luacheck: ignore 432/args
+    if type(args)=="function" then
+      local success
+      success, args = pcall(args,data)
+      if not success then return nil, args end
+    end
+    local pipe,err = io.popen(args)
+    if not pipe then return nil, err end
+    local list = {}
+    for line in pipe:lines() do
+      table.insert(list, not filter and line or filter(line))
+    end
+    pipe:close()
+    return list, field
+  end
+end
+
+local function assert (success, ...) -- to prevent "error object is not a string"
+  if success then return success, ... end
+  error(...==nil and "assertion failed!" or tostring(...), 2)
+end
+
+local mt = setmetatable({
+  assert=assert,
+  _import=_import,
+  _isWindows=_isWindows,
+  _optional=_optional,
+  _pathjoin=utils.pathjoin,
+  _pipeOut=_pipeOut,
+  _quote=_quote,
+  _readLines=_readLines,
+  _tmpfile=_tmpfile,
+}, { __index=_G })
+local function loadCfg (pathname, filename)
+  local env = setmetatable({}, { __index=mt })
+  local fn = assert(loadfile(pathname))
+  local applyParamsFn, getModels = setfenv(fn, env)(export or Shared)
+  for _,param in ipairs{"config", "sessionFile"} do
+    if env[param] then
+      env[param] = expandEnv(env[param])
+    end
+  end
+  if env.historyName then
+    env.showSession = env.showSession or function () --todo
+      local session = Shared.State[env.historyName]
+      if session and next(session) then
+        require"le"(session)
+      end
+    end
+  end
+  if not env.exe then
+    env.url = "https://github.com/FarManagerLegacy/LuaBinaries"
+  end
+  if env.hidden then
+    for _,v in ipairs(env.hidden) do env.hidden[v] = true end
+  end
+  return {
+    applyParamsFn = applyParamsFn,
+    getModels = getModels,
+    info = env,
+    filename = filename,
+    pathname = pathname,
+    reachable = isReachable(env.exe, pathname)
+  }
+end
+
+local function clearSession (info, session)
+  if info.clearSession then
+    if type(info.clearSession)=="function" then
+      info.clearSession(session)
+    else
+      local cmd = info.clearSession:format(session)
+      win.system(cmd)
+    end
+  elseif info.sessionFile then
+    local pathname = info.sessionFile:format(session)
+    win.DeleteFile(pathname)
+  elseif info.historyName then
+    export.setHistory(info.historyName, nil)
+  end
+end
+
+local function toggleHidden (items)
+  for _,item in ipairs(items) do
+    if item.hidden~=nil then
+      item.hidden = not item.hidden
+    end
+  end
+end
+
+local function chooseCfg (opts)
+  if State.isDlgOpened then return end
+  local curcfgfile = type(opts.cfg)=="table" and opts.cfg.filename or opts.cfg
+  local items1,items2 = {visibleN=0}, {visibleN=0}
+  local empty = true
+  local hk = utils.HK.new(".")
+  far.RecursiveSearch(cfgpath, "*.lua.cfg>>D", function (file, pathname)
+    local success, cfg = pcall(loadCfg, pathname, file.FileName)
+    if not success then
+      far.Message(cfg,"Error loading "..file.FileName,nil,"wl")
+      return nil
+    end
+    empty = empty and not cfg.reachable
+    local items = type(cfg.info.exe)=="string" and items2 or items1
+    if cfg.reachable then items.visibleN = items.visibleN+1 end
+    table.insert(items, {
+      hidden = file.FileAttributes:find"h" or not cfg.reachable or nil,
+      grayed = not cfg.reachable,
+      selected = file.FileName==curcfgfile,
+      FileName = file.FileName,
+      pathname = pathname,
+      cfg = cfg,
+    })
+    return nil
+  end)
+  if #items1 + #items2 == 0 then
+    far.Message("No config found", Shared.name, nil ,"w")
+    return
+  end
+  local function sortFn (a, b)
+    return a.FileName:lower() < b.FileName:lower()
+  end
+  table.sort(items1, sortFn)
+  table.sort(items2, sortFn)
+  local items = items1
+  local notBothGroupsPresent = items1.visibleN==0 or items2.visibleN==0 or nil
+  table.insert(items, {separator=true, hidden=notBothGroupsPresent, grayed=notBothGroupsPresent})
+  for _,item in ipairs(items2) do
+    item.checked = utf8.char(0xf4b5) -- "" nf-oct-command_palette
+    table.insert(items, item)
+  end
+  for _,item in ipairs(items) do
+    if not item.separator then
+      item.text = hk:iter(item.hidden~=nil).." "..item.cfg.info.name
+    end
+  end
+  if empty then
+    toggleHidden(items)
+  end
+  --
+  local props = {
+    Title="Choose provider",
+    Bottom="F4, Alt+F4, Ctrl+H, Alt+F1, F1",
+    HelpTopic=utils.HelpTopic "UtilitiesMenu",
+    Id=win.Uuid("7EF7D50A-9CF2-4053-97E5-041C39DE1774"),
+  }
+  if opts.profile~="default" then
+    props.Title = props.Title.." - "..opts.profile
+  end
+  local bkeys = "Enter CtrlEnter F4 AltF4 CtrlH AltF1"
+  repeat
+    State.isDlgOpened = true
+    local item, pos = far.Menu(props, items, bkeys)
+    State.isDlgOpened = false
+    if item then
+      local bk = item.BreakKey
+      item = items[pos]
+      local info = item.cfg.info
+      if bk=="Enter" or bk=="CtrlEnter" or not bk then
+        if item.grayed then
+          if info.url then
+            open(info.url)
+          end
+        else
+          if bk~="CtrlEnter" then
+            utils.msave(opts.profile, "cfgfile", item.FileName)
+          end
+          opts.cfg = item.cfg
+          return Shared.askAI(opts)
+        end
+      elseif bk=="CtrlH" then
+        toggleHidden(items)
+      elseif bk=="F4" then
+        if info.config then
+          editor.Editor(info.config)
+        end
+      elseif bk=="AltF4" then
+        if F.EEC_MODIFIED==editor.Editor(item.pathname) then
+          opts.cfg = item.FileName
+          return chooseCfg(opts)
+        end
+      elseif bk=="AltF1" then
+        if info.url then
+          open(info.url)
+        end
+      end
+    end
+    props.SelectIndex = pos
+  until not item
+end
+
+local function getCfg (profile, cfgname)
+  if not cfgname then
+    local filename = utils.mload(profile, "cfgfile")
+    local pathname = filename and utils.pathjoin(cfgpath,filename)
+    local cfg = pathname and win.GetFileAttr(pathname) and loadCfg(pathname,filename)
+    return cfg and cfg.reachable and cfg
+  elseif type(cfgname)=="string" then
+    if cfgname=="" then return end -- use chooseCfg menu
+    local pathname, filename
+    if cfgname:match"[\\/]" then
+      pathname = far.ConvertPath(cfgname)
+      if string.sub(pathname,1,#cfgpath)==cfgpath then
+        filename = string.sub(pathname,#cfgpath+2)
+      end
+    else
+      filename = cfgname
+      if not cfgname:match"%.lua%.cfg$" then
+        filename = filename..".lua.cfg"
+      end
+      pathname = utils.pathjoin(cfgpath,filename)
+    end
+    local cfg = loadCfg(pathname,filename)
+    if not cfg.reachable then
+      error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
+    end
+    return cfg
+  end
+end
+
+return {
+  clearSession=clearSession,
+  chooseCfg=chooseCfg,
+  getCfg=getCfg,
+}

@@ -53,38 +53,8 @@ local function isOpened (pathname)
   end
 end
 
-local function getCfg (profile, cfgname)
-  local cfgpath = Shared.cfgpath
-  if not cfgname then
-    local filename = utils.mload(profile, "cfgfile")
-    local pathname = filename and utils.pathjoin(cfgpath,filename)
-    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname,filename)
-    return cfg and cfg.reachable and cfg
-  elseif type(cfgname)=="string" then
-    if cfgname=="" then return end -- use chooseCfg menu
-    local pathname, filename
-    if cfgname:match"[\\/]" then
-      pathname = far.ConvertPath(cfgname)
-      if string.sub(pathname,1,#cfgpath)==cfgpath then
-        filename = string.sub(pathname,#cfgpath+2)
-      end
-    else
-      filename = cfgname
-      if not cfgname:match"%.lua%.cfg$" then
-        filename = filename..".lua.cfg"
-      end
-      pathname = utils.pathjoin(cfgpath,filename)
-    end
-    local cfg = utils.loadCfg(pathname,filename)
-    if not cfg.reachable then
-      error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
-    end
-    return cfg
-  end
-end
-
-local menu = utils.load"menu.lua.1" {
-  State=State, utils=utils, askAI=askAI,
+local configs = utils.load"configs.lua.1" {
+  State=State, O=O, utils=utils, askAI=Shared.askAI,
   cfgpath=Shared.cfgpath, name=Shared.name,
 }
 
@@ -99,8 +69,8 @@ local function main (opts)
   end
 
   local cfg = opts.cfg
-  cfg = getCfg(opts.profile, cfg) or cfg
-  if not cfg or cfg=="" then return menu.chooseCfg(opts) end
+  cfg = configs.getCfg(opts.profile, cfg) or cfg
+  if not cfg or cfg=="" then return configs.chooseCfg(opts) end
   opts.cfg = cfg
   if not cfg.params then
     cfg.params = {}
@@ -175,7 +145,7 @@ local function main (opts)
   end
   II:add {F.DI_BUTTON, "‹&-›", nil, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(_,hDlg,idx)
-      utils.clearSession(cfg.info, SESSION)
+      configs.clearSession(cfg.info, SESSION)
       local item = hDlg:GetDlgItem(idx)
       item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
       hDlg:SetDlgItem(idx, item)
@@ -315,6 +285,9 @@ local function main (opts)
     II=II, utils=utils, cfg=cfg, name=Shared.name, State=State, cfgpath=Shared.cfgpath,
     processSetsHistories=processSetsHistories, populateHistory=populateHistory,
   }
+  local chooseModel = utils.load"menu.lua.1" {
+    HelpTopic=utils.HelpTopic"",
+  }
   II:add {F.DI_BUTTON, "&Models - F6", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +(cfg.getModels and 0 or F.DIF_DISABLE),
     onclick=function(_,hDlg)
       local args = {}
@@ -348,7 +321,7 @@ local function main (opts)
           return utils.readHistory(II.model.History)
         end
       end
-      local success, model, argName = pcall(menu.chooseModel, getModels, args, fromHistory)
+      local success, model, argName = pcall(chooseModel, getModels, args, fromHistory)
       if not success then
         far.Message(model, "Error fetching models", nil, "wl")
       elseif model then
@@ -507,7 +480,7 @@ local function main (opts)
     local outputFilename = utils.pathjoin(Shared._tmp, ("Ask AI%s.md")
                                           :format(fmtProfile".%s"))
     if State.useSession==2 and not isOpened(outputFilename) then
-      utils.clearSession(cfg.info, SESSION)
+      configs.clearSession(cfg.info, SESSION)
     end
     local context = opts.context
     if not cfg.params.prompt then
@@ -543,7 +516,7 @@ local function main (opts)
            outputFilename
   elseif II[res].name=="btnSwitch" then
     opts.prompt = II.prompt[DATA]
-    menu.chooseCfg(opts)
+    configs.chooseCfg(opts)
   elseif II[res].name=="profile" then
     opts.prompt = II.prompt[DATA]
     Shared.askAI(opts) --switch profile
