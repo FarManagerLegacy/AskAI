@@ -120,34 +120,6 @@ local function _words (chunk)
 end
 
 local menu, dialog, utils --fwd decl.
-local function getCfg (profile, cfgname)
-  if not cfgname then
-    local filename = utils.mload(profile, "cfgfile")
-    local pathname = filename and utils.pathjoin(cfgpath,filename)
-    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname,filename)
-    return cfg and cfg.reachable and cfg
-  elseif type(cfgname)=="string" then
-    if cfgname=="" then return end -- use chooseCfg menu
-    local pathname, filename
-    if cfgname:match"[\\/]" then
-      pathname = far.ConvertPath(cfgname)
-      if string.sub(pathname,1,#cfgpath)==cfgpath then
-        filename = string.sub(pathname,#cfgpath+2)
-      end
-    else
-      filename = cfgname
-      if not cfgname:match"%.lua%.cfg$" then
-        filename = filename..".lua.cfg"
-      end
-      pathname = utils.pathjoin(cfgpath,filename)
-    end
-    local cfg = utils.loadCfg(pathname,filename)
-    if not cfg.reachable then
-      error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
-    end
-    return cfg
-  end
-end
 
 local setBigCursor; if jit and jit.os=="Windows" then
   local ffi = require"ffi"
@@ -175,8 +147,6 @@ local lastOutputFilename --fwd decl.
 local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
-  opts.cfg = getCfg(opts.profile, opts.cfg) or opts.cfg
-  if not opts.cfg then return menu.chooseCfg(opts) end
   opts.context = opts.context or Editor.SelValue
   local processStream, prompt, linewrap, stream, outputFilename = dialog(opts)
   if not processStream then return end

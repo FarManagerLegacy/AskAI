@@ -54,6 +54,36 @@ local function isOpened (pathname)
   end
 end
 
+local function getCfg (profile, cfgname)
+  local cfgpath = Shared.cfgpath
+  if not cfgname then
+    local filename = utils.mload(profile, "cfgfile")
+    local pathname = filename and utils.pathjoin(cfgpath,filename)
+    local cfg = pathname and win.GetFileAttr(pathname) and utils.loadCfg(pathname,filename)
+    return cfg and cfg.reachable and cfg
+  elseif type(cfgname)=="string" then
+    if cfgname=="" then return end -- use chooseCfg menu
+    local pathname, filename
+    if cfgname:match"[\\/]" then
+      pathname = far.ConvertPath(cfgname)
+      if string.sub(pathname,1,#cfgpath)==cfgpath then
+        filename = string.sub(pathname,#cfgpath+2)
+      end
+    else
+      filename = cfgname
+      if not cfgname:match"%.lua%.cfg$" then
+        filename = filename..".lua.cfg"
+      end
+      pathname = utils.pathjoin(cfgpath,filename)
+    end
+    local cfg = utils.loadCfg(pathname,filename)
+    if not cfg.reachable then
+      error(("%s: dependencies not found\nSee help and %s"):format(cfg.info.name, cfg.info.url))
+    end
+    return cfg
+  end
+end
+
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
@@ -65,6 +95,9 @@ local function main (opts)
   end
 
   local cfg = opts.cfg
+  cfg = getCfg(opts.profile, cfg) or cfg
+  if not cfg then return menu.chooseCfg(opts) end
+  opts.cfg = cfg
   if not cfg.params then
     cfg.params = {}
     for i=1,debug.getinfo(cfg.applyParamsFn, "u").nparams do
