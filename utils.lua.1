@@ -1,4 +1,4 @@
-local Shared = ... -- State, _tmp, name, cfgpath + O (transit)
+local Shared = ... -- State, _tmp, name, cfgpath, O
 
 local function mload (profile, key)
   local s, err = mf.mload("jd", Shared.name)
@@ -42,9 +42,15 @@ local function pathjoin (...) --same as win.JoinPath since Luafar 857
   return table.concat(args, path_sep)
 end
 
+local loaded = {}
 local function load (filename)
+  if not Shared.O.debug and loaded[filename] then
+    return loaded[filename]
+  end
   local pathname = pathjoin(Shared.cfgpath, filename)
-  return assert(loadfile(pathname))
+  local fn = assert(loadfile(pathname))
+  loaded[filename] = fn
+  return fn
 end
 
 local function HelpTopic (name)

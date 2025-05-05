@@ -32,6 +32,8 @@ local nfo = Info { _filename or ...,
     -- skip autodetection and use specified json module
     -- the module must provide `encode`, `decode`, and (optionally) `null`.
     --json_module="dkjson", -- http://dkolf.de/dkjson-lua/
+
+    --debug=true,
   };
   --disabled    = false;
 }
