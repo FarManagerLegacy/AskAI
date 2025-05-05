@@ -8,7 +8,7 @@ local F = far.Flags
 local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 --far2m
 local isFar3 = F.ACTL_GETFARMANAGERVERSION
 
-local newDlgInfo = assert(loadfile(utils.pathjoin(Shared.cfgpath, "DlgHelper.lua.1")))()
+local newDlgInfo = utils.load"DlgHelper.lua.1"()
 local X2 = 3 -- coords indices
 local SELECTED, HISTORY, FLAGS, DATA = 6,7,9,10
 
@@ -125,7 +125,7 @@ local function main (opts)
   local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
 
-  assert(loadfile(utils.pathjoin(Shared.cfgpath, "profiles.lua.1"))) {
+  utils.load"profiles.lua.1" {
     II=II, utils=utils, name=Shared.name, opts=opts,
   }
 
@@ -307,7 +307,7 @@ local function main (opts)
       end
     end,
   }
-  assert(loadfile(utils.pathjoin(Shared.cfgpath, "presets.lua.1"))) {
+  utils.load"presets.lua.1" {
     II=II, utils=utils, cfg=cfg, name=Shared.name, State=State, cfgpath=Shared.cfgpath,
     processSetsHistories=processSetsHistories, populateHistory=populateHistory,
   }

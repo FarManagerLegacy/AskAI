@@ -258,11 +258,11 @@ utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
-menu = assert(loadfile(utils.pathjoin(cfgpath, "menu.lua.1"))) {
+menu = utils.load"menu.lua.1" {
   State=State, utils=utils, askAI=askAI,
   cfgpath=cfgpath, name=nfo.name,
 }
-dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
+dialog = utils.load"dialog.lua.1" {
   State=State, O=O, utils=utils, menu=menu, askAI=askAI,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
