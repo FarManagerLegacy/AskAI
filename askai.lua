@@ -119,7 +119,7 @@ local function _words (chunk)
   end
 end
 
-local menu, dialog, utils --fwd decl.
+local dialog, utils --fwd decl.
 
 local setBigCursor; if jit and jit.os=="Windows" then
   local ffi = require"ffi"
@@ -258,16 +258,12 @@ utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
-menu = utils.load"menu.lua.1" {
-  State=State, utils=utils, askAI=askAI,
-  cfgpath=cfgpath, name=nfo.name,
-}
 dialog = utils.load"dialog.lua.1" {
-  State=State, O=O, utils=utils, menu=menu, askAI=askAI,
+  State=State, O=O, utils=utils, askAI=askAI,
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
-nfo.config  = function () mf.acall(menu.chooseCfg, {profile="default", cfg=utils.mload("default","cfgfile")}) end;
+nfo.config  = function () mf.acall(askAI, {cfg=""}) end;
 nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;
 nfo.execute = function () mf.acall(askAI) end;
 
@@ -294,7 +290,7 @@ if Macro then
     id="FD155A5E-3415-4A9A-BD91-1D7BA91097F0";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      mf.acall(menu.chooseCfg, {profile="default", cfg=utils.mload("default","cfgfile")})
+      mf.acall(askAI, {cfg=""})
     end;
   }
   local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"
