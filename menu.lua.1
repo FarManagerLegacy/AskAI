@@ -14,8 +14,9 @@ local function toggleHidden (items)
   end
 end
 
-local function chooseCfg (profile, prompt, curcfgfile)
+local function chooseCfg (opts)
   if State.isDlgOpened then return end
+  local curcfgfile = type(opts.cfg)=="table" and opts.cfg.filename or opts.cfg
   local items1,items2 = {visibleN=0}, {visibleN=0}
   local empty = true
   local hk = utils.HK.new(".")
@@ -69,8 +70,8 @@ local function chooseCfg (profile, prompt, curcfgfile)
     HelpTopic=utils.HelpTopic "UtilitiesMenu",
     Id=win.Uuid("7EF7D50A-9CF2-4053-97E5-041C39DE1774"),
   }
-  if profile~="default" then
-    props.Title = props.Title.." - "..profile
+  if opts.profile~="default" then
+    props.Title = props.Title.." - "..opts.profile
   end
   local bkeys = "Enter CtrlEnter F4 AltF4 CtrlH AltF1"
   repeat
@@ -88,9 +89,10 @@ local function chooseCfg (profile, prompt, curcfgfile)
           end
         else
           if bk~="CtrlEnter" then
-            utils.msave(profile, "cfgfile", item.FileName)
+            utils.msave(opts.profile, "cfgfile", item.FileName)
           end
-          return Shared.askAI(prompt, profile, item.cfg)
+          opts.cfg = item.cfg
+          return Shared.askAI(opts)
         end
       elseif bk=="CtrlH" then
         toggleHidden(items)
@@ -100,7 +102,8 @@ local function chooseCfg (profile, prompt, curcfgfile)
         end
       elseif bk=="AltF4" then
         if F.EEC_MODIFIED==editor.Editor(item.pathname) then
-          return chooseCfg(profile, prompt, item.FileName)
+          opts.cfg = item.FileName
+          return chooseCfg(opts)
         end
       elseif bk=="AltF1" then
         if info.url then

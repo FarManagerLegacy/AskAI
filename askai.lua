@@ -172,11 +172,13 @@ local setBigCursor; if jit and jit.os=="Windows" then
 end
 
 local lastOutputFilename --fwd decl.
-local function askAI (prompt, profile, cfgname)
-  profile = profile or "default"
-  local cfg = getCfg(profile,cfgname) or cfgname
-  if not cfg then return menu.chooseCfg(profile,prompt) end
-  local processStream, prompt, linewrap, stream, outputFilename = dialog(profile, cfg, prompt, Editor.SelValue)
+local function askAI (opts)
+  opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
+  opts.profile = opts.profile or "default"
+  opts.cfg = getCfg(opts.profile, opts.cfg) or opts.cfg
+  if not opts.cfg then return menu.chooseCfg(opts) end
+  opts.context = opts.context or Editor.SelValue
+  local processStream, prompt, linewrap, stream, outputFilename = dialog(opts)
   if not processStream then return end
   utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
@@ -295,7 +297,7 @@ dialog = assert(loadfile(utils.pathjoin(cfgpath, "dialog.lua.1"))) {
   cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
 }
 
-nfo.config  = function () mf.acall(menu.chooseCfg, "default") end;
+nfo.config  = function () mf.acall(menu.chooseCfg, {profile="default", cfg=utils.mload("default","cfgfile")}) end;
 nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;
 nfo.execute = function () mf.acall(askAI) end;
 
@@ -322,7 +324,7 @@ if Macro then
     id="FD155A5E-3415-4A9A-BD91-1D7BA91097F0";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      mf.acall(menu.chooseCfg, "default")
+      mf.acall(menu.chooseCfg, {profile="default", cfg=utils.mload("default","cfgfile")})
     end;
   }
   local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"
@@ -412,7 +414,7 @@ end
 if _cmdline=="" then
   sh.acall(askAI)
 elseif _cmdline then
-  askAI(_cmdline)
+  sh.acall(askAI, sh.eval(_cmdline))
 else
   return askAI
 end

@@ -57,13 +57,21 @@ end
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
-local function main (profile, cfg, prompt, context)
+local function main (opts)
   if State.isDlgOpened then return end
-  cfg.params = {}
-  for i=1,debug.getinfo(cfg.applyParamsFn, "u").nparams do
-    local name = debug.getlocal(cfg.applyParamsFn, i)
-    cfg.params[i] = name
-    cfg.params[name] = i
+
+  local function fmtProfile (fmt)
+    return opts.profile=="default" and "" or fmt:format(opts.profile)
+  end
+
+  local cfg = opts.cfg
+  if not cfg.params then
+    cfg.params = {}
+    for i=1,debug.getinfo(cfg.applyParamsFn, "u").nparams do
+      local name = debug.getlocal(cfg.applyParamsFn, i)
+      cfg.params[i] = name
+      cfg.params[name] = i
+    end
   end
   local canSession = cfg.info.clearSession or cfg.info.sessionFile or cfg.info.historyName
 
@@ -85,18 +93,14 @@ local function main (profile, cfg, prompt, context)
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
 
   assert(loadfile(utils.pathjoin(Shared.cfgpath, "profiles.lua.1"))) {
-    II=II, utils=utils, cfg=cfg, name=Shared.name, profile=profile,
-    setProfile=function (self,name)
-      self.profile = name
-      profile = name
-    end
+    II=II, utils=utils, name=Shared.name, opts=opts,
   }
 
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
-  II:add {F.DI_EDIT, prompt, {[X2]=-1},
+  II:add {F.DI_EDIT, opts.prompt, {[X2]=-1},
     DIF_HOMEITEM +F.DIF_FOCUS
-    +F_HISTORY, History=("AskAI%s prompt"):format(profile~="default" and ":"..profile or ""),
+    +F_HISTORY, History=("AskAI%s prompt"):format(fmtProfile":%s"),
     name="prompt"
   }
   II:ln() -- -- -- --
@@ -157,7 +161,7 @@ local function main (profile, cfg, prompt, context)
 
   local function makeHistoryName (param, name)
     name = name or cfg.info.histories and cfg.info.histories[param]
-    local prefix = ("AskAI%s"):format(profile~="default" and ":"..profile or "")
+    local prefix = ("AskAI%s"):format(fmtProfile":%s")
     local history = prefix.." param "..(name or param)
     if not (name or O.sharedParams[param]) then
       local baseName = cfg.info.name:match"[^[]+":match"^(.-)%s*$"
@@ -266,7 +270,7 @@ local function main (profile, cfg, prompt, context)
     onclick=function(_,hDlg,idx)
       if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
         hDlg:Close(idx)
-        utils.synchro(Shared.askAI, prompt, profile, cfg.pathname)
+        utils.synchro(Shared.askAI, opts)
       end
     end,
   }
@@ -464,10 +468,11 @@ local function main (profile, cfg, prompt, context)
     State.useWrap = II.chkWrap[SELECTED]
     State.wrapAt = II.edtWrap[DATA]
     local outputFilename = utils.pathjoin(Shared._tmp, ("Ask AI%s.md")
-                                          :format(profile=="default" and "" or "."..profile))
+                                          :format(fmtProfile".%s"))
     if State.useSession==2 and not isOpened(outputFilename) then
       utils.clearSession(cfg.info, SESSION)
     end
+    local context = opts.context
     if not cfg.params.prompt then
       local p = II.prompt[DATA]
       if context~="" then
@@ -500,11 +505,11 @@ local function main (profile, cfg, prompt, context)
            cfg.params.stream and State.useStream==1,
            outputFilename
   elseif II[res].name=="btnSwitch" then
-    prompt = II.prompt[DATA]
-    menu.chooseCfg(profile, prompt, cfg.filename)
+    opts.prompt = II.prompt[DATA]
+    menu.chooseCfg(opts)
   elseif II[res].name=="profile" then
-    prompt = II.prompt[DATA]
-    Shared.askAI(prompt, profile) --switch profile
+    opts.prompt = II.prompt[DATA]
+    Shared.askAI(opts) --switch profile
   end
 end
 

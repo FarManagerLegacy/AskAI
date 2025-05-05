@@ -1,7 +1,8 @@
 local F = far.Flags
-local Shared = ...
+local Shared = ... --name
 local II = Shared.II
 local utils = Shared.utils
+local opts = Shared.opts
 
 local function changeHistoryProfile (historyName, profile)
   return historyName:gsub("^(AskAI)(:?%S*)","%1"..(profile~="default" and ":"..profile or ""))
@@ -28,7 +29,7 @@ local function selectFromHistory (item,hDlg,idx)
       if ret then
         hDlg:EnableRedraw(0)
         hDlg:SetText(idx, ret.arg)
-        local sets = Shared.cfg.info.sets
+        local sets = opts.cfg.info.sets
         if sets and sets[item.name] then
           for _,subparam in ipairs(sets[item.name]) do
             local pos = II[subparam].idx
@@ -84,7 +85,7 @@ local function copy (src)
   return dst
 end
 local function createProfile (self,hDlg,idx,name)
-  settings[name] = copy(settings[Shared.profile])
+  settings[name] = copy(settings[opts.profile])
   utils.msave(settings)
   table.insert(self.ListItems, {Text=name})
   if hDlg then
@@ -93,19 +94,20 @@ local function createProfile (self,hDlg,idx,name)
     hDlg:ListAddStr(idx, name)
     hDlg:SetText(idx,name)
     hDlg:EnableRedraw(1)
-    Shared:setProfile(name)
+    opts.profile = name
   end
 end
 
 local function loadProfile (hDlg,_,name)
   local cfgfile = settings[name].cfgfile
-  if cfgfile==Shared.cfg.filename then
+  if cfgfile==opts.cfg.filename then
     local prompt = hDlg:GetText(II.prompt.idx)
     setHistories(hDlg, name, "clear")
     hDlg:SetText(II.prompt.idx, prompt)
-    Shared:setProfile(name)
+    opts.profile = name
   else
-    Shared:setProfile(name)
+    opts.profile = name
+    opts.cfg = settings[name].cfgfile
     hDlg:EnableRedraw(0)
     hDlg:SetDropdownOpened(II.profile.idx, 0)
     hDlg:Close(II.profile.idx) --switch profile
@@ -116,8 +118,8 @@ local function deleteProfile (self,hDlg,idx)
   local curpos = hDlg:ListGetCurPos(idx).SelectPos
   local name = self.ListItems[curpos].Text
   if name~="default" then
-    local switchToDefault = name==Shared.profile
-    local target = switchToDefault and "default" or Shared.profile
+    local switchToDefault = name==opts.profile
+    local target = switchToDefault and "default" or opts.profile
     for pos,item in ipairs(self.ListItems) do
       if item.Text==target then
         hDlg:ListSetCurPos(idx, {SelectPos=pos})
@@ -161,8 +163,8 @@ local FCF_FG_U_CURLY = F.FCF_FG_U_DATA0 and F.FCF_FG_U_DATA0 +F.FCF_FG_U_DATA1
 
 II:add {F.DI_TEXT, " ", {"-1",-1}}
 local HelpTopic = utils.HelpTopic"Profiles"
-local _width = math.min(20, math.max(6, Shared.profile:len()+2))
-II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGHLIGHT, ListItems=MakeProfileItems(),
+local _width = math.min(20, math.max(6, opts.profile:len()+2))
+II:add {F.DI_COMBOBOX, opts.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGHLIGHT, ListItems=MakeProfileItems(),
 
   oninit=function(_,hDlg,idx)
     hDlg:SetComboboxEvent(idx, F.CBET_KEY)
@@ -182,7 +184,7 @@ II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGH
       end
     end
     return true
-  end, _text=Shared.profile,
+  end, _text=opts.profile,
 
   onclose=function(self,hDlg,_,item)
     if item then
@@ -229,7 +231,7 @@ II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGH
         if 1==far.Message(("Invalid profile name '%s'. Edit?"):format(self._text), Shared.name, ";Ok;Cancel") then
           return idx
         end
-      elseif not settings[self._text] or self._text==Shared.profile then
+      elseif not settings[self._text] or self._text==opts.profile then
         return
       else
         if 1==far.Message(("Load '%s' profile?"):format(self._text), Shared.name, ";Ok;Cancel") then
@@ -237,7 +239,7 @@ II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGH
           return
         end
       end
-      hDlg:SetText(idx, Shared.profile) --reset text
+      hDlg:SetText(idx, opts.profile) --reset text
     end
   end,
 
@@ -258,7 +260,7 @@ II:add {F.DI_COMBOBOX, Shared.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGH
       end
     elseif key=="ShiftEnter" then
       if self._textInvalid then
-        hDlg:SetText(idx, Shared.profile)
+        hDlg:SetText(idx, opts.profile)
       end
       return true
     elseif key=="Enter" then
