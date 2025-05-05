@@ -1,4 +1,4 @@
-local Shared = ... --O, populateHistory
+local Shared = ... --O, populateHistory, opts
 local II = Shared.II
 local cfg = Shared.cfg
 local F = far.Flags
@@ -62,6 +62,10 @@ return function (hDlg,msg,idx,Param2)
         hDlg:SetEditPosition(idx,{CurPos=1})
       end
       run("oninit",item,hDlg,idx)
+    end
+    if Shared.opts.nodialog then
+      hDlg:Close(II.btnGo.idx)
+      return
     end
   elseif msg==F.DN_BTNCLICK then
     return run("onclick",item,hDlg,idx)
