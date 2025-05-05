@@ -300,9 +300,13 @@ if json and pcall(require, "ssl.https") then
   }
 end
 
-local function _import (filename, env, ...)
+local function load (filename)
   local pathname = pathjoin(Shared.cfgpath, filename)
-  local fn = assert(loadfile(pathname))
+  return assert(loadfile(pathname))
+end
+
+local function _import (filename, env, ...)
+  local fn = load(filename)
   env = env or getfenv(2) -- parent _ENV
   local name = env.name
   local ret1,ret2 = setfenv(fn,env)(export or Shared, ...)
@@ -522,6 +526,7 @@ return {
   mload=mload,
   msave=msave,
   pathjoin=pathjoin,
+  load=load,
   loadCfg=loadCfg,
   clearSession=clearSession,
   HelpTopic=HelpTopic,
