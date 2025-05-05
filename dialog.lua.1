@@ -56,7 +56,10 @@ local function dialog (opts)
 
   local cfg = opts.cfg
   cfg = configs.getCfg(opts.profile, cfg) or cfg
-  if not cfg or cfg=="" then return configs.chooseCfg(opts) end
+  if not cfg or cfg=="" then
+    opts.nodialog = false
+    return configs.chooseCfg(opts)
+  end
   opts.cfg = cfg
   if not cfg.params then
     cfg.params = {}
@@ -281,7 +284,7 @@ local function dialog (opts)
     name="btnGo"
   }
   data.DlgProc = utils.load"dlgproc.lua.1" {
-    II=II, cfg=cfg, O=O, populateHistory=populateHistory,
+    II=II, cfg=cfg, O=O, populateHistory=populateHistory, opts=opts,
   }
 
   State.isDlgOpened = true
