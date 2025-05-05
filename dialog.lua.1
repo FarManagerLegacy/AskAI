@@ -1,7 +1,6 @@
 ﻿local Shared = ... -- name, utils, askAI, _tmp, cfgpath
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
-local menu = Shared.menu
 local O = Shared.O
 
 local F = far.Flags
@@ -84,6 +83,11 @@ local function getCfg (profile, cfgname)
   end
 end
 
+local menu = utils.load"menu.lua.1" {
+  State=State, utils=utils, askAI=askAI,
+  cfgpath=Shared.cfgpath, name=Shared.name,
+}
+
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
@@ -96,7 +100,7 @@ local function main (opts)
 
   local cfg = opts.cfg
   cfg = getCfg(opts.profile, cfg) or cfg
-  if not cfg then return menu.chooseCfg(opts) end
+  if not cfg or cfg=="" then return menu.chooseCfg(opts) end
   opts.cfg = cfg
   if not cfg.params then
     cfg.params = {}
