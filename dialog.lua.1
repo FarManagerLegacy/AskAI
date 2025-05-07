@@ -57,6 +57,7 @@ local function dialog (opts)
   local cfg = opts.cfg
   cfg = configs.getCfg(opts.profile, cfg) or cfg
   if not cfg or cfg=="" then
+    opts.compact = false
     opts.nodialog = false
     return configs.chooseCfg(opts)
   end
@@ -85,6 +86,28 @@ local function dialog (opts)
     HelpTopic=utils.HelpTopic"Dialog",
   }
   local II = newDlgInfo(data)
+  if opts.compact then
+    local hide
+    II.ln = (function (ln)
+      return function (self, cutpoint)
+        hide = hide or cutpoint
+        if not hide then ln(self) end
+      end
+    end)(II.ln)
+    II.add = (function (add)
+      return function (self,item)
+        if hide then
+          item[4] = bit64.bor(F.DIF_HIDDEN, item.Flags or item[4] or 0)
+        end
+        return add(self,item)
+      end
+    end)(II.add)
+    opts.compact = false
+    opts._hidden = true
+  else
+    opts._hidden = false
+  end
+
   local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
 
@@ -153,7 +176,7 @@ local function dialog (opts)
     (State.useWrap~=0 and 0 or F.DIF_DISABLE) +F.DIF_MASKEDIT, Mask="999",
     name="edtWrap"
   }
-  II:ln() -- -- -- --
+  II:ln("cutpoint") -- -- -- --
 
   local function makeHistoryName (param, name)
     name = name or cfg.info.histories and cfg.info.histories[param]
