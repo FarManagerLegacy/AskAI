@@ -132,6 +132,9 @@ return function (hDlg,msg,idx,Param2)
       end
     elseif key=="PgUp" or key=="CtrlHome" then
       hDlg:SetFocus(II.prompt.idx)
+    elseif key=="CtrlH" then
+      Shared.opts.compact = not Shared.opts._hidden
+      hDlg:Close(II.profile.idx)
     end
   end
 end
