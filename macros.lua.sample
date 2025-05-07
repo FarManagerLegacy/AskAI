@@ -1,0 +1,34 @@
+﻿local askAI = require"askAI"
+-- Принимает на вход таблицу со такими возможными полями: `profile`: string, `nodialog`, `compact`: boolean.
+Macro {"CtrlB-N"; action=function() askAI {profile="test", compact=true} end}
+
+
+-- Упрощённое назначение макросов
+-- ------------------------------
+local Macro = require"askAI".Macro
+-- Специальная версия функции `Macro`, позволяющую задавать макросы как в обычном виде
+-- (mk:@MSITStore:%FARHOME%\Encyclopedia\macroapi_manual.ru.chm::/75.html "Стационарные макросы")
+-- так и в "упрощённом", причём в одном макросе могут сочетаться обе нотации.
+--
+-- В упрощённом виде данные в таблице передаются позиционно:
+-- ```
+-- Macro { key, profile[, description[, area]] }
+-- ```
+-- любое стандартное поле можно добавить и по имени
+
+Macro {"CtrlB-R", "translate", "^BR  Перевести"}
+Macro {"CtrlB-S", "summary",   "^BS  Сводка", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-", "explain",   "^B  Объяснить"}
+Macro {"CtrlB-", "rewrite",   "^B  Переписать", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-", "refine",    "^B  Уточнить", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-", "improve",   "^B  Улучшить", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-", "compose",   "^B  Составить"}
+Macro {"CtrlB-", "reply",     "^B  Ответить", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-", "grammarly", "^B  Проверить", "Editor", condition="Object.Selected"}
+
+-- Обработчик по-умолчанию активирует указанный профиль.
+-- При запуске из редактора с выделенным текстом сразу запускается запрос, диалог не используется;
+-- иначе открывается компактная форма диалога (Ctrl+H для отображения параметров).
+--
+-- Любая другая логика может быть реализована через собственный обработчик (`action=`),
+-- передачей параметров в `askAI`, как в самом первом примере этого файла.
