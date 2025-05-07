@@ -201,6 +201,54 @@ if Macro then
       end
     end;
   }
+
+  -- module interface
+  local function withProfile (m)
+    local nodialog = Area.Editor and Object.Selected
+    mf.acall(askAI, {
+      profile=m.profile,
+      prompt=nodialog and " ",
+      nodialog=nodialog,
+      compact=true,
+    })
+  end
+  local function stdCondition (_,m)
+    if not State.isDlgOpened then
+      return not m._condition or m._condition()
+    end
+  end
+  local function isNotOpened ()
+    return not State.isDlgOpened
+  end
+  local fnCache = {}
+  package.loaded.askAI = setmetatable({isNotOpened=isNotOpened},{
+    __call=function(_,...)
+      return askAI(...)
+    end,
+    __index=function(_,key)
+      if key=="Macro" then
+        local env = getfenv(2)
+        env.askAI = askAI
+        assert(env.Macro, "Macro function required in parent env")
+        return function (macro)
+          macro.area = macro.area or macro[4] or "Common"
+          macro.key = macro.key or assert(macro[1], "Required either 'key', or key name at [1] index")
+          macro.description = macro.description or macro[3] or macro[2] or macro.key
+          if not macro.action then
+            macro.profile = assert(macro[2], "Required either 'action', or profile name at [2] index")
+            macro.action = withProfile
+          end
+          if type(macro.condition)=="string" then
+            macro._condition = fnCache[macro.condition] or assert(require"moonscript".loadstring(macro.condition))
+            fnCache[macro.condition] = macro._condition
+            macro.condition = nil
+          end
+          macro.condition = macro.condition or stdCondition
+          return env.Macro(macro)
+        end
+      end
+    end,
+  })
   return
 end
 

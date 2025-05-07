@@ -1,0 +1,47 @@
+﻿-- Примечание:
+--   Макросы назначены на одну клавишу через последовательности
+--   [MacroEx](https://forum.farmanager.com/viewtopic.php?f=15&t=8764).  
+--   С тем же успехом можно и без MacroEx просто назначить на одну клавишу,
+--   и дальнейший выбор осуществлять через меню конфликта макросов.
+
+local askAI = require"askAI"
+-- Принимает на вход таблицу со такими возможными полями: `profile`: string, `nodialog`, `compact`: boolean.
+Macro { description="^BN  Тест";
+  key="CtrlB-N"; area="Common";
+  condition=askAI.isNotOpened;
+  action=function()
+    askAI {profile="test", compact=false}
+  end}
+
+
+-- Облегчённое назначение макросов
+-- -------------------------------
+local Macro = require"askAI".Macro
+-- Специальная версия функции `Macro`, позволяющую задавать макросы как в обычном виде
+-- (mk:@MSITStore:%FARHOME%\Encyclopedia\macroapi_manual.ru.chm::/75.html "Стационарные макросы")
+-- так и в "облегчённом", причём в одном макросе могут сочетаться обе нотации.
+--
+-- В облегчённом виде данные в таблице передаются позиционно:
+-- ```
+-- Macro { key, profile[, description[, area]] }
+-- ```
+-- любое стандартное поле можно добавить и по имени
+
+Macro {"CtrlB-C", "compose",   "^BC  Составить"}
+Macro {"CtrlB-X", "explain",   "^BX  Объяснить"}
+Macro {"CtrlB-D", "deutsch",   "^BD  На немецкий"}
+Macro {"CtrlB-E", "english",   "^BE  На английский"}
+Macro {"CtrlB-R", "translate", "^BR  Перевести"}
+Macro {"CtrlB-I", "improve",   "^BI  Улучшить",   "Editor", condition="Object.Selected"}
+Macro {"CtrlB-G", "grammarly", "^BG  Проверить",  "Editor", condition="Object.Selected"}
+Macro {"CtrlB-W", "rewrite",   "^BW  Переписать", "Editor", condition="Object.Selected"}
+Macro {"CtrlB-F", "refine",    "^BF  Уточнить",   "Editor", condition="Object.Selected"}
+Macro {"CtrlB-Y", "reply",     "^BY  Ответить",   "Editor", condition="Object.Selected"}
+Macro {"CtrlB-S", "summary",   "^BS  Сводка",     "Editor", condition="Object.Selected"}
+
+-- Обработчик по-умолчанию активирует указанный профиль.
+-- При запуске из редактора с выделенным текстом сразу запускается запрос, диалог не используется;
+-- иначе открывается компактная форма диалога (Ctrl+H для отображения параметров).
+--
+-- Любая другая логика может быть реализована через собственный обработчик (`action=`),
+-- передачей параметров в `askAI`, как в самом первом примере этого файла.
