@@ -7,19 +7,15 @@ apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
 model={
   "gemini-2.0-flash",
   "gemini-2.0-flash-exp",
-  "gemini-2.0-flash-exp-image-generation",
-  "gemini-2.0-flash-thinking-exp",
-  "gemini-2.0-flash-thinking-exp-1219",
   "gemini-2.0-flash-lite",
   "gemini-2.0-flash-lite-preview",
 
+  "gemini-2.5-flash-preview-05-20",
   "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-flash-preview-04-17-thinking",
   "gemini-2.5-pro-exp-03-25",
-  --"gemini-2.5-pro-preview-03-25", --no free quota tier
-
-  "gemini-2.0-pro-exp",
-  "gemini-2.0-pro-exp-02-05",
-  "gemini-exp-1206",
+  --"gemini-2.5-pro-preview-03-25", --no free tier
+  --"gemini-2.5-pro-preview-05-06", --no free tier
 
   "learnlm-1.5-pro-experimental",
   "learnlm-2.0-flash-experimental",
