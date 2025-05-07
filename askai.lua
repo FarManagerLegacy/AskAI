@@ -16,7 +16,8 @@ local nfo = Info { _filename or ...,
     --keyReply = "CtrlB:Hold",
     keyCopy = "CtrlShiftIns",
     sharedParams = { apibase=1, max_tokens=1, temperature=1, top_p=1, top_k=1, role=1 },
-    --smallDlg = true,
+    --smallDlg = true,   --no margins around frame
+    --compactDlg = true, --params hidden by default (CtrlH to toggle)
     stdEnvs = {
       apikey ={OPENAI_API_KEY=1},
       apibase={OPENAI_BASE_URL=1, OPENAI_API_BASE=1},
@@ -71,6 +72,9 @@ local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
   opts.context = opts.context or Editor.SelValue
+  if opts.compact==nil then
+    opts.compact = O.compactDlg
+  end
   dialog(opts)
 end
 
