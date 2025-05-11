@@ -1,10 +1,9 @@
 --https://docs.github.com/en/github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api
---https://github.com/marketplace/models/waitlist
 --https://github.com/marketplace/models/
 
 apibase="https://models.inference.ai.azure.com"
 
---https://github.com/settings/tokens?type=beta
+--https://github.com/settings/personal-access-tokens
 apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 
 --https://github.com/marketplace?type=models
@@ -17,9 +16,15 @@ model={
   "AI21-Jamba-Instruct",
 }
 
-modelsMeta=[[{
+modelsMeta=function()
+  local id = win.Uuid"922CC103-62C6-4F4E-8C99-31F4E84906D1"
+  local user_session = far.InputBox(id, "Github preset", "Enter user_session cookie:", "AskAI/github.preset/user_session",
+                                    nil,nil,nil,"FIB_BUTTONS")
+  if not user_session then return "" end
+  return ([[{
   apibase: "https://github.com/marketplace"
-  headers: "x-requested-with": "XMLHttpRequest" --, cookie: "user_session=..."
+  headers: "x-requested-with": "XMLHttpRequest", cookie: "user_session=%s"
   filterFn: (model) -> model.task=="chat-completion"
   nameFn: (model) -> model.original_name
-}]]
+}]]):format(user_session)
+end
