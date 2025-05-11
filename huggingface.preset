@@ -4,16 +4,16 @@
 apibase="https://api-inference.huggingface.co/models/{model}/v1"
 
 local title = "🤗 Hugging Face"
-apikey=win.GetEnv"HF_API_TOKEN" or far.InputBox(nil, title, "Enter apikey:", "AskAI param apikey:"..apibase)
+apikey=win.GetEnv"HF_API_TOKEN"
 
 local Shared = ...
 local check = Shared.utils.check
 local datafile = Shared.utils.pathjoin(Shared.cfgpath, "huggingface-models.json")
 
--- https://huggingface.co/models?other=text-generation-inference&inference=warm
--- https://huggingface.co/models?other=text-generation-inference&inference=cold
 local default = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 model=function()
+  apikey = apikey or far.InputBox(nil, title, "Enter apikey:", "AskAI param apikey:"..apibase,
+                                  nil, nil, nil, "FIB_BUTTONS")
   if not apikey then return default end
 
   local request = require("ssl.https").request
@@ -29,7 +29,7 @@ model=function()
       max_tokens=1,
     }
     local out = {}
-    local _, code = assert(request{
+    local _, code, _, status_line = assert(request{
       url=url,
       sink=ltn12.sink.table(out),
       source=ltn12.source.string(body),
@@ -43,7 +43,7 @@ model=function()
       local response = table.concat(out)
       model.error = response:match"^{" and json.decode(response).error or code
     end
-    return model
+    return model,code==402 and status_line
   end
 
   local function status (msg)
@@ -52,12 +52,13 @@ model=function()
   end
 
   local page,list, tested = 0, {}, {}
+  local br
   repeat
-    status("Fetching warm models list, page "..(page+1))
-    local url = "https://huggingface.co/models?other=text-generation-inference&sort=trending&inference=warm&p="..page
+    status("Fetching models list, page "..(page+1))
+    local url = "https://huggingface.co/models?other=text-generation-inference&sort=trending&p="..page
     local response, code, _, status_line = assert(request(url))
     assert(code==200, status_line)
-    if check"Esc" then error("break",0) end
+    if check"Esc" then break end
 
     local data_props = assert(response:match('data%-target="ModelList".-data%-props="([^"]+)"'), "Unexpected format")
     local data = json.decode((data_props:gsub("&quot;", '"')))
@@ -65,19 +66,23 @@ model=function()
     if not models or #models==0 then break end
 
     for _, model in ipairs(models) do
-      list[#list+1] = test(model)
-      if check"Esc" then error("break",0) end
+      list[#list+1],br = test(model)
+      br = br or check"Esc"
+      if br then break end
       if not model.error then
         table.insert(tested, model.id==default and 1 or #list+1, model.id)
       end
       status(model.id..": "..(model.error and "Error" or "OK!"))
     end
     page = page+1
-  until #models<30
+  until #models<30 or br
 
   local file = assert(io.open(datafile, "w"))
   file:write(json.encode(list))
   file:close()
+  if type(br)=="string" then
+    error(br)
+  end
   return tested
 end
 
