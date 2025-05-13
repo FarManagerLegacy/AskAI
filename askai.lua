@@ -35,6 +35,8 @@ local nfo = Info { _filename or ...,
     -- the module must provide `encode`, `decode`, and (optionally) `null`.
     --json_module="dkjson", -- http://dkolf.de/dkjson-lua/
 
+    timeout=120, -- http[s] response timeout in seconds
+
     --debug=true,
   };
   --disabled    = false;
