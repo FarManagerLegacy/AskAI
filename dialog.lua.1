@@ -303,14 +303,6 @@ local function dialog (opts)
       end,
     }
   end
-  II:add {F.DI_BUTTON, "Def&inition", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
-    onclick=function(_,hDlg,idx)
-      if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
-        hDlg:Close(idx)
-        utils.synchro(dialog, opts)
-      end
-    end,
-  }
   utils.load"presets.lua.1" {
     II=II, utils=utils, cfg=cfg, name=Shared.name, State=State, cfgpath=Shared.cfgpath,
     processSetsHistories=processSetsHistories, populateHistory=populateHistory,
@@ -318,7 +310,24 @@ local function dialog (opts)
   utils.load"models.lua.1" {
     II=II, utils=utils, cfg=cfg,
   }
-  II:add {F.DI_BUTTON, "Swi&tch", nil, F.DIF_CENTERGROUP,
+  local function editConfig (hDlg,idx)
+    if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
+      hDlg:Close(idx)
+      utils.synchro(dialog, opts)
+    end
+    return true
+  end
+  II:add {F.DI_BUTTON, "Pro&viders - ^B", nil, F.DIF_CENTERGROUP,
+    onkey=function(_,hDlg,idx,key)
+      if key=="F4" then
+        return editConfig(hDlg,idx)
+      end
+    end,
+    keys={
+      AltF4=function(_,hDlg,idx)
+        return editConfig(hDlg,idx)
+      end
+    },
     name="btnSwitch"
   }
   II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
