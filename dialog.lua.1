@@ -167,6 +167,24 @@ local function dialog (opts)
   II:add {F.DI_CHECKBOX, "st&ream", {x2}, cfg.params.stream and 0 or F.DIF_DISABLE, State.useStream,
     name="chkStream"
   }
+  if cfg.info.exe==true then
+    local function setTimeout (timeout)
+      require"ssl.https".TIMEOUT = timeout
+      require"socket.http".TIMEOUT = timeout
+    end
+    if O.timeout then
+      setTimeout(O.timeout)
+      O.timeout = false
+    end
+    II:add {F.DI_TEXT, "Time&out", {interval=4}, 0}
+    II:add {F.DI_FIXEDIT, require"ssl.https".TIMEOUT, nil, F.DIF_MASKEDIT, Mask="999",
+      onclose=function(_,hDlg,idx,item)
+        if item then
+          setTimeout(tonumber(hDlg:GetText(idx)))
+        end
+      end,
+    }
+  end
   II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
     onclick=function(_,hDlg,idx)
       hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
