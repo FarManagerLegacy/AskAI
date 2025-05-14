@@ -125,7 +125,7 @@ if Macro then
   local codeStart,codeEnd = "^%s*```%S+$", "^(%s*)```$"
   Macro { description=nfo.name..": copy code / paragraphs";
     area="Editor"; key=O.keyCopy;
-    filemask="Ask AI.md";
+    filemask="Ask AI*.md";
     id="353A2271-B739-41CE-AD47-BFDD109CBB17";
     action=function()
       local sel
@@ -180,7 +180,7 @@ if Macro then
   }
   Macro { description=nfo.name..": unwrap text";
     area="Editor"; key="AltF2";
-    filemask="Ask AI.md";
+    filemask="Ask AI*.md";
     id="F7E6330A-182A-41BE-8EDF-0EFC4C8168A8";
     action=function()
       local ei = editor.GetInfo()
