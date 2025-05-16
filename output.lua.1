@@ -71,6 +71,10 @@ end
 local setBigCursor; if jit and jit.os=="Windows" then
   local ffi = require"ffi"
   pcall(ffi.cdef, [[
+  //https://learn.microsoft.com/windows/console/getstdhandle
+  HANDLE GetStdHandle(
+    DWORD nStdHandle
+  );
   //https://learn.microsoft.com/en-us/windows/console/console-cursor-info-str
   typedef struct _CONSOLE_CURSOR_INFO {
     DWORD dwSize;
