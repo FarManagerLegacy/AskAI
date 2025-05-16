@@ -1,0 +1,21 @@
+--https://docs.github.com/en/rest/models/inference 
+apibase="https://models.github.ai/inference"
+
+--https://github.com/settings/personal-access-tokens
+apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
+
+--https://github.com/marketplace?type=models
+--https://github.com/marketplace/models/azure-openai/gpt-4o/playground
+--https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
+model="gpt-4.1"
+
+--https://docs.github.com/en/rest/models/catalog
+modelsMeta=[[{
+  endpoint: "/catalog/models"
+  dataFn: (data) -> data.apibase = data.apibase\match"^(.-)/inference$"
+  filterFn: (model) ->
+    for v in *model.supported_output_modalities
+      return true if v=="text"
+}]]
+
+headers='Connection: "close"'
