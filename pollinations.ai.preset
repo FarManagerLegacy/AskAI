@@ -1,8 +1,9 @@
 --https://pollinations.ai/
 --https://github.com/pollinations/pollinations/blob/master/APIDOCS.md
+--https://auth.pollinations.ai/
 
 apibase="https://text.pollinations.ai/openai"
-model="deepseek-reasoning-large"
+model="deepseek-reasoning"
 
 --https://text.pollinations.ai/models
 modelsMeta='apibase: "https://text.pollinations.ai"'

@@ -264,7 +264,7 @@
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
   [DeepSeek](https://www.deepseek.com/), [Qwen](https://qwenlm.github.io/), *Yi* от [01.AI](https://www.01.ai/), [MiniMax](https://www.minimaxi.com/en).
 
-Ориентироваться можно по рейтингу [ChatBot Arena](https://lmarena.ai/?leaderboard).
+Ориентироваться можно по рейтингу [LMArena](https://lmarena.ai/leaderboard).
 
 ### Обзор провайдеров
 
