@@ -270,6 +270,10 @@ $ #Меню выбора конфигурации провайдера#
 
  #•# §¦~bito~@https://bito.ai/@ - настройка описана ~тут~@https://forum.farmanager.com/viewtopic.php?t=13283@.
    §¦Недостаток: бесплатный лимит 75 сообщений в день, доступ только к BASIC-модели (gpt-4o-mini).
+ #•# §¦~Gemini CLI~@https://github.com/google-gemini/gemini-cli@ - ещё один способ доступа к моделям от ~Google~@https://ai.google.dev/@.
+   §¦В отличии от других вариантов бесплатно предоставляется доступ к #gemini-2.5-pro# (до 1000 запросов в день).
+   §¦Простой логин через браузер.
+   §¦Требуется ~Node.js~@https://nodejs.org/en/download@.
  #•# §¦~gh models~@https://github.com/github/gh-models@ - GitHub Models extension.
    §¦Инструкции по установке см. на домашней странице.
    §¦Необходим аккаунт GitHub. Действуют ~лимиты~@https://docs.github.com/en/github-models/prototyping-with-ai-models##rate-limits@.
