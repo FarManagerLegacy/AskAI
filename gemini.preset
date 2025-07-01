@@ -4,6 +4,7 @@
 
 apibase="https://generativelanguage.googleapis.com/v1beta/openai"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
+--https://ai.google.dev/gemini-api/docs/rate-limits#free-tier
 model={
   "gemini-2.0-flash",
   "gemini-2.0-flash-exp",
@@ -17,8 +18,7 @@ model={
 
   "gemini-2.5-flash-lite-preview-06-17",
 
-  "gemini-2.5-pro-exp-03-25",
-  --"gemini-2.5-pro", --no free tier
+  "gemini-2.5-pro",
 
   "learnlm-2.0-flash-experimental",
 
