@@ -1,0 +1,21 @@
+--Get token: https://copilot-demo.publicaffairs.workers.dev/token#Iv23ctfURkiMfJ4xr5mv
+--or:
+--powershell irm https://gitea.com/PublicAffairs/openai-github-copilot/raw/branch/main/scripts/Get-CopilotToken.ps1 ^| iex
+
+apibase="https://api.githubcopilot.com"
+apikey=win.GetEnv"GHU_TOKEN" or "set GHU_TOKEN env variable!"
+model={
+  "gpt-4.1",
+  "gpt-4o",
+  "gpt-4o-mini",
+  "o1",
+  "o1-mini",
+  "o3-mini",
+  "o4-mini",
+  "claude-3.7-sonnet",
+  "claude-3.7-sonnet-thought",
+  "claude-sonnet-4",
+  "gemini-2.5-pro",
+}
+
+modelsMeta="filterFn: (model) -> model.capabilities.type=='chat'"
