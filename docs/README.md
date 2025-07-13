@@ -299,7 +299,7 @@
     `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b`)
   - [cohere](https://cohere.com/command) (серии `command-*` и `c4ai-aya-*`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от Google
-  - [github](https://github.com/marketplace?type=models&task=chat-completion) (модели от *OpenAI*, *DeepSeek*, *Anthropic*, *Mistral*, *Meta*, *Cohere*, *AI21*, *Microsoft* и др.)
+  - [github-models](https://github.com/marketplace?type=models&task=chat-completion) (модели от *OpenAI*, *DeepSeek*, *Anthropic*, *Mistral*, *Meta*, *Cohere*, *AI21*, *Microsoft* и др.)
   - [groq](https://console.groq.com/playground) (модели до 90b)
   - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
   - [sambanova](https://cloud.sambanova.ai/pricing) (Llama \<= 405b, DeepSeek, Qwen)
@@ -328,7 +328,7 @@
 
 Кроме того:
 
-- `copilot-`/`gemini-proxy-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.  
+- `github-copilot-`/`gemini-proxy-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.  
   Примечание: `gemini` [с некоторых пор](https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/)
   доступен и через OpenAI API.
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
