@@ -16,7 +16,7 @@ end
 apikey=win.GetEnv"CF_API_TOKEN" or "set CF_API_TOKEN env variable!"
 
 --https://developers.cloudflare.com/workers-ai/models/
-model="@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+model="@cf/openai/gpt-oss-120b"
 
 --https://developers.cloudflare.com/api/resources/ai/subresources/models/methods/list/
 modelsMeta=[[{

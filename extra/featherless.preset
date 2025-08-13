@@ -1,4 +1,6 @@
 --https://featherless.ai/
+--https://chat.featherless.ai/
+
 --https://featherless.ai/models/meta-llama/Meta-Llama-3.1-8B-Instruct
 --https://featherless.ai/docs/api-reference
 
@@ -6,9 +8,8 @@ apibase="https://api.featherless.ai/v1"
 --apikey=
 
 --https://featherless.ai/models?view=table
-model="featherless-ai/Qwerky-72B" --https://substack.recursal.ai/p/featherlessai-introduces-qwerky-72b
---model="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
---model="unsloth/DeepSeek-R1-Distill-Qwen-14B"
+model="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+--model="unsloth/Qwen3-14B-Base"
 modelsMeta="filterFn: (model) -> model.available_on_current_plan"
 
 headers="cookie: 'session=xxx...'" -- Shift-F4
