@@ -1,3 +1,5 @@
+--https://docs.github.com/en/copilot/how-tos/manage-your-account/getting-free-access-to-copilot-pro-as-a-student-teacher-or-maintainer
+
 --Get token: https://copilot-demo.publicaffairs.workers.dev/token#Iv23ctfURkiMfJ4xr5mv
 --or:
 --powershell irm https://gitea.com/PublicAffairs/openai-github-copilot/raw/branch/main/scripts/Get-CopilotToken.ps1 ^| iex
@@ -5,6 +7,7 @@
 apibase="https://api.githubcopilot.com"
 apikey=win.GetEnv"GHU_TOKEN" or "set GHU_TOKEN env variable!"
 model={
+  "gpt-5",
   "gpt-4.1",
   "gpt-4o",
   "gpt-4o-mini",

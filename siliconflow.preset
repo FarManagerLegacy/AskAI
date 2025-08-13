@@ -1,14 +1,13 @@
 --https://nextchat-sf.vercel.app/
---https://cloud.siliconflow.cn/playground/chat
---https://cloud.siliconflow.cn/models?types=chat
---https://docs.siliconflow.cn/reference/chat-completions-1
+--https://cloud.siliconflow.cn/me/playground/chat
+--https://docs.siliconflow.cn/en/userguide/quickstart
 --New users will receive 20 million tokens when they register
 
 apibase="https://api.siliconflow.cn/v1"
 apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!"
 model="deepseek-ai/DeepSeek-R1"
 
---https://siliconflow.cn/models --免费
+--https://cloud.siliconflow.cn/me/models?types=chat
 --https://docs.siliconflow.cn/en/userguide/rate-limits/rate-limit-and-upgradation#2-1-free-model-rate-limits
 --The free version is named after the original name, while the paid version is prefixed with “Pro/” to distinguish it.
 -- curl "https://api.siliconflow.cn/v1/models?sub_type=chat" -H "Authorization: Bearer %SILICONFLOW_API_KEY%" | jq "[.data[].id | select(startswith(\"Pro/\")) | sub(\"^Pro/\"; \"\")] | sort_by(ascii_downcase)"

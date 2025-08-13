@@ -4,4 +4,4 @@
 
 apibase="https://api.novita.ai/v3/openai"
 apikey=win.GetEnv"NOVITAAI_API_KEY" or "set NOVITAAI_API_KEY env variable!"
-model="meta-llama/llama-4-maverick-17b-128e-instruct-fp8"
+model="openai/gpt-oss-120b"

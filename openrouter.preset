@@ -1,10 +1,11 @@
 --https://openrouter.ai/chat
---https://openrouter.ai/docs/parameters
+--https://openrouter.ai/docs/api-reference/parameters
 
 apibase="https://openrouter.ai/api/v1"
 apikey=win.GetEnv"OPENROUTER_API_KEY" or "set OPENROUTER_API_KEY env variable!"
 
---https://openrouter.ai/models?q=:free
-model="deepseek/deepseek-r1:free"
+--https://openrouter.ai/docs/faq#what-free-tier-options-exist
+--https://openrouter.ai/models?max_price=0
+model="deepseek/deepseek-r1-0528:free"
 
-modelsMeta='filterFn: (model) -> model.id\\match":free$"'
+modelsMeta='filterFn: (model) -> model.pricing.completion=="0"'

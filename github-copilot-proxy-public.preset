@@ -4,6 +4,7 @@
 apibase="https://copilot-demo.publicaffairs.workers.dev/v1"
 apikey=win.GetEnv"GHU_TOKEN" or "set GHU_TOKEN env variable!"
 model={
+  "gpt-5",
   "gpt-4.1",
   "gpt-4o",
   "gpt-4o-mini",

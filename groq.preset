@@ -3,4 +3,4 @@
 
 apibase="https://api.groq.com/openai/v1"
 apikey=win.GetEnv"GROQ_API_KEY" or "set GROQ_API_KEY env variable!"
-model="meta-llama/llama-4-maverick-17b-128e-instruct"
+model="openai/gpt-oss-120b"
