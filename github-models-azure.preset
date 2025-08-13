@@ -1,6 +1,7 @@
 --https://docs.github.com/en/github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api
 --https://github.com/marketplace/models/
 
+--https://github.blog/changelog/2025-07-17-deprecation-of-azure-endpoint-for-github-models/
 apibase="https://models.inference.ai.azure.com"
 
 --https://github.com/settings/personal-access-tokens
@@ -8,13 +9,8 @@ apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 
 --https://github.com/marketplace?type=models
 --https://github.com/marketplace/models/azure-openai/gpt-4o/playground
---https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
-model={
-  "gpt-4.1", -- default
-
-  -- from https://models.inference.ai.azure.com/models
-  "AI21-Jamba-Instruct",
-}
+--https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models#rate-limits
+model="gpt-5"
 
 modelsMeta=function()
   local id = win.Uuid"922CC103-62C6-4F4E-8C99-31F4E84906D1"
@@ -22,7 +18,8 @@ modelsMeta=function()
                                     nil,nil,nil,"FIB_BUTTONS")
   if not user_session then return "" end
   return ([[{
-  apibase: "https://github.com/marketplace"
+  apibase: "https://github.com/models"
+  endpoint: "/available"
   headers: "x-requested-with": "XMLHttpRequest", cookie: "user_session=%s"
   filterFn: (model) -> model.task=="chat-completion"
   nameFn: (model) -> model.original_name

@@ -1,102 +1,26 @@
 ﻿--https://huggingface.co/playground
---https://huggingface.co/docs/api-inference/index
+--https://huggingface.co/docs/inference-providers/index#http--curl
+--https://huggingface.co/docs/inference-providers/pricing
 
-apibase="https://api-inference.huggingface.co/models/{model}/v1"
+--https://huggingface.co/settings/inference-providers
+--[[ https://huggingface.co/docs/inference-providers/hub-api?code=curl#get-model-providers
+/cerebras/v1
+/cohere/compatibility/v1
+/featherless-ai/v1
+/fireworks-ai/inference/v1
+/groq/openai/v1
+/hyperbolic/v1
+/nebius/v1
+/novita/v3/openai/v1
+/nscale/v1
+/sambanova/v1
+/together/v1
+--]]
+apibase="https://router.huggingface.co/v1"
 
-local title = "🤗 Hugging Face"
-apikey=win.GetEnv"HF_API_TOKEN"
+apikey=win.GetEnv"HF_API_TOKEN" or "set HF_API_TOKEN env variable!"
 
-local Shared = ...
-local check = Shared.utils.check
-local datafile = Shared.utils.pathjoin(Shared.cfgpath, "huggingface-models.json")
-
-local default = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-model=function()
-  apikey = apikey or far.InputBox(nil, title, "Enter apikey:", "AskAI param apikey:"..apibase,
-                                  nil, nil, nil, "FIB_BUTTONS")
-  if not apikey then return default end
-
-  local request = require("ssl.https").request
-  local ltn12 = require("ltn12")
-  local l = package.loaded
-  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
-
-  local function test (model)
-    local id = model.id
-    local url = ("https://api-inference.huggingface.co/models/%s/v1/chat/completions"):format(id)
-    local body = json.encode {
-      messages={{content="", role="user"}},
-      max_tokens=1,
-    }
-    local out = {}
-    local _, code, _, status_line = assert(request{
-      url=url,
-      sink=ltn12.sink.table(out),
-      source=ltn12.source.string(body),
-      method="POST",
-      headers={
-        authorization="Bearer "..apikey,
-        ["content-type"] = "application/json",
-      }
-    })
-    if code~=200 then
-      local response = table.concat(out)
-      model.error = response:match"^{" and json.decode(response).error or code
-    end
-    return model,code==402 and status_line
-  end
-
-  local function status (msg)
-    actl.RedrawAll()
-    far.Message(msg, title, "")
-  end
-
-  local page,list, tested = 0, {}, {}
-  local br
-  repeat
-    status("Fetching models list, page "..(page+1))
-    local url = "https://huggingface.co/models?other=text-generation-inference&sort=trending&p="..page
-    local response, code, _, status_line = assert(request(url))
-    assert(code==200, status_line)
-    if check"Esc" then break end
-
-    local data_props = assert(response:match('data%-target="ModelList".-data%-props="([^"]+)"'), "Unexpected format")
-    local data = json.decode((data_props:gsub("&quot;", '"')))
-    local models = data.initialValues and data.initialValues.models
-    if not models or #models==0 then break end
-
-    for _, model in ipairs(models) do
-      list[#list+1],br = test(model)
-      br = br or check"Esc"
-      if br then break end
-      if not model.error then
-        table.insert(tested, model.id==default and 1 or #list+1, model.id)
-      end
-      status(model.id..": "..(model.error and "Error" or "OK!"))
-    end
-    page = page+1
-  until #models<30 or br
-
-  local file = assert(io.open(datafile, "w"))
-  file:write(json.encode(list))
-  file:close()
-  if type(br)=="string" then
-    error(br)
-  end
-  return tested
-end
-
-modelsMeta=([[{
-filterFn: (model) -> not model.error
-modelsFn: ->
-  file = assert io.open %q
-  data = file\read "*all"
-  file\close!
-  json = nil
-  with package.loaded
-    json = .cjson or .rsjson or .ljson or .dkjson or .lunajson or .json
-  with json.decode data
-    .keyId = "id"
-}]]):format(datafile)
-
---headers='"x-use-cache":"false", "x-wait-for-model":"true"'
+--https://huggingface.co/models?pipeline_tag=text-generation&sort=trending
+--https://huggingface.co/docs/inference-providers/hub-api#list-models
+--curl -s "https://huggingface.co/api/models?inference_provider=fireworks-ai&pipeline_tag=text-generation" | jq .[].id
+model="openai/gpt-oss-120b"

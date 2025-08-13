@@ -1,0 +1,23 @@
+--https://chutes.ai/app?type=llm&free=true&minPrice=0&maxPrice=0
+apibase="https://llm.chutes.ai/v1"
+apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
+model="zai-org/GLM-4.5-Air"
+
+modelsMeta=[[{
+  modelsFn: (data) ->
+    acc = {}
+    _, status_code, _, status_line = assert require"ssl.https".request
+      url:"https://api.chutes.ai/chutes/?include_public=true&template=vllm&limit=300"
+      headers:{authorization:"Bearer #{data.apikey}"}
+      sink:require"ltn12".sink.table acc
+    assert status_code==200, status_line
+    l = package.loaded
+    json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+    data = json.decode table.concat acc
+    with data.items do
+      .keyId = "name"
+  filterFn: (model) ->
+    model.current_estimated_price.usd.hour==0
+}]]
+
+modelsMeta="filterFn: (model) -> model.pricing.completion==0"

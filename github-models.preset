@@ -7,7 +7,7 @@ apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 --https://github.com/marketplace?type=models
 --https://github.com/marketplace/models/azure-openai/gpt-4o/playground
 --https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
-model="gpt-4.1"
+model="gpt-5"
 
 --https://docs.github.com/en/rest/models/catalog
 modelsMeta=[[{
