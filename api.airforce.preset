@@ -1,0 +1,7 @@
+-- https://api.airforce/
+-- https://panel.api.airforce/playground
+
+apibase="https://api.airforce/v1"
+model="gpt-5-chat"
+
+modelsMeta="filterFn: (model) -> model.supports_chat"
