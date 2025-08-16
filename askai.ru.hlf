@@ -354,6 +354,7 @@ $ #Обзор онлайн-сервисов#
      #•# §¦~github-models~@https://github.com/marketplace?type=models&task=chat-completion@ (модели от #Cohere#, #DeepSeek#, #Meta#, #Mistral AI#, #Microsoft#, #OpenAI#, #xAI# и др.)
      #•# §¦~groq~@https://console.groq.com/playground@ (модели до 120b)
      #•# §¦~mistral~@https://docs.mistral.ai/getting-started/models/models_overview/@, ~codestral~@https://console.mistral.ai/codestral@
+     #•# §¦~nvidia~@https://build.nvidia.com/@ (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
      #•# §¦~sambanova~@https://cloud.sambanova.ai/pricing@ (Llama, DeepSeek, Qwen)
  #•# §¦На некоторых сервисах только часть моделей доступна бесплатно:
      #•# §¦~chutes~@https://chutes.ai/app@ (бесплатно - небольшие модели #openai/gpt-oss-20b#, #zai-org/GLM-4.5-Air#, #Qwen/Qwen3-Coder-30B-A3B-Instruct#, …)
