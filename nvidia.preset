@@ -1,0 +1,8 @@
+-- https://build.nvidia.com/
+-- https://build.nvidia.com/openai/gpt-oss-120b
+ 
+apibase="https://integrate.api.nvidia.com/v1"
+apikey=win.GetEnv"NVIDIA_API_KEY" or "set NVIDIA_API_KEY env variable!"
+
+--https://build.nvidia.com/models?filters=usecase%3Ausecase_code_gen
+model="deepseek-ai/deepseek-r1-0528"
