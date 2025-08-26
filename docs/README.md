@@ -239,7 +239,7 @@
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
 - [tgpt](https://github.com/aandrew-me/tgpt), [pytgpt](https://github.com/Simatwa/python-tgpt) - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
-- Прочие утилиты - [aichat](https://github.com/sigoden/aichat), [chatgpt-cli](https://github.com/kardolus/chatgpt-cli), [mods](https://github.com/charmbracelet/mods), [sgpt](https://github.com/tbckr/sgpt) - работают с [OpenAI API](https://platform.openai.com/docs/api-reference) (и совместимыми).  
+- Прочие утилиты - [aichat](https://github.com/sigoden/aichat), [chatgpt-cli](https://github.com/kardolus/chatgpt-cli), [mods](https://github.com/charmbracelet/mods), [sgpt](https://github.com/tbckr/sgpt), [smartcat](https://github.com/efugier/smartcat) - работают с [OpenAI API](https://platform.openai.com/docs/api-reference) (и совместимыми).  
   Требуют задания некоторых параметров, прежде всего `apibase`, `apikey` и `model`.
   Их значения зависят от выбранного [сервиса](#обзор-онлайн-сервисов).  
   В зависимости от утилиты, параметры или надо установить через **файл** настроек (как описано выше),
