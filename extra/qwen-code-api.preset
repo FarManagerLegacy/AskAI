@@ -1,0 +1,57 @@
+-- 2,000 requests per day with no token limits
+-- 60 requests per minute rate limit
+-- https://github.com/QwenLM/qwen-code
+
+-- Initial token must be acquired either through qwen-code itself or via auth_qwen_code.py.
+-- Expired token could be updated by reloading the preset.
+
+apibase="https://portal.qwen.ai/v1"
+
+apikey=function ()
+  local filename = win.JoinPath(win.GetEnv"USERPROFILE", ".qwen", "oauth_creds.json")
+  local file,err = assert(io.open(filename,"r"))
+  local content = file:read"*a"
+  file:close()
+
+  local l = package.loaded
+  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  content = json.decode(content)
+  now = os.time()
+  if now*1000<content.expiry_date then
+    return content.access_token 
+  end
+
+  local ltn12 = require"ltn12"
+  local acc = {}
+  local _, status_code, _, status_line = assert(require"ssl.https".request {
+    method="POST",
+    url="https://chat.qwen.ai/api/v1/oauth2/token",
+    headers={["content-type"]="application/x-www-form-urlencoded", accept="application/json", ["user-agent"]=":"},
+    sink=ltn12.sink.table(acc),
+    source=ltn12.source.string(table.concat({
+      "grant_type=refresh_token",
+      "refresh_token="..content.refresh_token,
+      "client_id=f0304373b74a44d2b584a3fb70ca9e56",
+    },"&"))
+  })
+  local resp = table.concat(acc)
+  if status_code~=200 then
+    error(("%s\n\1\n%s"):format(status_line, resp))
+  end
+  resp = assert(json.decode(resp))
+  if resp.error then
+    error(resp.error_description)
+  end
+  resp.expiry_date = (now + resp.expires_in)*1000
+  resp.status = nil
+  resp.scope = nil
+  resp.expires_in = nil
+
+  file = assert(io.open(filename,"w"))
+  file:write(json.encode(resp))
+  file:close()
+  return resp.access_token
+end
+
+model="qwen3-coder-plus"
+modelsMeta="none"
