@@ -403,6 +403,7 @@ __Кнопки__:
    - [pollinations.ai] (OpenAI, Gemini, DeepSeek, Qwen, Mistral, Llama, [...](https://text.pollinations.ai/models))
    - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
    - [api.airforce]\: лимит 1 запрос в минуту, 500 в сутки
+   - [g4f.*]\: GPT4Free
    - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
@@ -460,6 +461,7 @@ __Кнопки__:
 [gemini]: https://ai.google.dev/gemini-api/docs/openai
 [github-copilot]: https://docs.github.com/en/copilot/get-started/what-is-github-copilot
 [github-models]: https://github.com/marketplace?type=models&task=chat-completion
+[g4f.*]: https://g4f.dev/
 [grok]: https://console.x.ai/
 [groq]: https://console.groq.com/playground
 [huggingface]: https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference&sort=trending

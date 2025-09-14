@@ -1,0 +1,9 @@
+--https://g4f.dev/docs/providers-and-models.html
+
+--https://g4f.dev/docs/ready_to_use.html
+apibase="https://g4f.dev/v1" --https://host.g4f.dev/v1
+
+--https://g4f.dev/api_key.html
+--apikey=
+
+model="o4-mini-high"

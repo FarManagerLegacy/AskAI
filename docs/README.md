@@ -295,6 +295,7 @@
   - [pollinations.ai](https://pollinations.ai/) (OpenAI, Gemini, DeepSeek, Qwen, Mistral, Llama, […](https://text.pollinations.ai/models))
   - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
   - [api.airforce](https://api.airforce): лимит 1 запрос в минуту, 500 в сутки
+  - [g4f.\*](https://g4f.dev/): GPT4Free
   - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели): some anonymous usage allowed
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):

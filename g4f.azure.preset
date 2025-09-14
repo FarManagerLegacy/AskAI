@@ -1,0 +1,10 @@
+--https://ai.azure.com/
+
+--https://g4f.dev/docs/ready_to_use.html
+apibase="https://g4f.dev/api/Azure" --https://host.g4f.dev/api/Azure
+
+--https://discord.gg/qXA4Wf4Fsm
+--https://g4f.dev/api_key.html
+--apikey=
+
+model="gpt-4.1"
