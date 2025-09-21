@@ -309,6 +309,11 @@
   - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
   - [nvidia](https://build.nvidia.com/) (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
   - [sambanova](https://cloud.sambanova.ai/pricing) (Llama, DeepSeek, Qwen)
+  - [vercel](https://vercel.com/ai-gateway) (модели от *Alibaba* Qwen, *Amazon*, *Anthropic*, *Cohere*, *DeepSeek*, *Google*,
+    *Meta*, *Mistral AI*, *Moonshot AI*, *OpenAI*, *xAI*, *Zhipu AI* и др.)  
+    Для регистрации требуется привязка кредитной карты.  
+    Free-аккаунты получают ежемесячно кредит \$5.
+    Некоторые модели бывают доступны бесплатно, в настоящий момент это `meituan/longcat-flash-chat`.
 - На некоторых сервисах только часть моделей доступна бесплатно:
   - [chutes](https://chutes.ai/app) (бесплатно - небольшие модели `openai/gpt-oss-20b`, `zai-org/GLM-4.5-Air`, `Qwen/Qwen3-Coder-30B-A3B-Instruct`, …)
   - [openrouter](https://openrouter.ai/models?q=:free) (до 50 запросов в день к бесплатным “:free” моделям,
