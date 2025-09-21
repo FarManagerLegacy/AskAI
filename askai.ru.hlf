@@ -363,8 +363,6 @@ $ #Обзор онлайн-сервисов#
 в том числе от Google, а также #llama#, #deepseek#, #qwen# и др.;
        §¦покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
      #•# §¦~siliconflow~@https://docs.siliconflow.cn/reference/chat-completions-1@ (бесплатно - небольшие модели)
-     #•# §¦~together.ai~@https://api.together.xyz/models@ (бесплатно - #meta-llama/Llama-3.3-70B-Instruct-Turbo-Free#, #meta-llama/Llama-Vision-Free#,
-#deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free#)
  #•# §¦Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
 задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
      #•# §¦~cerebras~@https://cloud.cerebras.ai/@ (#gpt-oss-120b#, и несколько моделей #Llama#, #Qwen#)
