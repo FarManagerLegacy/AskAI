@@ -417,6 +417,11 @@ __Кнопки__:
    - [mistral], [codestral]
    - [nvidia] (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
    - [sambanova] (Llama, DeepSeek, Qwen)
+   - [vercel] (модели от _Alibaba_ Qwen, _Amazon_, _Anthropic_, _Cohere_, _DeepSeek_, _Google_,
+     _Meta_, _Mistral AI_, _Moonshot AI_, _OpenAI_, _xAI_, _Zhipu AI_ и др.)  
+     Для регистрации требуется привязка кредитной карты.  
+     Free-аккаунты получают ежемесячно кредит $5.
+     Некоторые модели бывают доступны бесплатно, в настоящий момент это `meituan/longcat-flash-chat`.
 - На некоторых сервисах только часть моделей доступна бесплатно:
    - [chutes] (бесплатно - небольшие модели `openai/gpt-oss-20b`, `zai-org/GLM-4.5-Air`, `Qwen/Qwen3-Coder-30B-A3B-Instruct`, ...)
    - [openrouter] (до 50 запросов в день к бесплатным ":free" моделям,
@@ -473,6 +478,7 @@ __Кнопки__:
 [pollinations.ai]: https://pollinations.ai/
 [sambanova]: https://cloud.sambanova.ai/pricing
 [siliconflow]: https://docs.siliconflow.cn/reference/chat-completions-1
+[vercel]: https://vercel.com/ai-gateway
 
 [Обзор пресетов]: #Services
 

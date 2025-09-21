@@ -1,0 +1,13 @@
+--https://vercel.com/ai-gateway
+--https://ai-sdk.dev/playground
+--https://vercel.com/ai-gateway/models
+
+--https://vercel.com/docs/ai-gateway/pricing#free-tier
+--Free users get $5 of credits every 30 days
+--curl https://ai-gateway.vercel.sh/v1/credits -H "Authorization: Bearer %AI_GATEWAY_API_KEY%"
+
+--https://vercel.com/docs/ai-gateway/openai-compat
+apibase="https://ai-gateway.vercel.sh/v1"
+apikey=win.GetEnv"AI_GATEWAY_API_KEY" or "set AI_GATEWAY_API_KEY env variable!"
+model="meituan/longcat-flash-chat"
+modelsMeta='filterFn: (model) -> model.type=="language"'-- and model.pricing.input=="0" and model.pricing.output=="0"'
