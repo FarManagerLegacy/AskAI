@@ -1,0 +1,7 @@
+--https://creator.poe.com/docs/external-applications/interface-configuration
+--https://creator.poe.com/docs/external-applications/openai-compatible-api
+--https://creator.poe.com/docs/resources/usage-api
+apibase="https://api.poe.com/v1"
+apikey=win.GetEnv"POE_API_KEY" or "set POE_API_KEY env variable!"
+model="Grok-4-Fast-Reasoning"
+modelsMeta='filterFn: (model) -> model.architecture.modality=="text->text"'

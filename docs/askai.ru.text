@@ -416,6 +416,7 @@ __Кнопки__:
    - [groq] (модели до 120b)
    - [mistral], [codestral]
    - [nvidia] (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
+   - [poe] (все популярные модели + пользовательские "боты"): 3000 поинтов в день на бесплатном плане
    - [sambanova] (Llama, DeepSeek, Qwen)
    - [vercel] (модели от _Alibaba_ Qwen, _Amazon_, _Anthropic_, _Cohere_, _DeepSeek_, _Google_,
      _Meta_, _Mistral AI_, _Moonshot AI_, _OpenAI_, _xAI_, _Zhipu AI_ и др.)  
@@ -475,6 +476,7 @@ __Кнопки__:
 [novita.ai]: https://novita.ai/model-api/product/llm-api
 [nvidia]: https://build.nvidia.com/
 [openrouter]: https://openrouter.ai/models?q=:free
+[poe]: https://poe.com/
 [pollinations.ai]: https://pollinations.ai/
 [sambanova]: https://cloud.sambanova.ai/pricing
 [siliconflow]: https://docs.siliconflow.cn/reference/chat-completions-1
