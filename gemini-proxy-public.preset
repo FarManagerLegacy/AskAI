@@ -1,6 +1,6 @@
--- https://makersuite.google.com/app/apikey
+-- https://aistudio.google.com/app/api-keys
 -- https://habr.com/ru/articles/798123/
 
 apibase="https://my-openai-gemini-demo.vercel.app/v1"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
-model="gemini-2.5-flash"
+model="gemini-flash-latest"
