@@ -356,6 +356,7 @@ $ #Обзор онлайн-сервисов#
      #•# §¦~groq~@https://console.groq.com/playground@ (модели до 120b)
      #•# §¦~mistral~@https://docs.mistral.ai/getting-started/models/models_overview/@, ~codestral~@https://console.mistral.ai/codestral@
      #•# §¦~nvidia~@https://build.nvidia.com/@ (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
+     #•# §¦~poe~@https://poe.com/@ (все популярные модели + пользовательские “боты”): 3000 поинтов в день на бесплатном плане
      #•# §¦~sambanova~@https://cloud.sambanova.ai/pricing@ (Llama, DeepSeek, Qwen)
      #•# §¦~vercel~@https://vercel.com/ai-gateway@ (модели от #Alibaba# Qwen, #Amazon#, #Anthropic#, #Cohere#, #DeepSeek#, #Google#,
 #Meta#, #Mistral AI#, #Moonshot AI#, #OpenAI#, #xAI#, #Zhipu AI# и др.)
