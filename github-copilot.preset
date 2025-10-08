@@ -6,6 +6,7 @@
 
 apibase="https://api.githubcopilot.com"
 apikey=win.GetEnv"GHU_TOKEN" or "set GHU_TOKEN env variable!"
+--https://docs.github.com/ru/copilot/concepts/billing/copilot-requests#model-multipliers
 model={
   "gpt-5",
   "gpt-5-mini",
@@ -18,7 +19,6 @@ model={
   "claude-3.7-sonnet-thought",
   "claude-sonnet-4",
   "gemini-2.5-pro",
-  "grok-code-fast-1",
 }
 
 modelsMeta="filterFn: (model) -> model.capabilities.type=='chat'"
