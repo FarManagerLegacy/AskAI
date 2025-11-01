@@ -1,9 +1,11 @@
 ﻿--https://huggingface.co/playground
 --https://huggingface.co/docs/inference-providers/index#http--curl
---https://huggingface.co/docs/inference-providers/pricing
+--https://huggingface.co/docs/inference-providers/pricing#free-credits-to-get-started
+--Monthly Credits: $0.10
 
+--https://huggingface.co/docs/inference-providers/hub-api?code=curl
 --https://huggingface.co/settings/inference-providers
---[[ https://huggingface.co/docs/inference-providers/hub-api?code=curl#get-model-providers
+--[[
 /cerebras/v1
 /cohere/compatibility/v1
 /featherless-ai/v1
@@ -13,8 +15,11 @@
 /nebius/v1
 /novita/v3/openai/v1
 /nscale/v1
+/publicai/v1
 /sambanova/v1
+/scaleway/v1
 /together/v1
+/zai-org/api/paas/v4
 --]]
 apibase="https://router.huggingface.co/v1"
 
