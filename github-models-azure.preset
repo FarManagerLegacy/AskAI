@@ -21,7 +21,7 @@ modelsMeta=function()
   apibase: "https://github.com/models"
   endpoint: "/available"
   headers: "x-requested-with": "XMLHttpRequest", cookie: "user_session=%s"
-  filterFn: (model) -> model.task=="chat-completion"
+  filterFn: (model) -> model.task=="chat-completion" or model.task=="responses"
   nameFn: (model) -> model.original_name
 }]]):format(user_session)
 end
