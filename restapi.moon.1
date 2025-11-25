@@ -262,6 +262,62 @@ class GoogleGemini extends BasicSSE
   modelsKeys: {models:"models", id:"name"}
 
 
+class GoogleInternal extends BasicSSE -- abstract class
+  @@._cache = {}
+  class GoogleAuth extends Plain
+    headers: "Content-Type": "application/x-www-form-urlencoded"
+    api_base: "https://oauth2.googleapis.com"
+    new: (refresh_token, client_id, client_secret) =>
+      @payload = table.concat {
+        "grant_type=refresh_token", "refresh_token="..refresh_token, "client_id="..client_id, "client_secret="..client_secret
+      }, "&"
+
+    refresh: (expiry) =>
+      curtime = os.time!
+      unless expiry and expiry>curtime
+        with a=assert @request "POST", "/token", @payload
+          .expires_at = curtime + .expires_in
+      
+
+  client_id: nil
+  client_secret: nil
+  headers: nil
+  api_base: nil
+
+  new: (@refresh_token, @api_base) =>
+    assert @refresh_token, "refresh_token required"
+    @auth = GoogleAuth @refresh_token, @client_id, @client_secret
+    if data = @@._cache[@refresh_token]
+      { api_key:@api_key, exp:@exp, project:@project } = data
+    else
+      @project = (assert @request "POST", ":loadCodeAssist", cloudaicompanionProject:"default-project").cloudaicompanionProject
+      @@._cache[@refresh_token] = api_key:@api_key, exp:@exp, project:@project
+
+  request: (...) =>
+    if data = @auth\refresh @exp
+      { access_token:@api_key, expires_at:@exp } = data
+    super ...
+
+  generate: (request, model, stream, delta_callback=nil) =>
+    super stream and ":streamGenerateContent?alt=sse" or ":generateContent",
+      {:model, project:@project, :request}, if stream then delta_callback
+
+  is_valid: (parsed) =>
+    parsed.response.candidates
+
+  models: =>
+    response, meta = @request "POST", ":fetchAvailableModels", project:@project
+    if response
+      if type(response)~="table"
+        meta.data = response
+      else
+        addId = (obj,name) -> with obj
+          .id = name
+        return with [ addId model,name for name,model in pairs response.models ]
+          .keyId = "id"
+    nil, meta
+
+
 {
   :STREAMED
   :Plain
@@ -270,4 +326,5 @@ class GoogleGemini extends BasicSSE
   :SSE
   :OpenAI
   :GoogleGemini
+  :GoogleInternal
 }
