@@ -1,0 +1,132 @@
+socket = require "socket"
+ltn12 = require "ltn12"
+json or= require "cjson"
+:request = require "ssl.https"
+:escape, :unescape = require "socket.url"
+
+profiles =
+  gemini_cli:
+    client_id: "681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com"
+    client_secret: "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"
+  antigravity:
+    client_id: "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
+    client_secret: "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"
+
+SCOPES = table.concat {
+  "https://www.googleapis.com/auth/cloud-platform"
+  "https://www.googleapis.com/auth/userinfo.email"
+  "https://www.googleapis.com/auth/userinfo.profile"
+}, " "
+
+urlencode = (params) -> table.concat ["#{k}=#{escape v}" for k,v in pairs params], "&"
+openUrl or= (url) -> win.ShellExecute nil,nil,url
+parseQuery = (query) -> {key, unescape(val) for key,val in query\gmatch "([^&=?]-)=([^&=?]+)"}
+escapeHtml = (str) ->
+  (str or "")\gsub "[&<>\"']", { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" } 
+
+
+exchangeCodeForToken = (profile, code, port) ->
+  payload = urlencode
+    :code
+    client_id: profile.client_id
+    client_secret: profile.client_secret
+    redirect_uri: "http://localhost:#{port}/oauth-callback"
+    grant_type: "authorization_code"
+  response_body = {}
+  ok, status_code = request
+    url: "https://oauth2.googleapis.com/token"
+    method: "POST"
+    headers:
+      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Length": #payload 
+    source: ltn12.source.string payload
+    sink: ltn12.sink.table response_body
+  return nil, status_code unless ok
+  response = table.concat response_body
+  if status_code==200
+    json.decode response
+  else
+    nil, "HTTP #{status_code}: #{response}"
+
+
+oauth = (profile, log=->) ->
+  profile = profiles[profile] if type(profile)=="string"
+  return nil, "No such profile" unless profile
+  -- Bind to port 0 (random port)
+  server, socket_err = socket.bind "localhost", 0
+  return nil, socket_err unless server
+  _, port = server\getsockname!
+  log "Local callback server started on http://localhost:#{port}"
+  log "Waiting authorization callback..."
+  openUrl ("https://accounts.google.com/o/oauth2/v2/auth?"..urlencode
+    redirect_uri: "http://localhost:#{port}/oauth-callback"
+    state: win.Uuid win.Uuid!
+    client_id: profile.client_id
+    scope: SCOPES
+    response_type: "code"
+    --access_type: "offline"
+    --prompt: "consent"
+  ), log
+  local token, err
+  server\settimeout 0.5
+  while true
+    client, accept_err = server\accept!
+    if client
+      client\settimeout 5
+      -- Read the first line of the request (GET /oauth-callback?code=... HTTP/1.1)
+      line, client_err = client\receive!
+      if line
+        method, path_full = line\match "^(%w+)%s+(%S+)%s+HTTP"
+        -- log method.."\t"..path_full
+        path, query = path_full\match "([^?]+)%??(.*)" -- basic URL parsing
+        local response
+        if path=="/oauth-callback"
+          params = parseQuery query
+          if params.code
+            log "Authorization code received, exchanging for token..."
+            token, err = exchangeCodeForToken profile, params.code, port
+            if token
+              -- log json.encode token -- debug
+              response = "<h1>Authorization Successful!</h1><p>Token received, you can close this page.</p>"
+            else
+              log "Token exchange failed: #{err}"
+              response = "<h1>Failed to get token</h1><p>#{escapeHtml err}</p>"
+          else
+            err = params.error_description or params.error or "Authorization code not received."
+            log "Authorization Failed: #{err}"
+            response = "<h1>Authorization Failed.</h1><p>#{escapeHtml err}</p>"
+        else
+          response = "<h1>Not Found</h1><p>The requested URL was not found on this server.</p>"
+
+        client\send table.concat {
+          "HTTP/1.1 200 OK"
+          "Content-Type: text/html; charset=utf-8"
+          "Content-Length: " .. #response
+          "Connection: close"
+          ""
+          response
+        }, "\r\n"
+      else
+        log "Warning: Failed to read client request line: #{client_err}"
+
+      client\close!
+    elseif accept_err=="timeout"
+      if "Esc"==mf.waitkey 1
+        log "Exiting"
+        err = "User break"
+        break
+    else
+      log "Socket error: #{accept_err}"
+      err = accept_err
+      break
+
+    break if token or err
+
+  server\close!
+  token, err
+
+
+return oauth if ...
+
+if token = oauth "antigravity", print
+  print token.refresh_token

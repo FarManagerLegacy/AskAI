@@ -303,7 +303,7 @@ local mt = setmetatable({
 local function loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
-  local applyParamsFn, getModels = setfenv(fn, env)(export or Shared)
+  local applyParamsFn, getModels, authFn = setfenv(fn, env)(export or Shared)
   for _,param in ipairs{"config", "sessionFile"} do
     if env[param] then
       env[param] = expandEnv(env[param])
@@ -325,6 +325,7 @@ local function loadCfg (pathname, filename)
   end
   return {
     applyParamsFn = applyParamsFn,
+    authFn = authFn,
     getModels = getModels,
     info = env,
     filename = filename,
