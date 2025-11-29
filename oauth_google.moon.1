@@ -1,0 +1,146 @@
+socket = require "socket"
+url = require "socket.url"
+https = require "ssl.https"
+ltn12 = require "ltn12"
+json or= require "cjson"
+
+profiles =
+  gemini_cli:
+    CLIENT_ID: "681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com"
+    CLIENT_SECRET: "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"
+  antigravity:
+    CLIENT_ID: "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
+    CLIENT_SECRET: "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"
+
+SCOPES = {
+  "https://www.googleapis.com/auth/cloud-platform"
+  "https://www.googleapis.com/auth/userinfo.email"
+  "https://www.googleapis.com/auth/userinfo.profile"
+}
+
+makePayload = (params) -> table.concat ["#{k}=#{url.escape v}" for k, v in pairs params], "&"
+generateAuthUrl = (profile, port) ->
+  "https://accounts.google.com/o/oauth2/v2/auth?"..makePayload
+    access_type: "offline"
+    client_id: profile.CLIENT_ID
+    prompt: "consent"
+    redirect_uri: "http://localhost:#{port}/oauth-callback"
+    response_type: "code"
+    scope: table.concat SCOPES, " "
+    state: win.Uuid win.Uuid!
+
+exchangeCodeForToken = (profile, code, port) ->
+  post_data = makePayload
+    :code
+    client_id: profile.CLIENT_ID
+    client_secret: profile.CLIENT_SECRET
+    redirect_uri: "http://localhost:#{port}/oauth-callback"
+    grant_type: "authorization_code"
+  response_body = {}
+  success, status_code = https.request
+    url: "https://oauth2.googleapis.com/token"
+    method: "POST"
+    headers:
+      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Length": #post_data
+    source: ltn12.source.string post_data
+    sink: ltn12.sink.table response_body
+  return nil, status_code unless success
+  response = table.concat response_body
+  if status_code==200
+    json.decode(response), nil, response
+  else
+    nil, "HTTP #{status_code}: #{response}"
+
+open = (url) ->
+  if win.ShellExecute
+    win.ShellExecute nil, nil, url
+  else
+    for fname in *{"xdg-open", "explorer.exe", "open"}
+      if 0 == os.execute "which #{fname}"
+        os.execute "#{fname} '#{url}'"
+        return
+    far.Message url, ""
+
+escapeHtml = (str) ->
+  return "" unless str
+  tostring(str)\gsub("&", "&amp;")\gsub("<", "&lt;")\gsub(">", "&gt;")\gsub("\"", "&quot;")\gsub("'", "&#39;")
+
+parseQuery = (query) -> {key, url.unescape(val) for key, val in string.gmatch query, "([^&=?]-)=([^&=?]+)"}
+
+getToken = (profile, log) ->
+  profile = profiles[profile] if type(profile)=="string"
+  return nil, "No such profile" unless profile
+  -- Bind to port 0 (random port)
+  server, socket_err = socket.bind "localhost", 0
+  return nil, socket_err unless server
+  _, port = server\getsockname!
+  log or= ->
+  log "Local callback server started on http://localhost:#{port}"
+  log "Waiting authorization callback from Google..."
+  open generateAuthUrl profile, port
+  local token, err
+  server\settimeout 0.5
+  while true
+    client, accept_err = server\accept!
+    if client
+      client\settimeout 5
+      -- Read the first line of the request (GET /oauth-callback?code=... HTTP/1.1)
+      line, client_err = client\receive!
+      if line
+        method, path_full = line\match "^(%w+)%s+(%S+)%s+HTTP"
+        -- log method.."\t"..path_full
+        -- Basic URL Parsing
+        path, query = path_full\match "([^?]+)%??(.*)"
+        local response
+        if path=="/oauth-callback"
+          params = parseQuery query
+          if params.code
+            log "Authorization code received, exchanging for token..."
+            local token_str
+            token, err, token_str = exchangeCodeForToken profile, params.code, port
+            if token
+              -- log json.encode(token) -- debug
+              response = "<h1>Authorization Successful!</h1><p>Token received, you can close this page.</p>"..
+                --"<code>#{token_str}</code>"
+                "<code>#{token.refresh_token}</code>"
+            else
+              log "Token exchange failed: #{err}"
+              response = "<h1>Failed to get token</h1><p>#{escapeHtml err}</p>"
+          else
+            err = params.error_description or params.error or "Authorization code not received."
+            log "Authorization Failed: #{err}"
+            response = "<h1>Authorization Failed.</h1><p>#{escapeHtml err}</p>"
+        else
+          response = "<h1>Not Found</h1><p>The requested URL was not found on this server.</p>"
+
+        client\send table.concat {
+          "HTTP/1.1 200 OK"
+          "Content-Type: text/html; charset=utf-8"
+          "Content-Length: " .. #response
+          "Connection: close"
+          ""
+          response
+        }, "\r\n"
+      else
+        log "Warning: Failed to read client request line: #{client_err}"
+
+      client\close!
+    elseif accept_err=="timeout"
+      if mf.waitkey(1)=="Esc"
+        log "Exiting"
+        err = "User break"
+        break
+    else
+      log "Socket error: #{accept_err}"
+      err = accept_err
+      break
+
+    break if token or err
+
+  server\close!
+  token, err
+
+return getToken if ...
+token, err = getToken "antigravity", print
+print err or token.refresh_token

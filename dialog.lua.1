@@ -303,6 +303,23 @@ local function dialog (opts)
       end,
     }
   end
+  if cfg.authFn then
+    II:add {F.DI_BUTTON, "Au&thorization", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
+      onclick=function(_,hDlg)
+        local success, ret, err = pcall(cfg.authFn)
+        actl.RedrawAll()
+        if not success or err then
+          if err~="User break" then
+            far.Message(err or ret,"Authorization Failed",nil,"wl")
+          end
+          return
+        end
+        local idx = II.apikey.idx
+        hDlg:SetText(idx, ret.refresh_token)
+        hDlg:AddHistory(idx, ret.refresh_token)
+      end,
+    }
+  end
   utils.load"presets.lua.1" {
     II=II, utils=utils, cfg=cfg, name=Shared.name, State=State, cfgpath=Shared.cfgpath,
     processSetsHistories=processSetsHistories, populateHistory=populateHistory,
