@@ -386,10 +386,15 @@ local function dialog (opts)
     if context~="" and not cfg.params.context then
       cfg.info._context = context
     end
+    local success, processFn = pcall(cfg.applyParamsFn, unpack(args,1,#cfg.params))
+    if not success then
+      far.Message(processFn, Shared.name, nil, "w")
+      return dialog(opts)
+    end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
-    Shared.output (
+    Shared.output(
       outputFilename,
-      cfg.applyParamsFn(unpack(args,1,#cfg.params)),
+      processFn,
       II.prompt[DATA],
       linewrap,
       cfg.params.stream and State.useStream==1
