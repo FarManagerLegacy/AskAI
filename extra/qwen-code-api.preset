@@ -7,14 +7,14 @@
 
 apibase="https://portal.qwen.ai/v1"
 
+local Shared = ...
 apikey=function ()
   local filename = win.JoinPath(win.GetEnv"USERPROFILE", ".qwen", "oauth_creds.json")
   local file,err = assert(io.open(filename,"r"))
   local content = file:read"*a"
   file:close()
 
-  local l = package.loaded
-  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  local json = Shared.json
   content = json.decode(content)
   now = os.time()
   if now*1000<content.expiry_date then
