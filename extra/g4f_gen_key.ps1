@@ -4,7 +4,7 @@ param(
 )
 
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
-$PublicKeyUrl = 'https://host.g4f.dev/backend-api/v2/public-key'
+$PublicKeyUrl = 'https://g4f.dev/backend-api/v2/public-key'
 
 function Read-AsnLength {
     param([System.IO.BinaryReader]$br)
@@ -68,6 +68,9 @@ try {
         user       = $User
         timestamp  = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
         user_agent = $UserAgent
+        referrer   = "https://g4f.dev/docs/ready_to_use.html"
+        provider   = "Azure"
+        model      = "null"
     } | ConvertTo-Json -Compress
     $payloadBytes = [System.Text.Encoding]::UTF8.GetBytes($payloadJson)
     $encrypted = $rsa.Encrypt($payloadBytes, $false)
