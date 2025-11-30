@@ -3,6 +3,7 @@ apibase="https://llm.chutes.ai/v1"
 apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
 model="zai-org/GLM-4.5-Air"
 
+local Shared = ...
 modelsMeta=[[{
   modelsFn: (data) ->
     acc = {}
@@ -11,9 +12,7 @@ modelsMeta=[[{
       headers:{authorization:"Bearer #{data.apikey}"}
       sink:require"ltn12".sink.table acc
     assert status_code==200, status_line
-    l = package.loaded
-    json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
-    data = json.decode table.concat acc
+    data = Shared.json.decode table.concat acc
     with data.items do
       .keyId = "name"
   filterFn: (model) ->
