@@ -2,6 +2,8 @@
 --Try chat: from https://inference.cerebras.ai/
 
 apibase="https://api.cerebras.ai/v1"
+
+local Shared = ...
 apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
   if not oldkey:match"^demo%-" then return end
 
@@ -21,8 +23,7 @@ apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
     far.Message(('"%s" cookie required'):format(COOKIENAME),"Cerebras preset",nil,"wl")
   until false
 
-  local l = package.loaded
-  local json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
+  local json = Shared.json
   local ltn12 = require"ltn12"
 
   local acc = {}
