@@ -1,4 +1,4 @@
-local Shared = ... -- name, processSetsHistories, populateHistory
+local Shared = ... -- name, json, processSetsHistories, populateHistory
 local State = Shared.State
 local utils = Shared.utils
 local cfgpath = Shared.cfgpath
@@ -21,7 +21,12 @@ end
 local function loadPreset (pathname, itemsNames, cfgInfo)
   local fn = assert(loadfile(assert(pathname)))
   local env = setmetatable({},{__index=_G})
-  local ret = setfenv(fn,env)(Shared)
+  local ret = setfenv(fn,env) {
+    cfgpath=cfgpath,
+    State=State,
+    utils=utils, --.HK, .check, .pathjoin
+    json=Shared.json,
+  }
   for k in pairs(env) do
     if not itemsNames[k] then
       if k~="modelsMeta" then

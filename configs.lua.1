@@ -1,6 +1,7 @@
 ﻿local Shared = ... -- name, dialog, O
 local State = Shared.State
 local utils = Shared.utils
+local json = Shared.json
 local cfgpath = Shared.cfgpath
 local F = far.Flags
 
@@ -151,23 +152,8 @@ local open; do
   end
 end
 
-local json_module = Shared.O.json_module
-if not json_module then
-  for _,name in ipairs {"cjson", "rsjson", "ljson", "dkjson", "lunajson", "json"} do
-    if pcall(require, name) then json_module = name; break end
-  end
-end
-local json = json_module and require(json_module)
-local pretty_encode = json.encode
-
 local export
 if json and pcall(require, "ssl.https") then
-  if json_module=="dkjson" then
-    json = json.use_lpeg()
-    function pretty_encode (data)
-      return json.encode(data, {indent=true})
-    end
-  end
   local _env = setmetatable({json=json},{__index=_G})
   local _path = utils.pathjoin(Shared.cfgpath, "restapi.moon.1")
   local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
@@ -209,7 +195,7 @@ if json and pcall(require, "ssl.https") then
   end
 
   local function formatJson (data)
-    return wrapCode(pretty_encode(data), "json")
+    return wrapCode(json.pretty_encode(data), "json")
   end
 
   local function formatJsonMsg (data,getMsgText)

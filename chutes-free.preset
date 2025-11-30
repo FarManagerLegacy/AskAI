@@ -11,8 +11,6 @@ modelsMeta=[[{
       headers:{authorization:"Bearer #{data.apikey}"}
       sink:require"ltn12".sink.table acc
     assert status_code==200, status_line
-    l = package.loaded
-    json = l.cjson or l.rsjson or l.ljson or l.dkjson or l.lunajson or l.json
     data = json.decode table.concat acc
     with data.items do
       .keyId = "name"
