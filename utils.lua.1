@@ -49,15 +49,32 @@ local function check (key)
   until not k
 end
 
-local loaded = {}
-local function load (filename)
-  if not Shared.O.debug and loaded[filename] then
-    return loaded[filename]
+local function loadLua (filename, env)
+  if not (env and getmetatable(env)) then
+    env = setmetatable(env or {}, {__index=_G})
+  end
+  local pathname = filename:match(path_sep) and filename --presets
+    or pathjoin(Shared.cfgpath, filename)
+  local fn = assert(loadfile(pathname))
+  return setfenv(fn, env)
+end
+
+local function loadMoon (filename, env)
+  if not (env and getmetatable(env)) then
+    env = setmetatable(env or {}, {__index=_G})
   end
   local pathname = pathjoin(Shared.cfgpath, filename)
-  local fn = assert(loadfile(pathname))
-  loaded[filename] = fn
-  return fn
+  return assert(require"moonscript".loadfile(pathname,nil,env,nil))
+end
+
+local loaded = {}
+local function load (filename, env)
+  if not Shared.O.debug and loaded[filename] then
+    return env and setfenv(loaded[filename], env)
+                or loaded[filename]
+  end
+  loaded[filename] = loadLua(filename,env)
+  return loaded[filename]
 end
 
 local function HelpTopic (name)
@@ -187,6 +204,8 @@ return {
   msave=msave,
   pathjoin=pathjoin,
   load=load,
+  loadLua=loadLua,
+  loadMoon=loadMoon,
   HelpTopic=HelpTopic,
   HK=HK,
   synchro=synchro,

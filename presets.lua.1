@@ -19,12 +19,11 @@ local function toggleHidden (items)
 end
 
 local function loadPreset (pathname, itemsNames, cfgInfo)
-  local fn = assert(loadfile(assert(pathname)))
-  local env = setmetatable({},{__index=_G})
-  local ret = setfenv(fn,env) {
+  local env = {}
+  local ret = utils.loadLua(pathname,env) {
     cfgpath=cfgpath,
     State=State,
-    utils=utils, --.HK, .check, .pathjoin
+    utils=utils, --.HK, .check, .loadMoon
     json=Shared.json,
   }
   for k in pairs(env) do

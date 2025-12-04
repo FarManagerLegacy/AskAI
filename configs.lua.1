@@ -154,9 +154,7 @@ end
 
 local export
 if json and pcall(require, "ssl.https") then
-  local _env = setmetatable({json=json},{__index=_G})
-  local _path = utils.pathjoin(Shared.cfgpath, "restapi.moon.1")
-  local restapi = assert(require"moonscript".loadfile(_path, nil, _env, nil))("restapi")
+  local restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
   local function getHistory (historyName)
     State[historyName] = State[historyName] or {}
     return State[historyName]
@@ -241,10 +239,10 @@ if json and pcall(require, "ssl.https") then
 end
 
 local function _import (filename, env, ...)
-  local fn = utils.load(filename)
   env = env or getfenv(2) -- parent _ENV
+  local fn = utils.load(filename,env)
   local name = env.name
-  local ret1,ret2 = setfenv(fn,env)(export or Shared, ...)
+  local ret1,ret2 = fn(export or Shared, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
