@@ -1,10 +1,23 @@
 --https://g4f.dev/docs/providers-and-models.html
 
 --https://g4f.dev/docs/ready_to_use.html
-apibase="https://g4f.dev/v1" --https://host.g4f.dev/v1
+apibase="https://g4f.dev/v1"
+
+local Shared = ...
+local function withUsername(fn)
+  local id = win.Uuid"826FF41A-904B-4089-B48B-9CD649BDE23D"
+  local user = far.InputBox(id, "g4f", "Enter username", "AskAI/g4f*.preset/username", nil, nil, nil, far.Flags.FIB_BUTTONS)
+  return user and fn(user)
+end
 
 --https://g4f.dev/api_key.html
 apikey=function()
+  local _export = {json=Shared.json}
+  local ok, getToken = pcall(Common.utils.loadMoon("auth_g4f.moon.1", _export), "auth_g4f")
+  if ok then
+    return withUsername(getToken)
+  end
+
   local template
   if win.SearchPath then
     template = win.SearchPath(nil,"g4f_gen_key.ps1")
@@ -14,14 +27,12 @@ apikey=function()
          and "g4f_gen_key.sh "
   end
   if template then
-    local id = win.Uuid"826FF41A-904B-4089-B48B-9CD649BDE23D"
-    local user = far.InputBox(id, "g4f", "Enter username", "AskAI/g4f*.preset/username", nil, nil, nil, far.Flags.FIB_BUTTONS)
-    if user then
+    return withUsername(function(user)
       local f = assert(io.popen(template..user))
       local key = f:read"*a"
       f:close()
       return key
-    end
+    end)
   end
 end
 

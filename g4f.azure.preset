@@ -1,28 +1,12 @@
 --https://ai.azure.com/
 
 --https://g4f.dev/docs/ready_to_use.html
-apibase="https://g4f.dev/api/Azure" --https://host.g4f.dev/api/Azure
+apibase="https://g4f.dev/api/Azure"
 
 --https://discord.gg/qXA4Wf4Fsm
 --https://g4f.dev/api_key.html
-apikey=function()
-  if win.SearchPath then
-    template = win.SearchPath(nil,"g4f_gen_key.ps1")
-         and "powershell Set-ExecutionPolicy Bypass -Scope Process -Force; g4f_gen_key.ps1 -User "
-  else
-    template = 0==win.system"command -v g4f_gen_key.sh" and 0==win.system"command -v jq" and 0==win.system"command -v openssl"
-         and "g4f_gen_key.sh "
-  end
-  if template then
-    local id = win.Uuid"826FF41A-904B-4089-B48B-9CD649BDE23D"
-    local user = far.InputBox(id, "g4f", "Enter username", "AskAI/g4f*.preset/username", nil, nil, nil, far.Flags.FIB_BUTTONS)
-    if user then
-      local f = assert(io.popen(template..user))
-      local key = f:read"*a"
-      f:close()
-      return key
-    end
-  end
-end
+local Shared, g4f = ..., {}
+Shared.utils.loadLua("g4f.preset",g4f)(Shared)
+apikey=g4f.apikey
 
 model="gpt-4.1"
