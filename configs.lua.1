@@ -241,10 +241,10 @@ if json and pcall(require, "ssl.https") then
 end
 
 local function _import (filename, env, ...)
-  local fn = utils.load(filename)
   env = env or getfenv(2) -- parent _ENV
+  local fn = utils.load(filename,env)
   local name = env.name
-  local ret1,ret2 = setfenv(fn,env)(export or Shared, ...)
+  local ret1,ret2 = fn(export or Shared, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
