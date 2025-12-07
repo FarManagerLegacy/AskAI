@@ -51,7 +51,7 @@ local function dialog (opts)
 
   local json_module = O.json_module
   if not json_module then
-    for _,name in ipairs {"cjson", "rsjson", "ljson", "dkjson", "lunajson", "json"} do
+    for _,name in ipairs {"cjson.safe", "rsjson", "ljson", "dkjson", "lunajson", "json"} do
       if pcall(require, name) then json_module = name; break end
     end
   end

@@ -21,7 +21,7 @@ ffi.cdef [[
 
 socket = require "socket"
 ltn12 = require "ltn12"
-json or= require "cjson"
+json or= require "cjson.safe"
 :request = require "ssl.https"
 :escape = require "socket.url"
 :b64 = require "mime"
@@ -71,7 +71,7 @@ fetch = (path, headers, payload, allow_status_code) ->
     if code!=allow_status_code
       error "Request failed with status #{code}: #{status}\n\n#{resp_str}"
 
-  json.decode resp_str
+  assert json.decode resp_str
 
 
 client_id = "f0304373b74a44d2b584a3fb70ca9e56"

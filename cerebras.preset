@@ -40,7 +40,7 @@ apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
   })
   assert(status_code==200, status_line) --todo
 
-  local resp = json.decode(table.concat(acc))
+  local resp = assert(json.decode(table.concat(acc)))
   if resp.errors then
     far.Message(resp.errors[1].message,"Cerebras preset",nil,"wl")
     return
