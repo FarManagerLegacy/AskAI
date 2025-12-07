@@ -1,0 +1,132 @@
+--https://github.com/QwenLM/qwen-code/blob/main/packages/core/src/qwen/qwenOAuth2.ts
+ffi = require "ffi"
+local crypto
+
+if ffi.os=="Windows"
+  lib = "libcrypto-3"
+  lib ..= "x64" if ffi.arch=="x64"
+  crypto = ffi.load lib
+else
+  ok, crypto = pcall ffi.load, "libcrypto.so.3"
+  unless ok
+    ok, crypto = pcall ffi.load, "libcrypto.3.dylib"
+  unless ok
+    error "Could not load OpenSSL 3 library."
+
+ffi.cdef [[
+  int RAND_bytes(unsigned char *buf, int num);
+  typedef struct SHA256state_st SHA256_CTX;
+  unsigned char *SHA256(const unsigned char *d, size_t n, unsigned char *md);
+]]
+
+socket = require "socket"
+ltn12 = require "ltn12"
+json or= require "cjson"
+:request = require "ssl.https"
+:escape = require "socket.url"
+:b64 = require "mime"
+
+urlencode = (params) -> table.concat ["#{k}=#{escape v}" for k,v in pairs params], "&"
+openUrl or= (url) -> win.ShellExecute nil,nil,url
+generate_uuid = -> win.Uuid win.Uuid!
+
+
+base64url_encode = (data, len) ->
+  str = ffi.string data, len
+  str = string.gsub b64(str), "=+$", ""
+  string.gsub str, "[+/]", "+": "-", "/": "_"
+
+
+generate_pkce_pair = ->
+  random_bytes = ffi.new "unsigned char[64]"
+  unless 1==crypto.RAND_bytes(random_bytes, 64)
+    error "Failed to generate random bytes"
+
+  code_verifier = base64url_encode random_bytes, 64
+
+  hash = ffi.new "unsigned char[32]"
+  crypto.SHA256 (ffi.cast "const unsigned char*", code_verifier), #code_verifier, hash
+  code_challenge = base64url_encode hash, 32
+
+  code_verifier, code_challenge
+
+
+url_base = "https://chat.qwen.ai/api/v1/oauth2"
+fetch = (path, headers, payload, allow_status_code) ->
+  headers = with headers or {}
+    ["Accept"] = "application/json"
+    ["Content-Type"] = "application/x-www-form-urlencoded"
+    ["User-Agent"] = "QwenCode/0.7.1 (windows; amd64)" --npm view @qwen-code/qwen-code version
+
+  response_body = {}
+  _, code, _, status = assert request
+    :headers
+    url: url_base..path
+    method: "POST"
+    source: ltn12.source.string payload
+    sink: ltn12.sink.table response_body
+
+  resp_str = table.concat response_body
+  if code!=200
+    if code!=allow_status_code
+      error "Request failed with status #{code}: #{status}\n\n#{resp_str}"
+
+  json.decode resp_str
+
+
+client_id = "f0304373b74a44d2b584a3fb70ca9e56"
+POLLING_INTERVAL = 1
+-- TIMEOUT = 10 -- socket.http.TIMEOUT
+
+oauth = (log, time_cb=->) ->
+  code_verifier, code_challenge = generate_pkce_pair!
+
+  login_info = fetch "/device/code", {"x-request-id": generate_uuid!}, urlencode
+    :client_id
+    :code_challenge
+    scope: "openid profile email model.completion"
+    code_challenge_method: "S256"
+
+  openUrl login_info.verification_uri_complete, log
+
+  token_payload = urlencode
+    :client_id
+    :code_verifier
+    grant_type: "urn:ietf:params:oauth:grant-type:device_code"
+    device_code: login_info.device_code
+
+  start_time = socket.gettime!
+  while true
+    data = fetch "/token", {}, token_payload, 400
+    if data.access_token
+      return with data -- QwenCredentials format
+        .expiry_date = math.floor (socket.gettime! + .expires_in) * 1000
+        .expires_in = nil
+        .scope = nil
+        .status = nil
+    elseif data.error=="authorization_pending"
+      if "Esc"==mf.waitkey 1
+        return nil, "User break"
+
+      elapsed = socket.gettime! - start_time
+      remaining = login_info.expires_in - math.floor elapsed
+      minutes = math.floor remaining / 60
+      time_cb string.format "%d:%02d", minutes, remaining - minutes * 60
+      socket.sleep POLLING_INTERVAL
+    else
+      error data.detail or data.error_description or "Unexpected error"
+
+
+refreshToken = (token) ->
+  assert fetch "/token", {}, urlencode
+    :client_id
+    grant_type: "refresh_token"
+    refresh_token: token.refresh_token or token
+
+
+return oauth, refreshToken if ...
+
+print!
+print json.encode oauth print, (str) ->
+  io.write str, "\r"
+  io.flush!
