@@ -11,7 +11,7 @@ modelsMeta=[[{
       headers:{authorization:"Bearer #{data.apikey}"}
       sink:require"ltn12".sink.table acc
     assert status_code==200, status_line
-    data = json.decode table.concat acc
+    data = assert json.decode table.concat acc
     with data.items do
       .keyId = "name"
   filterFn: (model) ->

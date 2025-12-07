@@ -3,7 +3,7 @@ socket = require "socket"
 https = require "ssl.https"
 ltn12 = require "ltn12"
 mime = require "mime"
-json = json or require "cjson"
+json or= require "cjson.safe"
 json.encode_escape_forward_slash false if json.encode_escape_forward_slash
 
 local crypto
