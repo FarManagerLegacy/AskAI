@@ -2,55 +2,57 @@
 -- 60 requests per minute rate limit
 -- https://github.com/QwenLM/qwen-code
 
--- Initial token must be acquired either through qwen-code itself or via auth_qwen_code.py.
 -- Expired token could be updated by reloading the preset.
 
 apibase="https://portal.qwen.ai/v1"
 
 local Shared = ...
-apikey=function ()
-  local filename = win.JoinPath(win.GetEnv"USERPROFILE", ".qwen", "oauth_creds.json")
-  local file,err = assert(io.open(filename,"r"))
-  local content = file:read"*a"
-  file:close()
+apikey=function (cur)
+  local qwen = #cur>0 and mf.mload("jd", "AskAI - qwen-code-api.preset")
+  if qwen then
+    local now = os.time()
+    if now*1000<qwen.expiry_date then
+      return qwen.access_token 
+    end
 
-  local json = Shared.json
-  content = json.decode(content)
-  now = os.time()
-  if now*1000<content.expiry_date then
-    return content.access_token 
+    local ltn12 = require"ltn12"
+    local acc = {}
+    local _, status_code, _, status_line = assert(require"ssl.https".request {
+      method="POST",
+      url="https://chat.qwen.ai/api/v1/oauth2/token",
+      headers={["content-type"]="application/x-www-form-urlencoded", accept="application/json", ["user-agent"]=":"},
+      sink=ltn12.sink.table(acc),
+      source=ltn12.source.string(table.concat({
+        "grant_type=refresh_token",
+        "refresh_token="..qwen.refresh_token,
+        "client_id=f0304373b74a44d2b584a3fb70ca9e56",
+      },"&"))
+    })
+    local resp = table.concat(acc)
+    if status_code~=200 then
+      error(("%s\n\1\n%s"):format(status_line, resp))
+    end
+    resp = assert(Shared.json.decode(resp))
+    if resp.error then
+      error(resp.error_description)
+    end
+    resp.expiry_date = (now + resp.expires_in)*1000
+    resp.status = nil
+    resp.scope = nil
+    resp.expires_in = nil
+    qwen = resp
+  else
+    local _export = {json=Shared.json, openUrl=Shared.utils.openUrl}
+    local oauth = Shared.utils.loadMoon("oauth_qwen.moon.1", _export) "oauth_qwen"
+    local title,msg = "Authorization", "Waiting..."
+    qwen = oauth(function(url) msg = url end, function(time)
+      far.Message(msg,title..": "..time,"")
+    end)
+    actl.RedrawAll()
+    if not qwen then return end
   end
-
-  local ltn12 = require"ltn12"
-  local acc = {}
-  local _, status_code, _, status_line = assert(require"ssl.https".request {
-    method="POST",
-    url="https://chat.qwen.ai/api/v1/oauth2/token",
-    headers={["content-type"]="application/x-www-form-urlencoded", accept="application/json", ["user-agent"]=":"},
-    sink=ltn12.sink.table(acc),
-    source=ltn12.source.string(table.concat({
-      "grant_type=refresh_token",
-      "refresh_token="..content.refresh_token,
-      "client_id=f0304373b74a44d2b584a3fb70ca9e56",
-    },"&"))
-  })
-  local resp = table.concat(acc)
-  if status_code~=200 then
-    error(("%s\n\1\n%s"):format(status_line, resp))
-  end
-  resp = assert(json.decode(resp))
-  if resp.error then
-    error(resp.error_description)
-  end
-  resp.expiry_date = (now + resp.expires_in)*1000
-  resp.status = nil
-  resp.scope = nil
-  resp.expires_in = nil
-
-  file = assert(io.open(filename,"w"))
-  file:write(json.encode(resp))
-  file:close()
-  return resp.access_token
+  mf.msave("jd", "AskAI - qwen-code-api.preset", qwen)
+  return qwen.access_token
 end
 
 model="qwen3-coder-plus"
