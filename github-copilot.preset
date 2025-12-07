@@ -1,11 +1,27 @@
---https://docs.github.com/en/copilot/how-tos/manage-your-account/getting-free-access-to-copilot-pro-as-a-student-teacher-or-maintainer
-
---Get token: https://copilot-demo.publicaffairs.workers.dev/token#Iv23ctfURkiMfJ4xr5mv
---or:
---powershell irm https://gitea.com/PublicAffairs/openai-github-copilot/raw/branch/main/scripts/Get-CopilotToken.ps1 ^| iex
+--https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro
 
 apibase="https://api.githubcopilot.com"
-apikey=win.GetEnv"GHU_TOKEN" or "set GHU_TOKEN env variable!"
+
+--Get token: https://copilot-demo.publicaffairs.workers.dev/token#Iv23ctfURkiMfJ4xr5mv
+local client_id = client_id or "Iv23ctfURkiMfJ4xr5mv" --GitHub Copilot IDE Plugin
+local Shared = ...
+apikey=function(cur)
+  if cur~="" then return cur end
+  local _export = {json=Shared.json, openUrl=Shared.utils.openUrl}
+  local oauth = Shared.utils.loadMoon("oauth_github_copilot.moon.1", _export) "oauth_github_copilot"
+  local login_info = oauth.init(client_id)
+  far.CopyToClipboard(login_info.user_code)
+  local title = "Authorization"
+  local msg =
+    ("Enter the device_code [copied to clipboard] to log in: %s"):format(login_info.user_code).."\n"..
+    ("Press any key to open %s in your browser."):format(login_info.verification_uri)
+  far.Message(msg,title,"","l")
+  mf.waitkey()
+  msg = msg.."\nWaiting for authorization: %s"
+  return oauth.getToken(login_info, client_id, function(str)
+    far.Message(msg:format(str),title,"","l")
+  end)
+end
 
 --https://docs.github.com/copilot/reference/ai-models/supported-models
 --https://docs.github.com/copilot/concepts/billing/copilot-requests#model-multipliers

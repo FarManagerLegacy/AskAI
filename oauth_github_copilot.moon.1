@@ -1,0 +1,74 @@
+https = require "ssl.https"
+ltn12 = require "ltn12"
+json or= require "cjson.safe"
+:sleep, :gettime = require "socket"
+
+default_client_id = "Iv1.b507a08c87ecfe98" -- GitHub Copilot Plugin by GitHub
+-- default_client_id = "Iv23ctfURkiMfJ4xr5mv" -- GitHub Copilot IDE Plugin
+-- default_client_id = "01ab8ac9400c4e429b23" -- Visual Studio Code
+
+openUrl or= (url) -> win.ShellExecute nil,nil,url
+
+
+post = (url, payload) ->
+  response_body = {}
+  _, code, _, status = assert https.request
+    :url
+    method: "POST"
+    headers:
+      "Accept": "application/json"
+      "Content-Type": "application/json"
+      "Content-Length": #payload
+    source: ltn12.source.string payload
+    sink: ltn12.sink.table response_body
+
+  if code!=200
+    error "HTTP Status Code #{code}: #{status} "
+
+  return assert json.decode table.concat response_body
+
+
+init = (client_id=default_client_id) ->
+  with post "https://github.com/login/device/code",
+     json.encode :client_id, scope: "read:user"
+   .expiry_date = math.floor gettime! + .expires_in
+
+
+getToken = (login_info, client_id=default_client_id, time_cb=->) ->
+  openUrl login_info.verification_uri
+
+  payload = json.encode
+    :client_id
+    device_code: login_info.device_code
+    grant_type: "urn:ietf:params:oauth:grant-type:device_code"
+
+  while true
+    data = post "https://github.com/login/oauth/access_token", payload
+    if data.access_token
+      return data.access_token
+    elseif data.error=="authorization_pending"
+      for _=1, data.interval or login_info.interval
+        remaining = login_info.expiry_date - math.floor gettime!
+        minutes = math.floor remaining / 60
+        time_cb string.format "%d:%02d", minutes, remaining - minutes * 60
+        if "Esc"==mf.waitkey 1
+          return nil, "User break"
+        sleep 1
+    else
+      error data.error_description or "Unknown error occurred"
+
+
+oauth = :init, :getToken
+
+return oauth if ...
+
+with login_info = oauth.init!
+  far.CopyToClipboard .user_code
+  print "Enter the device_code [copied to clipboard] to log in: #{.user_code}"
+  print "Press any key to open #{.verification_uri} in your browser."
+  mf.waitkey!
+  if access_token = oauth.getToken login_info, nil, (str) ->
+      io.write "Waiting for authorization: #{str}", "\r"
+      io.flush!
+    far.CopyToClipboard access_token
+    print "access_token [copied to clipboard]: #{access_token}"
