@@ -49,6 +49,28 @@ local function check (key)
   until not k
 end
 
+local openUrl; do
+  if win.ShellExecute then
+    function openUrl (url)
+      win.ShellExecute(nil,nil,url)
+    end
+  else
+    for _,fname in ipairs{"xdg-open","explorer.exe","open"} do
+      if 0==os.execute("which "..fname) then
+        function openUrl (url)
+          os.execute(("%s '%s'"):format(fname,url))
+        end
+        break
+      end
+    end
+    openUrl = openUrl or function(url,fallback)
+      if fallback then fallback(url) end
+      far.CopyToClipboard(url)
+      far.Message(url, "Copied to clipboard")
+    end
+  end
+end
+
 local function loadLua (filename, env)
   if not (env and getmetatable(env)) then
     env = setmetatable(env or {}, {__index=_G})
@@ -212,4 +234,5 @@ return {
   readHistory=readHistory,
   cleanHistory=cleanHistory,
   check=check,
+  openUrl=openUrl,
 }
