@@ -132,26 +132,6 @@ local function isReachable (fname, source)
   end
 end
 
-local open; do
-  if win.ShellExecute then
-    function open (url)
-      win.ShellExecute(nil,nil,url)
-    end
-  else
-    for _,fname in ipairs{"xdg-open","explorer.exe","open"} do
-      if 0==os.execute("which "..fname) then
-        function open (url)
-          os.execute(("%s '%s'"):format(fname,url))
-        end
-        break
-      end
-    end
-    open = open or function (url)
-      far.Message(url,"")
-    end
-  end
-end
-
 local export
 if json and pcall(require, "ssl.https") then
   local restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
@@ -234,7 +214,6 @@ if json and pcall(require, "ssl.https") then
     utils=utils,
     json=json,
     cfgpath=Shared.cfgpath, -- for presets-openai.lua.cfg
-    open=open,
   }
 end
 
@@ -413,7 +392,7 @@ local function chooseCfg (opts)
       if bk=="Enter" or bk=="CtrlEnter" or not bk then
         if item.grayed then
           if info.url then
-            open(info.url)
+            utils.openUrl(info.url)
           end
         else
           if bk~="CtrlEnter" then
@@ -435,7 +414,7 @@ local function chooseCfg (opts)
         end
       elseif bk=="AltF1" then
         if info.url then
-          open(info.url)
+          utils.openUrl(info.url)
         end
       end
     end
