@@ -1,0 +1,26 @@
+--gpt-oss, DeepSeek, Ministral, Qwen, ...
+--https://www.clarifai.com/pricing: $0/mo: Up to 1K API Calls/month
+--https://docs.clarifai.com/product-updates/changelog/
+--https://clarifai.com/playground
+
+--https://docs.clarifai.com/compute/providers/open-ai/
+apibase="https://api.clarifai.com/v2/ext/openai/v1"
+
+--https://docs.clarifai.com/control/authentication/pat
+apikey=win.GetEnv"CLARIFAI_PAT" or "set CLARIFAI_PAT env variable!"
+
+model="https://clarifai.com/openai/chat-completion/models/gpt-oss-120b"
+
+modelsMeta=[[{
+  apibase: "https://clarifai.com/api/_api/v2"
+  endpoint: "/models?featured_only=true"
+  modelsData: {"models", id: "id"}
+  nameFn: (model) ->
+    with model do return "https://clarifai.com/#{.user_id}/#{.app_id}/models/#{.id}"
+  filterFn: (model) -> model.billing_type and model.deploy_restriction==1
+}]]
+
+--[[ &model_type_id=multimodal-to-text / text-to-text / &per_page=1000
+curl -s "https://clarifai.com/api/_api/v2/models?featured_only=true&sort_by_name=true&sort_ascending=true" |
+  jq -r ".models[] | \"https://clarifai.com/\(.user_id)/\(.app_id)/models/\(.id)\""
+--]]

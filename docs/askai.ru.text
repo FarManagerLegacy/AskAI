@@ -419,6 +419,7 @@ __Кнопки__:
      Некоторые модели бывают доступны бесплатно, в настоящий момент это `meituan/longcat-flash-chat`.
 - На некоторых сервисах только часть моделей доступна бесплатно:
    - [chutes] (бесплатно - небольшие модели `openai/gpt-oss-20b`, `zai-org/GLM-4.5-Air`, `Qwen/Qwen3-Coder-30B-A3B-Instruct`, ...)
+   - [clarifai] (бесплатно до 1K запросов/месяц: gpt-oss, DeepSeek, Ministral, Qwen, ...)
    - [openrouter] (до 50 запросов в день к бесплатным ":free" моделям,
      в том числе от Google, а также `llama`, `deepseek`, `qwen` и др.;  
      покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
@@ -449,6 +450,7 @@ __Кнопки__:
 [ai21]: https://www.ai21.com/jamba
 [cerebras]: https://cloud.cerebras.ai/
 [chutes]: https://chutes.ai/app
+[clarifai]: https://www.clarifai.com/products/model-inference
 [codestral]: https://console.mistral.ai/codestral
 [cloudflare]: https://developers.cloudflare.com/workers-ai/models/
 [deepbricks]: https://deepbricks.ai/pricing
