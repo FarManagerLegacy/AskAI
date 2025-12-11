@@ -1,9 +1,11 @@
 --https://docs.mistral.ai/api/
---https://docs.mistral.ai/getting-started/models/models_overview/
+--https://docs.mistral.ai/getting-started/models
 --https://chat.mistral.ai/
 
 apibase="https://api.mistral.ai/v1"
 apikey=win.GetEnv"MISTRAL_API_KEY" or "set MISTRAL_API_KEY env variable!"
 model="mistral-large-latest"
-
-modelsMeta='modelsKeys: {models:"data", id:"id"}'
+modelsMeta=[[{
+  modelsKeys: {models:"data", id:"id"}
+  filterFn: (model) -> "string"!=type model.deprecation
+}]]
