@@ -1,0 +1,10 @@
+-- https://api.airforce/
+-- https://panel.api.airforce/playground
+
+-- Free: 1 request per minute / 1,000 requests per day
+-- Not reliable!
+
+apibase="https://api.airforce/v1"
+model="gpt-5-chat"
+
+modelsMeta="filterFn: (model) -> model.supports_chat"
