@@ -14,11 +14,14 @@ local function toggleHidden (items)
   end
 end
 
+local function _prep (fn)
+  return fn and setfenv(fn, setmetatable({},{__index=_G}))
+end
 local function chooseModel (getModels, args, fromHistory)
   local models, argName = getModels(args) --not safe
   if models and models[1] then
     local keyId = type(models[1])=="table" and models.keyId
-    local filterFn, nameFn = models.filterFn, models.nameFn
+    local filterFn, nameFn = _prep(models.filterFn), models.nameFn
     local current = args[argName or "model"]
     local items = {}
     for i,model in ipairs(models) do
