@@ -165,31 +165,20 @@ class LinesStream extends Plain
         meta.data, response = response, nil
     response, meta
 
-  --modelsKeys: {models:"data", id:"id"}
+  modelsData: {
+    "data"   -- openai
+    "models" -- cohere
+    "result" -- cloudflare
+    -- otherwise assume response root -- together, github
+  }
 
   models: (endpoint) =>
     response, meta = @request "GET", endpoint or "/models"
     if response
-      if type(response)~="table"
-        meta.data = response
+      if type(response)=="table"
+        return (-> for k in *@modelsData do if v = response[k] return v)! or response
       else
-        if @modelsKeys then
-          keys = @modelsKeys
-          models = keys.models and response[keys.models] or response
-          models.keyId = keys.id
-          return models
-        -- else use heuristics
-        models = response.data   or -- openai
-                 response.models or -- cohere, google gemini
-                 response.result or -- cloudflare
-                 response           -- together, github
-        if item = models[2]
-          keyId = item.name and not item.name\match" " and "name" or -- cloudflare, cohere, github, google gemini
-                  item.id and "id"  -- openai, copilot, openrouter
-          if keyId
-            models.keyId = keyId
-            return models
-        meta.statusline = "Unexpected response"
+        meta.data = response
     nil, meta
 
 
@@ -259,7 +248,7 @@ class GoogleGemini extends BasicSSE
   is_valid: (parsed) =>
     parsed.candidates
 
-  modelsKeys: {models:"models", id:"name"}
+  modelsData: { "models" }
 
 
 class GoogleInternal extends BasicSSE -- abstract class
@@ -310,13 +299,12 @@ class GoogleInternal extends BasicSSE -- abstract class
   models: =>
     response, meta = @request "POST", ":fetchAvailableModels", project:@project
     if response
-      if type(response)~="table"
-        meta.data = response
-      else
+      if type(response)=="table"
         addId = (obj,name) -> with obj
-          .id = name
-        return with [ addId model,name for name,model in pairs response.models ]
-          .keyId = "id"
+          .name = name
+        return [ addId model,name for name,model in pairs response.models ]
+      else
+        meta.data = response
     nil, meta
 
 

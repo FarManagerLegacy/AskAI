@@ -22,6 +22,6 @@ modelsMeta=function()
   endpoint: "/available"
   headers: "x-requested-with": "XMLHttpRequest", cookie: "user_session=%s"
   filterFn: (model) -> model.task=="chat-completion" or model.task=="responses"
-  nameFn: (model) -> model.original_name
+  modelsData: {"data", id:"original_name"}
 }]]):format(user_session)
 end
