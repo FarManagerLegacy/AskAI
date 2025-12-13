@@ -10,7 +10,7 @@ apibase=function()
     elseif account_id then
       return ("https://api.cloudflare.com/client/v4/accounts/%s/ai/v1"):format(account_id)
     end
-  until not Account_ID
+  until not account_id
 end
 
 apikey=win.GetEnv"CF_API_TOKEN" or "set CF_API_TOKEN env variable!"
