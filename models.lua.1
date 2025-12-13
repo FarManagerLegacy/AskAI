@@ -19,8 +19,13 @@ local function _prep (fn)
 end
 local function chooseModel (getModels, args, fromHistory)
   local models, argName = getModels(args) --not safe
-  if models and models[1] then
-    local keyId = type(models[1])=="table" and models.keyId
+  local _item = models and models[1]
+  if _item then
+    local keyId
+    if type(_item)=="table" then
+      keyId = models.keyId or _item.id and "id" or _item.name and "name"
+        or error"Unexpected models list"
+    end
     local filterFn, nameFn = _prep(models.filterFn), models.nameFn
     local current = args[argName or "model"]
     local items = {}
