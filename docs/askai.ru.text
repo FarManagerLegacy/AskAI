@@ -407,6 +407,7 @@ __Кнопки__:
    - [github-copilot] (модели от _OpenAI_, _Anthropic_, _Google_)
    - [github-models] (модели от _Cohere_, _DeepSeek_, _Meta_, _Mistral AI_, _Microsoft_, _OpenAI_, _xAI_ и др.)
    - [groq] (модели до 120b)
+   - [iflow] (китайские OpenSource-модели: DeepSeek, GLM, Kimi, Qwen, TStars)
    - [mistral], [codestral]
    - [nvidia] (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
    - [poe] (все популярные модели + пользовательские "боты"): 3000 поинтов в день на бесплатном плане
@@ -460,6 +461,7 @@ __Кнопки__:
 [g4f.*]: https://g4f.dev/
 [grok]: https://console.x.ai/
 [groq]: https://console.groq.com/playground
+[iflow]: https://platform.iflow.cn/en
 [huggingface]: https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference&sort=trending
 [hyperbolic]: https://app.hyperbolic.xyz/models
 [lepton]: https://www.lepton.ai/playground

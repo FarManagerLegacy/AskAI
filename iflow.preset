@@ -1,0 +1,21 @@
+--https://iflow.cn/
+--All users receive 1,000 monthly points each month.
+
+--https://platform.iflow.cn/en/docs
+apibase="https://apis.iflow.cn/v1"
+
+--https://iflow.cn/?open=setting
+apikey=win.GetEnv"IFLOW_API_KEY" or "set IFLOW_API_KEY env variable!"
+
+--https://platform.iflow.cn/en/models
+model="qwen3-235b-a22b-thinking-2507"
+
+modelsMeta=[[modelsFn: (data) ->
+  client = api.OpenAI data.apikey, "https://iflow.cn/api"
+  :data = assert client\request "POST", "/platform/models/list", "{}", nil, "content-type": "application/json"
+  with models = {keyId: "modelName"}
+    for group,arr in pairs data
+      for m in *arr
+        table.insert models, with m
+          .group = group
+]]
