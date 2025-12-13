@@ -1,0 +1,32 @@
+local title = "g4f.claude preset"
+local file = "g4f.claude.preset"
+local function input (id, prompt, name, fn)
+  local guid = win.Uuid(id)
+  local prompt1,prompt2 = ("Enter %s:"):format(prompt), ("%s required"):format(prompt)
+  local history = ("AskAI/%s/%s"):format(file,name)
+  return function ()
+    repeat
+      local str = far.InputBox(guid,title,prompt1,history)
+      if str=="" then
+        far.Message(prompt2,title,nil,"wl")
+      elseif str then
+        return fn(str)
+      end
+    until not str --Esc
+  end
+end
+
+apibase=input("2562BE23-A0BC-4874-B80A-8BC0713F4E56", "organization ID (lastActiveOrg cookie)", "organization_id", function(organization_id)
+  return "https://g4f.dev/api/claude/"..organization_id
+end)
+
+model={
+  "claude-sonnet-4-5-20250929",
+  "claude-haiku-4-5-20251001",
+}
+
+modelsMeta="none"
+
+headers=input("5401BC3C-C71E-405B-9DCF-4ABDAE575BF7", "sessionKey cookie", "sessionKey", function(sessionKey)
+  return ('cookie:"sessionKey=%s"'):format(sessionKey)
+end)
