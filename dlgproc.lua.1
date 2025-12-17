@@ -1,6 +1,7 @@
-local Shared = ... --O, populateHistory, opts
+local Shared = ... --O, populateHistory
 local II = Shared.II
-local cfg = Shared.cfg
+local opts = Shared.opts
+local cfg = opts.cfg
 local F = far.Flags
 local HISTORY, DATA = 7,10
 
@@ -63,7 +64,7 @@ return function (hDlg,msg,idx,Param2)
       end
       run("oninit",item,hDlg,idx)
     end
-    if Shared.opts.nodialog then
+    if opts.nodialog then
       hDlg:Close(II.btnGo.idx)
       return
     end
@@ -133,7 +134,7 @@ return function (hDlg,msg,idx,Param2)
     elseif key=="PgUp" or key=="CtrlHome" then
       hDlg:SetFocus(II.prompt.idx)
     elseif key=="CtrlH" then
-      Shared.opts.compact = not Shared.opts._hidden
+      opts.compact = not opts._hidden
       hDlg:Close(II.profile.idx)
     end
   end
