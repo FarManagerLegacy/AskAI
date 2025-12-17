@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, dialog, O, _tmp
+﻿local Shared = ... -- name, dialog, O, tempdir
 local State = Shared.State
 local utils = Shared.utils
 local json = Shared.json
@@ -55,7 +55,7 @@ local function writeFile (pathname, content)
   fp:close()
 end
 local function _tmpfile (filename, content)
-  local pathname = utils.pathjoin(Shared._tmp, filename)
+  local pathname = utils.pathjoin(Shared.tempdir, filename)
   writeFile(pathname, content)
   table.insert(todel, pathname)
   return '"'..pathname..'"'
