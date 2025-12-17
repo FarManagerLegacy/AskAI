@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, utils, _tmp, cfgpath, output
+﻿local Shared = ... -- name, utils, tempdir, cfgpath, output
 local State = Shared.State
 local utils = Shared.utils -- HelpTopic, clearSession, HK
 local O = Shared.O
@@ -67,7 +67,7 @@ local function dialog (opts)
   end
   local configs = utils.load"configs.lua.1" {
     State=State, O=O, utils=utils, dialog=dialog, json=json,
-    cfgpath=Shared.cfgpath, name=Shared.name, _tmp=Shared._tmp,
+    cfgpath=Shared.cfgpath, name=Shared.name, tempdir=Shared.tempdir,
   }
 
   local function fmtProfile (fmt)
@@ -393,7 +393,7 @@ local function dialog (opts)
     State.useStream = II.chkStream[SELECTED]
     State.useWrap = II.chkWrap[SELECTED]
     State.wrapAt = II.edtWrap[DATA]
-    local outputFilename = utils.pathjoin(Shared._tmp, ("Ask AI%s.md")
+    local outputFilename = utils.pathjoin(Shared.tempdir, ("Ask AI%s.md")
                                           :format(fmtProfile".%s"))
     if State.useSession==2 and not isOpened(outputFilename) then
       configs.clearSession(cfg.info, SESSION)

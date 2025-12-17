@@ -46,7 +46,7 @@ local O = nfo.options
 local F = far.Flags
 
 local cfgpath = (_filename or ...):match"^(.*)[\\/]"
-local _tmp = far.InMyConfig and far.InMyConfig() --luacheck: globals far.InMyConfig -- far2m
+local tempdir = far.InMyConfig and far.InMyConfig() --luacheck: globals far.InMyConfig -- far2m
                              or win.GetEnv("FARLOCALPROFILE")
 local State do
   local sh = sh or pcall(require,"sh") and require"sh" --LuaShell
@@ -60,14 +60,14 @@ end
 
 local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) {
   State=State, O=O,
-  cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
+  cfgpath=cfgpath, name=nfo.name, tempdir=tempdir,
 }
 
 local output = utils.load"output.lua.1" {utils=utils}
 
 local dialog = utils.load"dialog.lua.1" {
   State=State, O=O, utils=utils, output=output,
-  cfgpath=cfgpath, name=nfo.name, _tmp=_tmp,
+  cfgpath=cfgpath, name=nfo.name, tempdir=tempdir,
 }
 
 local function askAI (opts)
@@ -93,7 +93,7 @@ if Macro then
       mf.acall(askAI)
     end;
   }
-  State.lastOutputFilename = utils.pathjoin(_tmp, "Ask AI.md") --default
+  State.lastOutputFilename = utils.pathjoin(tempdir, "Ask AI.md") --default
   Macro { description=nfo.name..": reopen output";
     area="Common"; key=O.keyOutput or O.key..":Double";
     id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
