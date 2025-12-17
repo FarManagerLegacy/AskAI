@@ -211,17 +211,15 @@ if json and pcall(require, "ssl.https") then
     formatJson=formatJson,
     formatJsonMsg=formatJsonMsg,
     formatErrMsg=formatErrMsg,
-    utils=utils,
-    json=json,
-    cfgpath=Shared.cfgpath, -- for presets-openai.lua.cfg
   }
 end
+export = setmetatable(export or {}, {__index=Shared})
 
 local function _import (filename, env, ...)
   env = env or getfenv(2) -- parent _ENV
   local fn = utils.load(filename,env)
   local name = env.name
-  local ret1,ret2 = fn(export or Shared, ...)
+  local ret1,ret2 = fn(export, ...)
   if name and name~=env.name then
     env.name = ("%s [%s]"):format(name, env.name)
   end
@@ -266,7 +264,7 @@ local mt = setmetatable({
 local function loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
-  local applyParamsFn, getModels, authFn = setfenv(fn, env)(export or Shared)
+  local applyParamsFn, getModels, authFn = setfenv(fn, env)(export)
   for _,param in ipairs{"config", "sessionFile"} do
     if env[param] then
       env[param] = expandEnv(env[param])
