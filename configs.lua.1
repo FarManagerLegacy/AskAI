@@ -1,4 +1,4 @@
-﻿local Shared = ... -- name, dialog, O
+﻿local Shared = ... -- name, dialog, O, _tmp
 local State = Shared.State
 local utils = Shared.utils
 local json = Shared.json
@@ -272,7 +272,7 @@ local function loadCfg (pathname, filename)
   end
   if env.historyName then
     env.showSession = env.showSession or function () --todo
-      local session = Shared.State[env.historyName]
+      local session = State[env.historyName]
       if session and next(session) then
         require"le"(session)
       end
