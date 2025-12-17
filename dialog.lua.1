@@ -341,12 +341,12 @@ local function dialog (opts)
     }
   end
   utils.load"presets.lua.1" {
-    II=II, utils=utils, cfg=cfg, json=json,
+    II=II, utils=utils, opts=opts, json=json,
     name=Shared.name, State=State, cfgpath=Shared.cfgpath,
     processSetsHistories=processSetsHistories, populateHistory=populateHistory,
   }
   utils.load"models.lua.1" {
-    II=II, utils=utils, cfg=cfg,
+    II=II, utils=utils, opts=opts,
   }
   local function editConfig (hDlg,idx)
     if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
@@ -372,7 +372,7 @@ local function dialog (opts)
     name="btnGo"
   }
   data.DlgProc = utils.load"dlgproc.lua.1" {
-    II=II, cfg=cfg, O=O, populateHistory=populateHistory, opts=opts,
+    II=II, O=O, populateHistory=populateHistory, opts=opts,
   }
 
   State.isDlgOpened = true
