@@ -1,8 +1,8 @@
-﻿local Shared = ... -- name, O, tempdir, openDialog
-local State = Shared.State
-local utils = Shared.utils
-local json = Shared.json
-local cfgpath = Shared.cfgpath
+﻿local Common = ... -- name, O, tempdir, openDialog
+local State = Common.State
+local utils = Common.utils
+local json = Common.json
+local cfgpath = Common.cfgpath
 local F = far.Flags
 
 local _isWindows = package.config:sub(1,1)=="\\"
@@ -55,7 +55,7 @@ local function writeFile (pathname, content)
   fp:close()
 end
 local function _tmpfile (filename, content)
-  local pathname = utils.pathjoin(Shared.tempdir, filename)
+  local pathname = utils.pathjoin(Common.tempdir, filename)
   writeFile(pathname, content)
   table.insert(todel, pathname)
   return '"'..pathname..'"'
@@ -105,7 +105,7 @@ if pcall(require, "piper") then
           end
           cb()
         else -- debug
-          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all:gsub("\r\n","\n"), Shared.name, nil, "wl")
+          far.Message("ExitCode: "..prc.ExitCode.."\n\1\n"..prc.all:gsub("\r\n","\n"), Common.name, nil, "wl")
         end
         cleanup()
       end
@@ -213,7 +213,7 @@ if json and pcall(require, "ssl.https") then
     formatErrMsg=formatErrMsg,
   }
 end
-export = setmetatable(export or {}, {__index=Shared})
+export = setmetatable(export or {}, {__index=Common})
 
 local function _import (filename, env, ...)
   env = env or getfenv(2) -- parent _ENV
@@ -345,7 +345,7 @@ local function chooseCfg (opts)
     return nil
   end)
   if #items1 + #items2 == 0 then
-    far.Message("No config found", Shared.name, nil ,"w")
+    far.Message("No config found", Common.name, nil ,"w")
     return
   end
   local function sortFn (a, b)
@@ -397,7 +397,7 @@ local function chooseCfg (opts)
             utils.msave(opts.profile, "cfgfile", item.FileName)
           end
           opts.cfg = item.cfg
-          return Shared.openDialog(opts)
+          return Common.openDialog(opts)
         end
       elseif bk=="CtrlH" then
         toggleHidden(items)

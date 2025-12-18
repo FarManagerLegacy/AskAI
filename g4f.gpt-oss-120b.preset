@@ -3,6 +3,6 @@ apibase="https://g4f.dev/api/gpt-oss-120b"
 
 --https://discord.gg/qXA4Wf4Fsm
 --https://g4f.dev/api_key.html
-local Shared, g4f = ..., {}
-Shared.utils.loadLua("g4f.preset",g4f)(Shared)
+local Common, g4f = ..., {}
+Common.utils.loadLua("g4f.preset",g4f)(Common)
 apikey=g4f.apikey

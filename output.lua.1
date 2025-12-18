@@ -1,4 +1,4 @@
-local Shared = ... --utils
+local Common = ... --utils
 local F = far.Flags
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
@@ -99,7 +99,7 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
     openOutput(outputFilename, "existing")
     return
   end
-  Shared.utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
+  Common.utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
     local Id = wi.Id

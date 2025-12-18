@@ -1,5 +1,5 @@
-local Shared = ... --O
-local dialog = Shared.dialog -- populateHistory
+local Common = ... --O
+local dialog = Common.dialog -- populateHistory
 local II = dialog.II
 local opts = dialog.opts
 local cfg = opts.cfg
@@ -56,7 +56,7 @@ return function (hDlg,msg,idx,Param2)
     for param,list in pairs(cfg.info.predefined or {}) do
       dialog.populateHistory(II[param], hDlg, list, "init")
     end
-    for param,list in pairs(Shared.O.stdEnvs) do
+    for param,list in pairs(Common.O.stdEnvs) do
       dialog.populateHistory(II[param], hDlg, getEnvValues(list))
     end
     for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
@@ -103,7 +103,7 @@ return function (hDlg,msg,idx,Param2)
       ret = run("onkey",item,hDlg,idx,key)
       if ret~=nil then return ret end
     end
-    if key==Shared.O.key then
+    if key==Common.O.key then
       hDlg:Close(II.btnSwitch.idx)
     elseif key=="AltSubtract" then
       hDlg:send(F.DN_BTNCLICK, II.btnClrSession.idx)

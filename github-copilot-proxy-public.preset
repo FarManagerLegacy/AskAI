@@ -4,10 +4,10 @@
 apibase="https://copilot-demo.publicaffairs.workers.dev/v1"
 
 --Get token: https://copilot-demo.publicaffairs.workers.dev/token
-local Shared, copilot = ..., {
+local Common, copilot = ..., {
   client_id="Iv1.b507a08c87ecfe98" -- GitHub Copilot Plugin by GitHub
 }
-Shared.utils.loadLua("github-copilot.preset", copilot)(Shared)
+Common.utils.loadLua("github-copilot.preset", copilot)(Common)
 apikey=copilot.apikey
 
 --https://docs.github.com/copilot/reference/ai-models/supported-models

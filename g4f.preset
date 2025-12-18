@@ -3,7 +3,7 @@
 --https://g4f.dev/docs/ready_to_use.html
 apibase="https://g4f.dev/v1"
 
-local Shared = ...
+local Common = ...
 local function withUsername(fn)
   local id = win.Uuid"826FF41A-904B-4089-B48B-9CD649BDE23D"
   local user = far.InputBox(id, "g4f", "Enter username", "AskAI/g4f*.preset/username", nil, nil, nil, far.Flags.FIB_BUTTONS)
@@ -12,7 +12,7 @@ end
 
 --https://g4f.dev/api_key.html
 apikey=function()
-  local _export = {json=Shared.json}
+  local _export = {json=Common.json}
   local ok, getToken = pcall(Common.utils.loadMoon("auth_g4f.moon.1", _export), "auth_g4f")
   if ok then
     return withUsername(getToken)

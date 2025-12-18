@@ -1,7 +1,7 @@
-﻿local Shared = ... -- name, utils, tempdir, cfgpath, output
-local State = Shared.State
-local utils = Shared.utils -- HelpTopic, clearSession, HK
-local O = Shared.O
+﻿local Common = ... -- name, utils, tempdir, cfgpath, output
+local State = Common.State
+local utils = Common.utils -- HelpTopic, clearSession, HK
+local O = Common.O
 
 local F = far.Flags
 local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 --far2m
@@ -67,7 +67,7 @@ local function main (opts)
   end
   local configs = utils.load"configs.lua.1" {
     State=State, O=O, utils=utils, json=json,
-    cfgpath=Shared.cfgpath, name=Shared.name, tempdir=Shared.tempdir,
+    cfgpath=Common.cfgpath, name=Common.name, tempdir=Common.tempdir,
     openDialog=main,
   }
 
@@ -130,11 +130,11 @@ local function main (opts)
   end
 
   local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
-  II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
+  II:add {F.DI_DOUBLEBOX, Common.name, {[X2]=-1}}
 
   local dialog = { II=II, opts=opts, populateHistory=populateHistory, } --processSetsHistories
   utils.load"profiles.lua.1" {
-    utils=utils, name=Shared.name, dialog=dialog,
+    utils=utils, name=Common.name, dialog=dialog,
   }
 
   II:add {F.DI_TEXT, _prompt}
@@ -345,7 +345,7 @@ local function main (opts)
   end
   utils.load"presets.lua.1" {
     utils=utils, json=json,
-    name=Shared.name, State=State, cfgpath=Shared.cfgpath,
+    name=Common.name, State=State, cfgpath=Common.cfgpath,
     dialog=dialog,
   }
   utils.load"models.lua.1" {
@@ -396,7 +396,7 @@ local function main (opts)
     State.useStream = II.chkStream[SELECTED]
     State.useWrap = II.chkWrap[SELECTED]
     State.wrapAt = II.edtWrap[DATA]
-    local outputFilename = utils.pathjoin(Shared.tempdir, ("Ask AI%s.md")
+    local outputFilename = utils.pathjoin(Common.tempdir, ("Ask AI%s.md")
                                           :format(fmtProfile".%s"))
     if State.useSession==2 and not isOpened(outputFilename) then
       configs.clearSession(cfg.info, SESSION)
@@ -429,11 +429,11 @@ local function main (opts)
     end
     local success, processFn = pcall(cfg.applyParamsFn, unpack(args,1,#cfg.params))
     if not success then
-      far.Message(processFn, Shared.name, nil, "w")
+      far.Message(processFn, Common.name, nil, "w")
       return main(opts)
     end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
-    Shared.output(
+    Common.output(
       outputFilename,
       processFn,
       II.prompt[DATA],
