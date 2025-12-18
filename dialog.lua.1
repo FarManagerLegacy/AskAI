@@ -1,4 +1,4 @@
-﻿local Common = ... -- name, utils, tempdir, cfgpath, output
+﻿local Common,output = ... -- name, utils, tempdir, cfgpath
 local State = Common.State
 local utils = Common.utils -- HelpTopic, clearSession, HK
 local O = Common.O
@@ -64,12 +64,9 @@ local function main (opts)
         return json.encode(data, {indent=true})
       end
     end
+    Common.json = json
   end
-  local configs = utils.load"configs.lua.1" {
-    State=State, O=O, utils=utils, json=json,
-    cfgpath=Common.cfgpath, name=Common.name, tempdir=Common.tempdir,
-    openDialog=main,
-  }
+  local configs = utils.load"configs.lua.1"(Common,main)
 
   local function fmtProfile (fmt)
     return opts.profile=="default" and "" or fmt:format(opts.profile)
@@ -133,9 +130,7 @@ local function main (opts)
   II:add {F.DI_DOUBLEBOX, Common.name, {[X2]=-1}}
 
   local dialog = { II=II, opts=opts, populateHistory=populateHistory, } --processSetsHistories
-  utils.load"profiles.lua.1" {
-    utils=utils, name=Common.name, dialog=dialog,
-  }
+  utils.load"profiles.lua.1"(Common,dialog)
 
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
@@ -343,14 +338,11 @@ local function main (opts)
       end,
     }
   end
-  utils.load"presets.lua.1" {
-    utils=utils, json=json,
-    name=Common.name, State=State, cfgpath=Common.cfgpath,
-    dialog=dialog,
-  }
-  utils.load"models.lua.1" {
-    utils=utils, dialog=dialog,
-  }
+
+  utils.load"presets.lua.1"(Common,dialog)
+
+  utils.load"models.lua.1"(Common,dialog)
+
   local function editConfig (hDlg,idx)
     if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
       hDlg:Close(idx)
@@ -374,9 +366,7 @@ local function main (opts)
   II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
     name="btnGo"
   }
-  data.DlgProc = utils.load"dlgproc.lua.1" {
-    O=O, dialog=dialog,
-  }
+  data.DlgProc = utils.load"dlgproc.lua.1"(Common,dialog)
 
   State.isDlgOpened = true
   local res = far.Dialog(II:params())
@@ -433,7 +423,7 @@ local function main (opts)
       return main(opts)
     end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
-    Common.output(
+    output(
       outputFilename,
       processFn,
       II.prompt[DATA],

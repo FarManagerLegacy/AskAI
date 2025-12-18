@@ -1,4 +1,4 @@
-﻿local Common = ... -- name, O, tempdir, openDialog
+﻿local Common,openDialog = ... -- name, O, tempdir
 local State = Common.State
 local utils = Common.utils
 local json = Common.json
@@ -397,7 +397,7 @@ local function chooseCfg (opts)
             utils.msave(opts.profile, "cfgfile", item.FileName)
           end
           opts.cfg = item.cfg
-          return Common.openDialog(opts)
+          return openDialog(opts)
         end
       elseif bk=="CtrlH" then
         toggleHidden(items)
