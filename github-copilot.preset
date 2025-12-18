@@ -4,11 +4,11 @@ apibase="https://api.githubcopilot.com"
 
 --Get token: https://copilot-demo.publicaffairs.workers.dev/token#Iv23ctfURkiMfJ4xr5mv
 local client_id = client_id or "Iv23ctfURkiMfJ4xr5mv" --GitHub Copilot IDE Plugin
-local Shared = ...
+local Common = ...
 apikey=function(cur)
   if cur~="" then return cur end
-  local _export = {json=Shared.json, openUrl=Shared.utils.openUrl}
-  local oauth = Shared.utils.loadMoon("oauth_github_copilot.moon.1", _export) "oauth_github_copilot"
+  local _export = {json=Common.json, openUrl=Common.utils.openUrl}
+  local oauth = Common.utils.loadMoon("oauth_github_copilot.moon.1", _export) "oauth_github_copilot"
   local login_info = oauth.init(client_id)
   far.CopyToClipboard(login_info.user_code)
   local title = "Authorization"

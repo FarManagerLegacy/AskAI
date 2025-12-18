@@ -1,7 +1,7 @@
-local Shared = ... -- State, tempdir, name, cfgpath, O
+local Common = ... -- State, tempdir, name, cfgpath, O
 
 local function mload (profile, key)
-  local s, err = mf.mload("jd", Shared.name)
+  local s, err = mf.mload("jd", Common.name)
   if err then return nil, err end
   assert(type(s)=="table", "Error in settings")
   if not profile then return s end
@@ -19,7 +19,7 @@ local function msave (profile, key, value)
     assert(type(profile)=="table")
     s = profile
   else
-    s = mf.mload("jd", Shared.name) or {}
+    s = mf.mload("jd", Common.name) or {}
     if type(key)~="string" then
       assert(key==nil or type(key)=="table")
       s[profile] = key
@@ -32,7 +32,7 @@ local function msave (profile, key, value)
       p[key] = value
     end
   end
-  assert(mf.msave("jd", Shared.name, s), "Error writing settings")
+  assert(mf.msave("jd", Common.name, s), "Error writing settings")
 end
 
 local path_sep = package.config:sub(1,1)
@@ -76,7 +76,7 @@ local function loadLua (filename, env)
     env = setmetatable(env or {}, {__index=_G})
   end
   local pathname = filename:match(path_sep) and filename --presets
-    or pathjoin(Shared.cfgpath, filename)
+    or pathjoin(Common.cfgpath, filename)
   local fn = assert(loadfile(pathname))
   return setfenv(fn, env)
 end
@@ -85,13 +85,13 @@ local function loadMoon (filename, env)
   if not (env and getmetatable(env)) then
     env = setmetatable(env or {}, {__index=_G})
   end
-  local pathname = pathjoin(Shared.cfgpath, filename)
+  local pathname = pathjoin(Common.cfgpath, filename)
   return assert(require"moonscript".loadfile(pathname,nil,env,nil))
 end
 
 local loaded = {}
 local function load (filename, env)
-  if not Shared.O.debug and loaded[filename] then
+  if not Common.O.debug and loaded[filename] then
     return env and setfenv(loaded[filename], env)
                 or loaded[filename]
   end
@@ -100,7 +100,7 @@ local function load (filename, env)
 end
 
 local function HelpTopic (name)
-  return ("<%s%s>%s"):format(Shared.cfgpath, path_sep, name)
+  return ("<%s%s>%s"):format(Common.cfgpath, path_sep, name)
 end
 
 local HK = {

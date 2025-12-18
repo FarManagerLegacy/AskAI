@@ -6,7 +6,7 @@
 
 apibase="https://portal.qwen.ai/v1"
 
-local Shared = ...
+local Common = ...
 apikey=function (cur)
   local qwen = #cur>0 and mf.mload("jd", "AskAI - qwen-code-api.preset")
   if qwen then
@@ -32,7 +32,7 @@ apikey=function (cur)
     if status_code~=200 then
       error(("%s\n\1\n%s"):format(status_line, resp))
     end
-    resp = assert(Shared.json.decode(resp))
+    resp = assert(Common.json.decode(resp))
     if resp.error then
       error(resp.error_description)
     end
@@ -42,8 +42,8 @@ apikey=function (cur)
     resp.expires_in = nil
     qwen = resp
   else
-    local _export = {json=Shared.json, openUrl=Shared.utils.openUrl}
-    local oauth = Shared.utils.loadMoon("oauth_qwen.moon.1", _export) "oauth_qwen"
+    local _export = {json=Common.json, openUrl=Common.utils.openUrl}
+    local oauth = Common.utils.loadMoon("oauth_qwen.moon.1", _export) "oauth_qwen"
     local title,msg = "Authorization", "Waiting..."
     qwen = oauth(function(url) msg = url end, function(time)
       far.Message(msg,title..": "..time,"")

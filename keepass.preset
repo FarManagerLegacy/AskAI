@@ -1,8 +1,8 @@
 -- https://keepass.info/plugins.html#keepasscmdr
 -- KeePassCommand.bat expected somewhere in PATH
 
-local Shared = ...
-local State = Shared.State
+local Common = ...
+local State = Common.State
 
 local group = "AskAI"
 
@@ -24,7 +24,7 @@ end
 local res = {}
 local function init()
   local items = {}
-  local hk = Shared.utils.HK.new(". ")
+  local hk = Common.utils.HK.new(". ")
   for name in list():gmatch"[^\n]+" do
     items[#items+1] = {
       text=hk:iter()..name,

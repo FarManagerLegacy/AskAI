@@ -1,8 +1,8 @@
-local Shared = ... -- name, json
-local State = Shared.State
-local utils = Shared.utils
-local cfgpath = Shared.cfgpath
-local dialog = Shared.dialog -- processSetsHistories, populateHistory
+local Common = ... -- name, json
+local State = Common.State
+local utils = Common.utils
+local cfgpath = Common.cfgpath
+local dialog = Common.dialog -- processSetsHistories, populateHistory
 local II = dialog.II
 local cfg = dialog.opts.cfg
 local F = far.Flags
@@ -25,7 +25,7 @@ local function loadPreset (pathname, itemsNames, cfgInfo)
     cfgpath=cfgpath,
     State=State,
     utils=utils, --.HK, .check, .loadMoon
-    json=Shared.json,
+    json=Common.json,
   }
   for k in pairs(env) do
     if not itemsNames[k] then
@@ -94,7 +94,7 @@ local function choosePreset (itemsNames, cfgInfo)
       toggleHidden(items)
     elseif bk=="ShiftF4" or bk=="Ins" then
       local name = far.InputBox(win.Uuid "B45A2CFB-6C4F-49E9-A1EE-4721BB4AAFA4",
-                                Shared.name..": create preset", "Enter new name",
+                                Common.name..": create preset", "Enter new name",
                                 "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
@@ -114,7 +114,7 @@ local function choosePreset (itemsNames, cfgInfo)
       end
     elseif bk=="F5" or bk=="ShiftF5" then
       local name = far.InputBox(win.Uuid "F2366621-CF3A-4953-B297-D85EA0BD0287",
-                                Shared.name..": copy preset", "Enter new name",
+                                Common.name..": copy preset", "Enter new name",
                                 "AskAI preset", nil, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
@@ -128,14 +128,14 @@ local function choosePreset (itemsNames, cfgInfo)
         else
           err = err:match"^(.-)\r\n$" or err
           local msg = ('Cannot copy\n"%s"\nto\n"%s"\n\1\n%s'):format(item.name..".preset", pathname, err)
-          far.Message(msg,Shared.name.." copy preset error",
+          far.Message(msg,Common.name.." copy preset error",
                       ";Ok", "w", presetsTopic,
                       win.Uuid "610D35D5-6CBF-4AC4-81D0-99BF791CA3B4")
         end
       end
     elseif bk=="F6" or bk=="ShiftF6" then
       local name = far.InputBox(win.Uuid "9374B901-94EC-4FD4-9B01-A73010A344D5",
-                                Shared.name..": rename preset", "Enter new name",
+                                Common.name..": rename preset", "Enter new name",
                                 "AskAI preset", item.name, nil, presetsTopic, F.FIB_NOUSELASTHISTORY)
       if name then
         name = name:gsub("[/\\]","-")
@@ -147,13 +147,13 @@ local function choosePreset (itemsNames, cfgInfo)
         else
           err = err:match"^(.-)\r\n$" or err
           local msg = ('Cannot rename\n"%s"\nto\n"%s"\n\1\n%s'):format(item.name..".preset", pathname, err)
-          far.Message(msg,Shared.name.." rename preset error",
+          far.Message(msg,Common.name.." rename preset error",
                       ";Ok", "w", presetsTopic,
                       win.Uuid "2559CAD9-82AD-4297-99B9-D3BA144AA3AE")
         end
       end
     elseif bk=="F8" or bk=="Del" then
-      local ret = far.Message("Do you want to delete the preset?\n"..item.name, Shared.name,
+      local ret = far.Message("Do you want to delete the preset?\n"..item.name, Common.name,
                               "Delete;Cancel", "w", presetsTopic,
                               win.Uuid "E4486D00-4751-4AAA-97D4-D30A9D618BEF")
       if ret==1 and win.DeleteFile(item.pathname) then
