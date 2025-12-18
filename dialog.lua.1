@@ -46,7 +46,7 @@ end
 local idInput = win.Uuid"58DD9ECD-CFFA-472E-BFD7-042295C86CAE"
 local SESSION = "default"
 local _prompt = "Ask any &question (editor selection will be included with request)"
-local function dialog (opts)
+local function main (opts)
   if State.isDlgOpened then return end
 
   local json_module = O.json_module
@@ -66,8 +66,9 @@ local function dialog (opts)
     end
   end
   local configs = utils.load"configs.lua.1" {
-    State=State, O=O, utils=utils, dialog=dialog, json=json,
+    State=State, O=O, utils=utils, json=json,
     cfgpath=Shared.cfgpath, name=Shared.name, tempdir=Shared.tempdir,
+    openDialog=main,
   }
 
   local function fmtProfile (fmt)
@@ -131,8 +132,9 @@ local function dialog (opts)
   local F_HISTORY = F.DIF_HISTORY +F.DIF_USELASTHISTORY +F.DIF_MANUALADDHISTORY
   II:add {F.DI_DOUBLEBOX, Shared.name, {[X2]=-1}}
 
+  local dialog = { II=II, opts=opts, populateHistory=populateHistory, } --processSetsHistories
   utils.load"profiles.lua.1" {
-    II=II, utils=utils, name=Shared.name, opts=opts,
+    utils=utils, name=Shared.name, dialog=dialog,
   }
 
   II:add {F.DI_TEXT, _prompt}
@@ -242,6 +244,7 @@ local function dialog (opts)
       end
     end
   end
+  dialog.processSetsHistories = processSetsHistories
 
   local function processSetsDependants (self, hDlg, idx, text)
     text = text or hDlg:GetText(idx)
@@ -341,17 +344,17 @@ local function dialog (opts)
     }
   end
   utils.load"presets.lua.1" {
-    II=II, utils=utils, opts=opts, json=json,
+    utils=utils, json=json,
     name=Shared.name, State=State, cfgpath=Shared.cfgpath,
-    processSetsHistories=processSetsHistories, populateHistory=populateHistory,
+    dialog=dialog,
   }
   utils.load"models.lua.1" {
-    II=II, utils=utils, opts=opts,
+    utils=utils, dialog=dialog,
   }
   local function editConfig (hDlg,idx)
     if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
       hDlg:Close(idx)
-      utils.synchro(dialog, opts)
+      utils.synchro(main,opts)
     end
     return true
   end
@@ -372,7 +375,7 @@ local function dialog (opts)
     name="btnGo"
   }
   data.DlgProc = utils.load"dlgproc.lua.1" {
-    II=II, O=O, populateHistory=populateHistory, opts=opts,
+    O=O, dialog=dialog,
   }
 
   State.isDlgOpened = true
@@ -427,7 +430,7 @@ local function dialog (opts)
     local success, processFn = pcall(cfg.applyParamsFn, unpack(args,1,#cfg.params))
     if not success then
       far.Message(processFn, Shared.name, nil, "w")
-      return dialog(opts)
+      return main(opts)
     end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
     Shared.output(
@@ -443,8 +446,8 @@ local function dialog (opts)
     configs.chooseCfg(opts)
   elseif II[res].name=="profile" then
     opts.prompt = II.prompt[DATA]
-    dialog(opts) --switch profile
+    main(opts) --switch profile
   end
 end
 
-return dialog
+return main

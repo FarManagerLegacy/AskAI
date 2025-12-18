@@ -65,11 +65,6 @@ local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1")) 
 
 local output = utils.load"output.lua.1" {utils=utils}
 
-local dialog = utils.load"dialog.lua.1" {
-  State=State, O=O, utils=utils, output=output,
-  cfgpath=cfgpath, name=nfo.name, tempdir=tempdir,
-}
-
 local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
@@ -77,7 +72,10 @@ local function askAI (opts)
   if opts.compact==nil then
     opts.compact = O.compactDlg
   end
-  dialog(opts)
+  utils.load"dialog.lua.1" {
+    State=State, O=O, utils=utils, output=output,
+    cfgpath=cfgpath, name=nfo.name, tempdir=tempdir,
+  } (opts)
 end
 
 nfo.config  = function () mf.acall(askAI, {cfg=""}) end;
