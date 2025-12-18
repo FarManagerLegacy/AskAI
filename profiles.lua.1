@@ -1,8 +1,9 @@
 local F = far.Flags
 local Shared = ... --name
-local II = Shared.II
 local utils = Shared.utils
-local opts = Shared.opts
+local dialog = Shared.dialog
+local II = dialog.II
+local opts = dialog.opts
 
 local function changeHistoryProfile (historyName, profile)
   return historyName:gsub("^(AskAI)(:?%S*)","%1"..(profile~="default" and ":"..profile or ""))
@@ -133,7 +134,7 @@ local function deleteProfile (self,hDlg,idx)
     utils.msave(settings)
     local _, err = utils.cleanHistory(name)
     if err then
-      far.Message(err, Shared.name, nil, "w")
+      far.Message(err, Common.name, nil, "w")
     end
     if switchToDefault then
       loadProfile(hDlg, idx, "default")
@@ -228,13 +229,13 @@ II:add {F.DI_COMBOBOX, opts.profile, {0, -1, width=_width}, F.DIF_LISTAUTOHIGHLI
     if not got then
       self._from = nil
       if self._textInvalid then
-        if 1==far.Message(("Invalid profile name '%s'. Edit?"):format(self._text), Shared.name, ";Ok;Cancel") then
+        if 1==far.Message(("Invalid profile name '%s'. Edit?"):format(self._text), Common.name, ";Ok;Cancel") then
           return idx
         end
       elseif not settings[self._text] or self._text==opts.profile then
         return
       else
-        if 1==far.Message(("Load '%s' profile?"):format(self._text), Shared.name, ";Ok;Cancel") then
+        if 1==far.Message(("Load '%s' profile?"):format(self._text), Common.name, ";Ok;Cancel") then
           loadProfile(hDlg, nil, self._text)
           return
         end

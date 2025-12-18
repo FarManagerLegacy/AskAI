@@ -1,6 +1,7 @@
-local Shared = ... --O, populateHistory
-local II = Shared.II
-local opts = Shared.opts
+local Shared = ... --O
+local dialog = Shared.dialog -- populateHistory
+local II = dialog.II
+local opts = dialog.opts
 local cfg = opts.cfg
 local F = far.Flags
 local HISTORY, DATA = 7,10
@@ -53,10 +54,10 @@ return function (hDlg,msg,idx,Param2)
   local item = II[idx]
   if msg==F.DN_INITDIALOG then
     for param,list in pairs(cfg.info.predefined or {}) do
-      Shared.populateHistory(II[param], hDlg, list, "init")
+      dialog.populateHistory(II[param], hDlg, list, "init")
     end
     for param,list in pairs(Shared.O.stdEnvs) do
-      Shared.populateHistory(II[param], hDlg, getEnvValues(list))
+      dialog.populateHistory(II[param], hDlg, getEnvValues(list))
     end
     for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
       if item.History then

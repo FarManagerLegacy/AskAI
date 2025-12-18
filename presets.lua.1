@@ -1,9 +1,10 @@
-local Shared = ... -- name, json, processSetsHistories, populateHistory
+local Shared = ... -- name, json
 local State = Shared.State
 local utils = Shared.utils
 local cfgpath = Shared.cfgpath
-local II = Shared.II
-local cfg = Shared.opts.cfg
+local dialog = Shared.dialog -- processSetsHistories, populateHistory
+local II = dialog.II
+local cfg = dialog.opts.cfg
 local F = far.Flags
 
 -- menu ------------
@@ -187,7 +188,7 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
           if v~=hDlg:GetText(item.idx) then
             hDlg:SetText(item.idx, v)
             hDlg:AddHistory(item.idx, v)
-            Shared.processSetsHistories(hDlg, v, dependants)
+            dialog.processSetsHistories(hDlg, v, dependants)
           end
         else
           secondary[item] = v
@@ -201,7 +202,7 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
           if not v then goto continue end
         end
         if type(v)=="table" then
-          Shared.populateHistory(item, hDlg, v)
+          dialog.populateHistory(item, hDlg, v)
           v = v[1]
           isFn = false
         end
