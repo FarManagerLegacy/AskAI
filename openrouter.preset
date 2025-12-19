@@ -5,7 +5,28 @@ apibase="https://openrouter.ai/api/v1"
 apikey=win.GetEnv"OPENROUTER_API_KEY" or "set OPENROUTER_API_KEY env variable!"
 
 --https://openrouter.ai/docs/faq#what-free-tier-options-exist
+--https://openrouter.ai/docs/api/reference/limits
+--https://openrouter.ai/docs/guides/routing/model-variants/free
 --https://openrouter.ai/models?max_price=0
 model="deepseek/deepseek-r1-0528:free"
 
 modelsMeta='filterFn: (model) -> model.pricing.completion=="0"'
+
+--- Extra params info ---
+
+-- `reasoning` (from OpenAI Responses API): alternative to `reasoning_effort`
+--https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request#request.body.reasoning
+--https://platform.openai.com/docs/api-reference/responses/create#responses_create-reasoning
+--reasoning={effort=reasoning_effort, summary="auto|concise|detailed"},
+
+--https://openrouter.ai/docs/api/reference/parameters
+--https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request
+--prompt?: string;
+--min_p?: number; // Range: [0, 1]
+--top_a?: number; // Range: [0, 1]
+
+-- OpenRouter-only: https://openrouter.ai/docs/api-reference/overview#completions-request-format
+--transforms?: string[]; --See "Prompt Transforms" section: openrouter.ai/docs/transforms
+--models?: string[]; --See "Model Routing" section: openrouter.ai/docs/model-routing
+--route?: 'fallback';
+--provider?: ProviderPreferences; --See "Provider Routing" section: openrouter.ai/docs/provider-routing
