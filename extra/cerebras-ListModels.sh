@@ -4,8 +4,8 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-curl -s 'https://inference.cerebras.ai/api/graphql' \
+curl -s 'https://chat.cerebras.ai/api/graphql' \
   -H 'content-type: application/json' \
-  -H "cookie: authjs.session-token=$1" \
-  --data-raw '{"operationName":"ListModels","variables":{"organizationId":"__personal"},"query":"query ListModels($organizationId: ID) {\n  ListModels(organizationId: $organizationId) {\n    id\n    name\n    description\n    modelVisibility\n    __typename\n  }\n}"}' \
+  -b "authjs.session-token=$1" \
+  --data-raw '{"operationName":"ListModels","variables":{"organizationId":"__personal"},"query":"query ListModels($organizationId: ID) {\n  ListModels(organizationId: $organizationId) {\n    id\n    name\n    description\n    modelVisibility\n    __typename\n  }\n}"}'\
   | jq [.data.ListModels[].id]

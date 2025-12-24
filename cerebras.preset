@@ -1,6 +1,8 @@
 --https://cloud.cerebras.ai/
---Try chat: from https://inference.cerebras.ai/
+--https://inference-docs.cerebras.ai/support/change-log
+--Try chat: from https://chat.cerebras.ai/
 
+--https://inference-docs.cerebras.ai/
 apibase="https://api.cerebras.ai/v1"
 
 local Common = ...
@@ -23,24 +25,25 @@ apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
     far.Message(('"%s" cookie required'):format(COOKIENAME),"Cerebras preset",nil,"wl")
   until false
 
-  local json = Common.json
   local ltn12 = require"ltn12"
-
   local acc = {}
   local _, status_code, _, status_line = assert(require"ssl.https".request {
     method="POST",
-    url="https://inference.cerebras.ai/api/graphql",
+    url="https://chat.cerebras.ai/api/graphql",
     headers={["content-type"]="application/json", cookie=cookies},
     sink=ltn12.sink.table(acc),
-    source=ltn12.source.string(json.encode{
-      operationName="GetMyDemoApiKey",
-      variables={},
-      query="query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"
-    })
+    source=ltn12.source.string[[{
+      "operationName": "GetMyDemoApiKey",
+      "variables": {},
+      "query": "query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"
+    }]]
   })
-  assert(status_code==200, status_line) --todo
+  local resp = table.concat(acc)
+  if status_code~=200 then
+    error(("%s\n\1\n%s"):format(status_line or status_code, resp))
+  end
 
-  local resp = assert(json.decode(table.concat(acc)))
+  resp = assert(Common.json.decode(resp))
   if resp.errors then
     far.Message(resp.errors[1].message,"Cerebras preset",nil,"wl")
     return
