@@ -5,8 +5,7 @@ if [ $# -eq 0 ]; then
 fi
 
 curl -s 'https://chat.cerebras.ai/api/graphql' \
-  -H 'accept: */*' \
   -H 'content-type: application/json' \
   -b "authjs.session-token=$1" \
-  --data-raw '{"operationName":"GetMyDemoApiKey","variables":{},"query":"query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"}' \
-  | jq -r .data.GetMyDemoApiKey
+  --data-raw '{"operationName":"ListMyRegions","variables":{},"query":"query ListMyRegions {\n  ListMyRegions {\n    id\n    name\n    baseApiUrl\n    __typename\n  }\n}"}'
+  
