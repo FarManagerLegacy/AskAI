@@ -11,3 +11,12 @@ apibase="https://ai-gateway.vercel.sh/v1"
 apikey=win.GetEnv"AI_GATEWAY_API_KEY" or "set AI_GATEWAY_API_KEY env variable!"
 model="meituan/longcat-flash-chat"
 modelsMeta='filterFn: (model) -> model.type=="language"'-- and model.pricing.input=="0" and model.pricing.output=="0"'
+
+--https://vercel.com/docs/ai-gateway/openai-compat#reasoning-configuration
+extra_body={
+  "reasoning: enabled: true",
+  "reasoning: enabled: false",
+  "reasoning: max_tokens: 2000",
+  'reasoning: effort: "high"',
+  "reasoning: exclude: true",
+}

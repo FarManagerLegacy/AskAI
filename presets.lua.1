@@ -18,13 +18,15 @@ local function toggleHidden (items)
   end
 end
 
+local optional = {modelsMeta=true, extra_body=true}
 local function loadPreset (pathname, itemsNames, cfgInfo)
   local export = setmetatable({}, {__index=Common})
   local env = {}
   local ret = utils.loadLua(pathname,env)(export) -- cfgpath, State, json, utils: .HK, .check, .loadMoon
   for k in pairs(env) do
     if not itemsNames[k] then
-      if k~="modelsMeta" then
+      if not optional[k] then
+        -- Look for corresponding environment param
         local key = cfgInfo.env and cfgInfo.env[k]
         if not key then return end
         env[key] = env[k]

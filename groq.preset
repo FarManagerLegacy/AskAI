@@ -4,3 +4,12 @@
 apibase="https://api.groq.com/openai/v1"
 apikey=win.GetEnv"GROQ_API_KEY" or "set GROQ_API_KEY env variable!"
 model="openai/gpt-oss-120b"
+
+--https://console.groq.com/docs/reasoning#options-for-reasoning-format
+extra_body={
+  "",
+  'reasoning_format: "parsed"',  --message.reasoning
+  'reasoning_format: "raw"',     --<think>
+  'reasoning_format: "hidden"',
+  "include_reasoning: false",    --(default: true)
+}

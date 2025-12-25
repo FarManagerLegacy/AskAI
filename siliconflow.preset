@@ -17,3 +17,10 @@ modelsMeta=[[{
     models.list = models.list or {m.id,true for m in *models}
     models.list["Pro/"..model.id]
 }]]
+
+--https://docs.siliconflow.cn/en/api-reference/chat-completions/chat-completions#body-one-of-0-enable-thinking
+extra_body={
+  "enable_thinking: true, thinking_budget: 65368",
+  "enable_thinking: true",
+  "",
+}
