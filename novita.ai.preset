@@ -5,3 +5,10 @@
 apibase="https://api.novita.ai/v3/openai"
 apikey=win.GetEnv"NOVITAAI_API_KEY" or "set NOVITAAI_API_KEY env variable!"
 model="openai/gpt-oss-120b"
+
+--https://novita.ai/docs/api-reference/model-apis-llm-create-chat-completion#param-separate-reasoning
+extra_body={
+  "",
+  "enable_thinking: true, separate_reasoning: true",
+  "enable_thinking: false",
+}

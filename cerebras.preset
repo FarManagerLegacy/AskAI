@@ -52,3 +52,10 @@ apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
 end
 
 model="gpt-oss-120b"
+
+--https://inference-docs.cerebras.ai/capabilities/reasoning#reasoning-with-z-ai-glm-4-6
+--https://inference-docs.cerebras.ai/resources/openai#passing-non-standard-parameters
+extra_body={
+  "disable_reasoning: false",
+  "disable_reasoning: true",
+}

@@ -7,3 +7,15 @@ apibase="https://api.poe.com/v1"
 apikey=win.GetEnv"POE_API_KEY" or "set POE_API_KEY env variable!"
 model="Grok-4-Fast-Reasoning"
 modelsMeta='filterFn: (model) -> model.architecture.modality\\match"text.-%->text"'
+
+--bot-specific parameters
+--https://creator.poe.com/docs/external-applications/openai-compatible-api#using-custom-parameters-with-extra_body
+extra_body={
+  "",
+  --Gemini
+  "web_search: true",
+  'thinking_level: "high"', 
+  'web_search: true, thinking_level: "high"',
+  --Claude
+  "thinking_budget: 12288",
+}

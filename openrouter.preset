@@ -12,12 +12,19 @@ model="deepseek/deepseek-r1-0528:free"
 
 modelsMeta='filterFn: (model) -> model.pricing.completion=="0"'
 
---- Extra params info ---
+--https://openrouter.ai/docs/guides/best-practices/reasoning-tokens#controlling-reasoning-tokens
+extra_body={
+  'reasoning: effort: "high"',   --OpenAI, Grok
+  "reasoning: max_tokens: 2000", --Gemini, Anthropic, Qwen (thinking_budget)
+  "reasoning: exclude: true",
+  "reasoning: enabled: false",
 
--- `reasoning` (from OpenAI Responses API): alternative to `reasoning_effort`
---https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request#request.body.reasoning
---https://platform.openai.com/docs/api-reference/responses/create#responses_create-reasoning
---reasoning={effort=reasoning_effort, summary="auto|concise|detailed"},
+  --https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request#request.body.reasoning
+  --https://platform.openai.com/docs/api-reference/responses/create#responses_create-reasoning
+  'reasoning: summary: "concise"', --auto|concise|detailed
+}
+
+--- Extra params info ---
 
 --https://openrouter.ai/docs/api/reference/parameters
 --https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request

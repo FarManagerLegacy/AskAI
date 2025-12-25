@@ -11,3 +11,9 @@ apikey=win.GetEnv"SAMBANOVA_API_KEY" or "set SAMBANOVA_API_KEY env variable!"
 model="DeepSeek-R1-0528"
 
 modelsMeta=""
+--https://docs.sambanova.ai/docs/api-reference/chat-completions/create-chat-based-completion#body-chat-template-kwargs-one-of-0
+extra_body={
+  "",
+  --DeepSeek-V3.1
+  "chat_template_kwargs: enable_thinking: true",
+}

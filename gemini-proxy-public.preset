@@ -4,3 +4,12 @@
 apibase="https://my-openai-gemini-demo.vercel.app/v1"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
 model="gemini-flash-latest"
+
+--https://ai.google.dev/gemini-api/docs/openai#extra-body
+--https://ai.google.dev/api/generate-content#ThinkingConfig
+extra_body={
+  "",
+  "extra_body: google: thinkingConfig: includeThoughts:true",
+  "extra_body: google: thinkingConfig: includeThoughts:true, thinkingBudget:1024",
+  'extra_body: google: thinkingConfig: includeThoughts:true, thinkingLevel:"high"',
+}
