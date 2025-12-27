@@ -208,6 +208,12 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
           hDlg:SetText(item.idx, v)
           hDlg:AddHistory(item.idx, v)
         end
+        if item.name=="apidef" and v~=exV then
+          local name = exV:match"^%s-class (%w+) extends OpenAI"
+          if name then
+            Common.restapi.OpenAI[name] = nil
+          end
+        end
         ::continue::
       end
       ::exitPresets::
