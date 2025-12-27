@@ -133,8 +133,7 @@ local function isReachable (fname, source)
 end
 
 local export
-if json and pcall(require, "ssl.https") then
-  local restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
+if Common.restapi then
   local function getHistory (historyName)
     State[historyName] = State[historyName] or {}
     return State[historyName]
@@ -202,7 +201,6 @@ if json and pcall(require, "ssl.https") then
   end
 
   export = {
-    restapi=restapi,
     getHistory=getHistory,
     setHistory=setHistory,
     boolean=boolean,
