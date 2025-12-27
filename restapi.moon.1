@@ -57,24 +57,29 @@ class Plain
       :headers
     }
     if success
-      response = if delta_callback then out.response else table.concat out
-      pcall -> response = assert json.decode response
-      response, status_code, response_headers, status_line
+      data_str = if delta_callback then out.response else table.concat out
+      if data_str==STREAMED
+        return data_str, status_code, response_headers, status_line, "" 
+      local response
+      pcall -> response = assert json.decode data_str
+      response or data_str, status_code, response_headers, status_line, data_str
     else
       nil, status_code
 
-  formatErr: (meta) -> meta.statusline or meta.status_code
+  formatErr: (meta) ->
+    table.concat { meta.statusline or meta.status_code, meta.data_str }, "\n\n"
 
   request: (method, endpoint, payload, delta_callback, headers) =>
     if method\match"^[/?]"
       endpoint, payload, delta_callback, headers = method, endpoint, payload, delta_callback
       method = payload and "POST" or "GET"
 
-    response, status_code, headers, statusline = @_request method, endpoint, payload, delta_callback, headers
-    meta = setmetatable { :status_code, :headers, :statusline }, __tostring: @formatErr
+    response, status_code, headers, statusline, data_str = @_request method, endpoint, payload, delta_callback, headers
+    data_str = nil if data_str==""
+    meta = setmetatable { :status_code, :headers, :statusline, :data_str }, __tostring: @formatErr
     if response
       if status_code<200 or status_code>299
-        meta.data = response if response~=STREAMED
+        meta.data = response unless response==STREAMED
         response = nil
     response, meta
 
