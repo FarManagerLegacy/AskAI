@@ -2,58 +2,71 @@
 -- 60 requests per minute rate limit
 -- https://github.com/QwenLM/qwen-code
 
--- Expired token could be updated by reloading the preset.
-
 apibase="https://portal.qwen.ai/v1"
 
 local Common = ...
+local key_name = "AskAI - qwen-code-api.preset"
 apikey=function (cur)
-  local qwen = #cur>0 and mf.mload("jd", "AskAI - qwen-code-api.preset")
-  if qwen then
-    local now = os.time()
-    if now*1000<qwen.expiry_date then
-      return qwen.access_token 
-    end
-
-    local ltn12 = require"ltn12"
-    local acc = {}
-    local _, status_code, _, status_line = assert(require"ssl.https".request {
-      method="POST",
-      url="https://chat.qwen.ai/api/v1/oauth2/token",
-      headers={["content-type"]="application/x-www-form-urlencoded", accept="application/json", ["user-agent"]=":"},
-      sink=ltn12.sink.table(acc),
-      source=ltn12.source.string(table.concat({
-        "grant_type=refresh_token",
-        "refresh_token="..qwen.refresh_token,
-        "client_id=f0304373b74a44d2b584a3fb70ca9e56",
-      },"&"))
-    })
-    local resp = table.concat(acc)
-    if status_code~=200 then
-      error(("%s\n\1\n%s"):format(status_line, resp))
-    end
-    resp = assert(Common.json.decode(resp))
-    if resp.error then
-      error(resp.error_description)
-    end
-    resp.expiry_date = (now + resp.expires_in)*1000
-    resp.status = nil
-    resp.scope = nil
-    resp.expires_in = nil
-    qwen = resp
-  else
-    local _export = {json=Common.json, openUrl=Common.utils.openUrl}
-    local oauth = Common.utils.loadMoon("oauth_qwen.moon.1", _export) "oauth_qwen"
-    local title,msg = "Authorization", "Waiting..."
-    qwen = oauth(function(url) msg = url end, function(time)
-      far.Message(msg,title..": "..time,"")
-    end)
-    actl.RedrawAll()
-    if not qwen then return end
+  if cur~="" and mf.mload("jd", key_name) then
+    return
   end
-  mf.msave("jd", "AskAI - qwen-code-api.preset", qwen)
-  return qwen.access_token
+  local _export = {json=Common.json, openUrl=Common.utils.openUrl}
+  local oauth = Common.utils.loadMoon("oauth_qwen.moon.1", _export) "oauth_qwen"
+  local title,msg = "Authorization", "Waiting..."
+  local data = oauth(function(url) msg = url end, function(time)
+    far.Message(msg, title..": "..time, "")
+  end)
+  actl.RedrawAll()
+  if data then
+    data.exp = data.expiry_date / 1000
+    data.expiry_date, data.resource_url, data.token_type = nil,nil,nil
+    mf.msave("jd", key_name, data)
+    return "[Authorized]"
+  end
 end
 
-model="qwen3-coder-plus"
+model={
+  --"qwen3-coder-plus",
+  "coder-model",  --qwen3-coder-plus-2025-09-23
+  "vision-model", --qwen3-vl-plus-2025-09-23
+}
 modelsMeta="none"
+
+apidef=[[
+class QwenCode extends OpenAI
+  userAgent = "QwenCode/0.7.1 (windows; amd64)", --npm view @qwen-code/qwen-code version
+  class OAuth2 extends Plain
+    headers:
+      "User-Agent": userAgent
+      "Content-Type": "application/x-www-form-urlencoded"
+    api_base: "https://chat.qwen.ai/api/v1/oauth2"
+
+    new: (client_id) =>
+      @payload = "client_id=#{client_id}&grant_type=refresh_token&refresh_token="
+
+    refresh: (data) =>
+      curtime = os.time!
+      unless data.exp>curtime
+        data, meta = @request "POST", "/token", @payload..data.refresh_token
+        with assert data or meta.data, meta
+          error .error_description if .error
+          error meta unless .status=="success"
+          .exp = .expires_in + curtime
+          .expires_in, .resource_url, .scope, .status, .token_type = nil
+
+  key_name: "AskAI - qwen-code-api.preset"
+  client_id: "f0304373b74a44d2b584a3fb70ca9e56"
+  headers: "User-Agent": userAgent
+  api_base: "https://portal.qwen.ai/v1"
+
+  new: (@refresh_token, @api_base) =>
+    data = assert mf.mload("jd", @key_name), "Authorization required"
+    @auth = OAuth2 @client_id
+    @api_key = data.access_token
+
+  request: (...) =>
+    if data = @auth\refresh mf.mload "jd", @key_name
+      mf.msave "jd", @key_name, data
+      @api_key = data.access_token
+    super ...
+]]

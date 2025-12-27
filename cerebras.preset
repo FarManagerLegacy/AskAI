@@ -5,51 +5,7 @@
 --https://inference-docs.cerebras.ai/
 apibase="https://api.cerebras.ai/v1"
 
-local Common = ...
-apikey=win.GetEnv"CEREBRAS_API_KEY" or function (oldkey) -- get demo key
-  if not oldkey:match"^demo%-" then return end
-
-  local id = win.Uuid"75297D85-1DAF-46AF-A9C4-1B66E959CAFB"
-  local COOKIENAME = "authjs.session-token"
-  local cookies
-  repeat
-    cookies = far.InputBox(id, "Cerebras preset", "Enter cookies:", "AskAI/cerebras.preset/cookies")
-    if not cookies then
-      return -- Esc
-    elseif #cookies==36 then --uuid
-      cookies = COOKIENAME.."="..cookies
-      break
-    elseif cookies:find(COOKIENAME,1,"plain") then
-      break
-    end
-    far.Message(('"%s" cookie required'):format(COOKIENAME),"Cerebras preset",nil,"wl")
-  until false
-
-  local ltn12 = require"ltn12"
-  local acc = {}
-  local _, status_code, _, status_line = assert(require"ssl.https".request {
-    method="POST",
-    url="https://chat.cerebras.ai/api/graphql",
-    headers={["content-type"]="application/json", cookie=cookies},
-    sink=ltn12.sink.table(acc),
-    source=ltn12.source.string[[{
-      "operationName": "GetMyDemoApiKey",
-      "variables": {},
-      "query": "query GetMyDemoApiKey {\n  GetMyDemoApiKey\n}"
-    }]]
-  })
-  local resp = table.concat(acc)
-  if status_code~=200 then
-    error(("%s\n\1\n%s"):format(status_line or status_code, resp))
-  end
-
-  resp = assert(Common.json.decode(resp))
-  if resp.errors then
-    far.Message(resp.errors[1].message,"Cerebras preset",nil,"wl")
-    return
-  end
-  return resp.data.GetMyDemoApiKey
-end
+apikey=win.GetEnv"CEREBRAS_API_KEY" or "set CEREBRAS_API_KEY env variable!"
 
 model="gpt-oss-120b"
 
@@ -59,3 +15,43 @@ extra_body={
   "disable_reasoning: false",
   "disable_reasoning: true",
 }
+
+apidef=[[
+class Cerebras extends OpenAI
+  @@._cache = {}
+  class Auth extends Plain
+    headers: "User-Agent": ":"
+    api_base: "https://chat.cerebras.ai/api"
+    expires_in: 600
+    GetMyDemoApiKey: '{"operationName":"GetMyDemoApiKey","variables":{},"query":"query GetMyDemoApiKey {\\n  GetMyDemoApiKey\\n}"}'
+
+    new: (@session_token) => @headers.cookie = "authjs.session-token=#{@session_token}"
+
+    refresh: (expiry) =>
+      curtime = os.time!
+      unless expiry and expiry>curtime
+        with data = assert @request "/graphql", @GetMyDemoApiKey, "content-type": "application/json"
+          assert data and data~=json.null, "Wrong authjs.session-token value"
+          error .errors[1].message if .errors
+          return {
+            exp:curtime + @expires_in
+            demoApiKey:assert .data and .data.GetMyDemoApiKey, "Unexpected response"
+          }
+
+  api_base: "https://api.cerebras.ai/v1"
+
+  new: (@api_key, @api_base, @cache) =>
+    if @api_key and #@api_key==36 and win.Uuid @api_key
+      session_token = @api_key
+      @auth = Auth session_token
+      data = @@._cache[session_token]
+      unless data
+        data = @auth\refresh!
+        @@._cache[session_token] = data
+      { demoApiKey:@api_key, exp:@exp } = data
+
+  request: (...) =>
+    if data = @auth and @auth\refresh @exp
+      { demoApiKey:@api_key, exp:@exp } = data
+    super ...
+]]
