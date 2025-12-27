@@ -73,6 +73,8 @@ class Plain
     if method\match"^[/?]"
       endpoint, payload, delta_callback, headers = method, endpoint, payload, delta_callback
       method = payload and "POST" or "GET"
+      if "table"==type delta_callback
+        headers,delta_callback = delta_callback,nil
 
     response, status_code, headers, statusline, data_str = @_request method, endpoint, payload, delta_callback, headers
     data_str = nil if data_str==""
