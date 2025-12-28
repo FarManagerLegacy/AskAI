@@ -1,0 +1,16 @@
+--DeepSeek, gemma, GLM, gpt-oss, Kimi, Llama, Qwen, ...
+
+--Free: €0 forever / Limited AI Models / 5 RPM Rate Limits / 300 RPD Request Limit / Limited Context (Approx. 50%)
+--https://www.a4f.co/pricing
+
+--https://chat.a4f.co/
+--https://playground.a4f.co/
+--https://www.a4f.co/dashboard
+
+--https://www.a4f.co/docs/quickstart
+apibase="https://api.a4f.co/v1"
+apikey=win.GetEnv"A4F_API_KEY" or "set A4F_API_KEY env variable!"
+
+--https://www.a4f.co/models
+model="provider-5/gemini-2.5-flash"
+modelsMeta='filterFn: (model) -> model.type=="chat/completion"'

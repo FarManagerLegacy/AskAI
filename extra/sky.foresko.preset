@@ -1,0 +1,11 @@
+--Sky / Foresko
+--https://play.google.com/store/apps/details?id=com.foresko.sky
+--Source: https://github.com/aandrew-me/tgpt/commit/cb447267b44d653348ce81aa73d9e9e9742bced0
+
+apibase="https://api.sky.foresko.com/v1"
+
+--model="gpt-4.1-mini" -- non-customizable
+
+apidef=[[class SkyForesko extends OpenAI
+  defaultEndpoint: "/create-chat-completion"
+]]

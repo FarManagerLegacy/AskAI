@@ -1,0 +1,8 @@
+--https://yep.com/chat/
+apibase="https://api.yep.com/v1"
+model={
+  "DeepSeek-R1-Distill-Qwen-32B", --"Thinking enabled"
+  "Mixtral-8x7B-Instruct-v0.1",
+}
+headers='"Accept-Language": "en-US", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"'
+modelsMeta="none"
