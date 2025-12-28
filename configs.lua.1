@@ -280,6 +280,14 @@ local function loadCfg (pathname, filename)
     env.url = "https://github.com/FarManagerLegacy/LuaBinaries"
   end
   local function toMap (t) for _,v in ipairs(t) do t[v] = true end end
+  if env.serviceFields then
+    toMap(env.serviceFields)
+    if not Common.O.debug then
+      local function merge (dest,source) for _,v in ipairs(source) do table.insert(dest,v) end end
+      env.hidden = env.hidden or {}
+      merge(env.hidden, env.serviceFields)
+    end
+  end
   if env.hidden then
     toMap(env.hidden)
   end

@@ -9,7 +9,7 @@ local options = {
   std = "_G+luamacro",
   globals={
     "clearSession", "config", "env", "exe", "name", "predefined", "prompt", "sessionFile", "showSession", "url",
-    "hidden", "histories", "historyName", "modelsMeta", "sets",
+    "hidden", "histories", "historyName", "modelsMeta", "sets", "serviceFields",
   };
   read_globals={
     "_context", "_import", "_isWindows", "_optional", "_pathjoin", "_pipeOut", "_quote", "_readLines", "_tmpfile",
