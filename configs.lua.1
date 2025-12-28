@@ -279,8 +279,9 @@ local function loadCfg (pathname, filename)
   if not env.exe then
     env.url = "https://github.com/FarManagerLegacy/LuaBinaries"
   end
+  local function toMap (t) for _,v in ipairs(t) do t[v] = true end end
   if env.hidden then
-    for _,v in ipairs(env.hidden) do env.hidden[v] = true end
+    toMap(env.hidden)
   end
   return {
     applyParamsFn = applyParamsFn,
