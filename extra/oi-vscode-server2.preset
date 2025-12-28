@@ -1,0 +1,15 @@
+apibase="https://oi-vscode-server-2.onrender.com/v1"
+
+model="*" --gemini-2.0-flash
+
+local function genId (length)
+  local charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+  local result = {}
+  for i=1,length do
+    local rand_index = math.random(1, #charset)
+    table.insert(result, string.sub(charset, rand_index, rand_index))
+  end
+  return table.concat(result)
+end
+
+headers = string.format('userid: "%s"', genId(21))

@@ -1,0 +1,31 @@
+--Anthropic, DeepSeek, Google, OpenAI, Qwen, xAI Grok, Zhipu GLM
+--https://docs.redpill.ai/concepts/pricing#free-tier: demo key only!
+
+--https://www.redpill.ai/
+--https://docs.redpill.ai/quickstart
+--https://chat.redpill.ai/
+
+--https://docs.redpill.ai/api-reference/overview
+apibase="https://api.redpill.ai/v1"
+
+--https://www.redpill.ai/keys
+--https://docs.redpill.ai/authentication#key-format
+local demoApiKey = "sk-9JABKD0bYW6s8VN6PoIG0LUOj1uo44TrXm0MNJWXe7GWP1wR"
+apikey={
+  win.GetEnv"REDPILL_API_KEY" or "",
+  demoApiKey,
+}
+
+--https://www.redpill.ai/models
+model={
+  --https://docs.redpill.ai/concepts/supported-models#free-models
+  "qwen/qwen-2.5-7b-instruct", -- Doesn't require apikey
+}
+
+--https://docs.redpill.ai/use-cases/reasoning-models#controlling-reasoning-effort
+extra_body={
+  "",
+  "reasoning: include_reasoning: false",
+  "reasoning: max_tokens: 2000",
+  'reasoning: effort: "high"',
+}
