@@ -188,10 +188,11 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
             dialog.processSetsHistories(hDlg, v, dependants)
           end
         else
-          secondary[item] = v
+          secondary[k] = v
         end
       end
-      for item,v in pairs(secondary) do
+      for k,v in pairs(secondary) do
+        local item = II[k]
         local exV = hDlg:GetText(item.idx)
         local isFn = type(v)=="function"
         if isFn then
