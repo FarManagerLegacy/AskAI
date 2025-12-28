@@ -68,6 +68,9 @@ local function main (opts)
     if pcall(require, "ssl.https") then
       if O.debug or not Common.restapi then
         Common.restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
+        Common.restapi.Plain.__base.formatErr = function (meta)
+          return table.concat({meta.statusline or meta.status_code, meta.data_str}, "\n\1\n")
+        end
       end
     end
   end
