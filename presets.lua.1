@@ -168,6 +168,7 @@ local function _pcall (fn, ...)
   if success then return res end
   far.Message(res,"Error in preset",nil,"wl")
 end
+local DATA = 10
 II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
   onclick=function(_,hDlg)
     local preset = choosePreset(II, cfg.info)
@@ -205,7 +206,8 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
           isFn = false
         end
         local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
-        if isHidden or isFn or exV=="" or exV:match" env variable!$" then
+        local isService = cfg.info.serviceFields and cfg.info.serviceFields[item.name]
+        if isHidden or isService or isFn or exV=="" or exV:match" env variable!$" then
           hDlg:SetText(item.idx, v)
           hDlg:AddHistory(item.idx, v)
         end
@@ -216,6 +218,15 @@ II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
           end
         end
         ::continue::
+      end
+      if cfg.info.serviceFields then
+        for _,k in ipairs(cfg.info.serviceFields) do
+          local item = II[k]
+          if not preset[k] and item[DATA]~="" then
+            hDlg:SetText(item.idx, "")
+            hDlg:AddHistory(item.idx, "")
+          end
+        end
       end
       ::exitPresets::
       hDlg:EnableRedraw(1)
