@@ -19,13 +19,9 @@ local function toggleHidden (items)
 end
 
 local function loadPreset (pathname, itemsNames, cfgInfo)
+  local export = setmetatable({}, {__index=Common})
   local env = {}
-  local ret = utils.loadLua(pathname,env) {
-    cfgpath=cfgpath,
-    State=State,
-    utils=utils, --.HK, .check, .loadMoon
-    json=Common.json,
-  }
+  local ret = utils.loadLua(pathname,env)(export) -- cfgpath, State, json, utils: .HK, .check, .loadMoon
   for k in pairs(env) do
     if not itemsNames[k] then
       if k~="modelsMeta" then
