@@ -176,7 +176,7 @@ if Common.restapi then
   end
 
   local function formatJsonMsg (data,getMsgText)
-    local msg = getMsgText(data)
+    local msg = getMsgText and getMsgText(data)
     if type(msg)=="string" then
       if select(2, msg:gsub("\n","\n"))>2 then
         msg = wrapCode(msg, "error")
@@ -197,7 +197,7 @@ if Common.restapi then
     elseif meta.statusline:find(data,1,"plain") then
       return meta.statusline
     end
-    return table.concat({meta.statusline, data}, sep)
+    return table.concat({meta.statusline, data}, sep or "\n")
   end
 
   export = {
