@@ -1,8 +1,11 @@
-﻿--https://huggingface.co/playground
+--Monthly Credits: $0.10
+--https://huggingface.co/chat/
+--https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference,zai-org,publicai&sort=trending
+
+--https://huggingface.co/playground
 --https://huggingface.co/docs/inference-providers/index#http--curl
 --https://huggingface.co/docs/inference-providers/tasks/chat-completion#api-specification
 --https://huggingface.co/docs/inference-providers/pricing#free-credits-to-get-started
---Monthly Credits: $0.10
 
 --https://huggingface.co/docs/inference-providers/hub-api?code=curl
 --https://huggingface.co/settings/inference-providers

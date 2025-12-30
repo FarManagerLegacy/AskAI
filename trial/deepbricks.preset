@@ -1,0 +1,10 @@
+--allows some usage with 0 balance
+--o1/o3/o4/gpt-5/.../Claude/Gemini 
+--https://deepbricks.ai/pricing
+
+--https://deepbricks.ai/playground
+--https://deepbricks.ai/docs
+
+apibase="https://api.deepbricks.ai/v1"
+apikey=win.GetEnv"DEEPBRICKS_API_KEY" or "set DEEPBRICKS_API_KEY env variable!"
+model="gpt-5-chat"

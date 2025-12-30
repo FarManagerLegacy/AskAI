@@ -1,4 +1,5 @@
---Deprecated
+--Deprecated!
+--gpt-oss, Qwen, ...
 --https://docs.ncompass.tech/legacy/ai-inference-api
 
 apibase="https://api.ncompass.tech/v1"

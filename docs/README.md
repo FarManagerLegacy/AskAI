@@ -267,7 +267,6 @@
 ### Обзор провайдеров
 
 - [OpenAI](https://platform.openai.com/) – оригинальный разработчик *ChatGPT*.  
-  Новому пользователю предоставляется кредит \$5, после исчерпания которого доступно только платное использование.  
   Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью “нативной” конфигурации,
   так и называющейся “*OpenAI-compatible*”.
 - Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [xAI](https://x.ai/grok) *Grok*, [AI21 labs](https://www.ai21.com) *Jamba*.  
@@ -324,14 +323,12 @@
   - [cerebras](https://cloud.cerebras.ai/) (gpt-oss, GLM, Llama, Qwen)
   - [featherless](https://featherless.ai/models) (бесплатно - огромное количество моделей \<15B)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
-- Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
-  - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial
-  - [deepbricks](https://deepbricks.ai/pricing) (o1/o3/o4/gpt-5/…/Claude/Gemini): allows some usage with 0 balance
-  - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
-  - [huggingface](https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference&sort=trending) (OpenSource-модели): \$0.1 monthly
-  - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, gpt-oss, Qwen): \$10 credit for free trial
-  - [ncompass](https://www.ncompass.tech/about) (OpenSource-модели: Llama, Qwen, …): \$1 free credits
-  - [novita.ai](https://novita.ai/model-api/product/llm-api) (OpenSource-модели): \$0.5 credit
+- Дополнительные пресеты расположены в поддиректориях.  
+  Чтобы они появились в [списке](#работа-с-пресетами), необходимо скопировать нужные из них в основную директорию
+  (лучше сделать ссылку).
+  - `trial/`: сервисы, для которых доступен пробный кредит.
+  - `paid/`: без пробного периода (или кредит \< \$1).
+  - `extra/`: прочие, например сервисы неопределённого происхождения.
 
 Кроме того:
 
