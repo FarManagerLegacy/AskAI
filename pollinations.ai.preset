@@ -1,9 +1,20 @@
---https://pollinations.ai/
---https://github.com/pollinations/pollinations/blob/master/APIDOCS.md
---https://auth.pollinations.ai/
+--Claude, Gemini, Grok, Llama, Mistral, Nova, OpenAI, Perplexity,
+--DeepSeek, Kimi, Qwen, ...
 
-apibase="https://text.pollinations.ai/openai"
+--How do daily Pollen grants work?
+--You receive a daily Pollen grant based on your tier. Daily Pollen is spent before your purchased Pollen. Unused Pollen expires each day.
+
+--https://pollinations.ai/
+--https://enter.pollinations.ai/
+--https://enter.pollinations.ai/api/docs
+--https://pollinations.ai/play
+
+--https://enter.pollinations.ai/api/docs#tag/genpollinationsai/POST/v1/chat/completions
+apibase="https://gen.pollinations.ai/v1"
+
+apikey=win.GetEnv"PLLN_API_KEY" or "set PLLN_API_KEY env variable!"
+
 model="openai-large"
 
---https://text.pollinations.ai/models
-modelsMeta='apibase: "https://text.pollinations.ai"'
+--https://enter.pollinations.ai/api/docs#tag/genpollinationsai/GET/text/models
+modelsMeta='apibase:"https://gen.pollinations.ai/text"'

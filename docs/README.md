@@ -288,7 +288,6 @@
 конфигурации некоторых утилит (кроме тех, которые хранят эти значения в собственных файлах настроек).
 
 - Не требуют ключа (`apikey`) только эти пресеты:
-  - [pollinations.ai](https://pollinations.ai/) (OpenAI, Gemini, DeepSeek, Qwen, Mistral, Llama, […](https://text.pollinations.ai/models))
   - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
   - [g4f.\*](https://g4f.dev/): GPT4Free
   - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели): some anonymous usage allowed
@@ -305,6 +304,8 @@
   - [mistral](https://mistral.ai/models), [codestral](https://console.mistral.ai/codestral)
   - [nvidia](https://build.nvidia.com/) (OpenSource-модели: DeepSeek, gpt-oss, Kimi, Llama, MiniMax, Mistral, Qwen, Phi-4, …)
   - [poe](https://poe.com/) (все популярные модели + пользовательские “боты”): 3000 поинтов в день на бесплатном плане
+  - [pollinations.ai](https://pollinations.ai/) (Claude, Gemini, Grok, Llama, Mistral, Nova, OpenAI, Perplexity,
+    DeepSeek, Kimi, Qwen, […](https://gen.pollinations.ai/models))
   - [sambanova](https://cloud.sambanova.ai/pricing) (DeepSeek, gpt-oss, Llama, Qwen, …)
   - [vercel](https://vercel.com/ai-gateway) (модели от *Anthropic*, *Google*, *Meta*, *Mistral AI*, *OpenAI*, *xAI*,
     и множество других, включая китайские OpenSource модели)  

@@ -1,0 +1,10 @@
+--https://pollinations.ai/
+--https://github.com/pollinations/pollinations/blob/master/APIDOCS.md#advanced-text-generation-openai-compatible
+--https://auth.pollinations.ai/
+
+apibase="https://text.pollinations.ai/openai"
+apikey=win.GetEnv"PLLN_TOKEN" or "set PLLN_TOKEN env variable!"
+model="deepseek"
+
+--https://text.pollinations.ai/models
+modelsMeta='apibase: "https://text.pollinations.ai"'
