@@ -324,7 +324,6 @@
   - [cerebras](https://cloud.cerebras.ai/) (gpt-oss, GLM, Llama, Qwen)
   - [featherless](https://featherless.ai/models) (бесплатно - огромное количество моделей \<15B)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
-  - [lepton](https://www.lepton.ai/playground) (`llama3-3-70`, …, `mixtral-8x7b` и др.)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
   - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial
   - [deepbricks](https://deepbricks.ai/pricing) (o1/o3/o4/gpt-5/…/Claude/Gemini): allows some usage with 0 balance

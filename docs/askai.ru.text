@@ -431,7 +431,6 @@ __Кнопки__:
    - [cerebras] (gpt-oss, GLM, Llama, Qwen)
    - [featherless] (бесплатно - огромное количество моделей <15B)
    - [fireworks.ai] (всевозможные OpenSource-модели)
-   - [lepton] (`llama3-3-70`, ..., `mixtral-8x7b` и др.)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
    - [ai21] (Jamba): $10 credit, 3mo trial
    - [deepbricks] (o1/o3/o4/gpt-5/.../Claude/Gemini): allows some usage with 0 balance
@@ -468,7 +467,6 @@ __Кнопки__:
 [iflow]: https://platform.iflow.cn/en
 [huggingface]: https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference&sort=trending
 [hyperbolic]: https://app.hyperbolic.xyz/models
-[lepton]: https://www.lepton.ai/playground
 [mistral]: https://mistral.ai/models
 [ncompass]: https://www.ncompass.tech/about
 [novita.ai]: https://novita.ai/model-api/product/llm-api
