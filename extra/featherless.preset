@@ -1,15 +1,27 @@
+--Access to models up to 15B [a whole bunch of!]
+
 --https://featherless.ai/
 --https://chat.featherless.ai/
+--https://phoenix.featherless.ai/
 
 --https://featherless.ai/models/meta-llama/Meta-Llama-3.1-8B-Instruct
 --https://featherless.ai/docs/api-reference
 
+--https://featherless.ai/docs/completions
 apibase="https://api.featherless.ai/v1"
---apikey=
+apikey=win.GetEnv"FEATHERLESS_API_KEY"
 
 --https://featherless.ai/models?view=table
 model="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
 --model="unsloth/Qwen3-14B-Base"
-modelsMeta="filterFn: (model) -> model.available_on_current_plan"
 
-headers="cookie: 'session=xxx...'" -- Shift-F4
+--https://featherless.ai/docs/api-reference-models
+--modelsMeta="filterFn: (model) -> model.available_on_current_plan"
+modelsMeta='endpoint:"/models?available_on_current_plan"'
+
+local id = win.Uuid"EFDCBA78-92C8-4A59-9DCF-9D5439F31DEB"
+headers=function() -- Shift-F4
+  local session = far.InputBox(id, "featherless.ai preset", "Enter 'session' cookie:", "AskAI/featherless.preset/session")
+  return session=="" and ""
+      or session and ("cookie: 'session=%s'"):format(session)
+end

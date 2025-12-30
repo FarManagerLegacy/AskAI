@@ -393,10 +393,11 @@ __Кнопки__:
 С перечисленными ниже пресетами помимо конфигурации `openai.lua.cfg` совместимы также
 конфигурации некоторых утилит (кроме тех, которые хранят эти значения в собственных файлах настроек).
 
-- Не требуют ключа (`apikey`) только эти пресеты:
+- Не требуют ключа (`apikey`) эти пресеты:
    - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
    - [g4f.*]\: GPT4Free
    - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
+   - Некоторые пресеты из поддиректории `extra/` (см. ниже)
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):
    - [cloudflare] (`@cf/openai/gpt-oss-120b`, `@cf/meta/llama-3.3-70b-instruct-fp8-fast`,
@@ -425,17 +426,15 @@ __Кнопки__:
      в том числе gemma, gpt-oss, Mistral, DeepSeek, Kimi, Llama, Qwen, Xiaomi MiMo, ...;  
      покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
    - [siliconflow] (бесплатно - DeepSeek, Kimi, ...)
-- Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
-  задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
-   - [cerebras] (gpt-oss, GLM, Llama, Qwen)
-   - [featherless] (бесплатно - огромное количество моделей <15B)
-   - [fireworks.ai] (всевозможные OpenSource-модели)
 - Дополнительные пресеты расположены в поддиректориях.  
   Чтобы они появились в [списке][Пресеты], необходимо скопировать нужные из них в основную директорию
   (лучше сделать ссылку).
   - `trial/`: сервисы, для которых доступен пробный кредит.
   - `paid/`:  без пробного периода (или кредит < $1).
-  - `extra/`: прочие, например сервисы неопределённого происхождения.
+  - `extra/`: прочие, среди которых:
+    - сервисы, для бесплатного доступа к которым задействован их приватный API
+      (например Cookie и/или другие требуемые данные в заголовках);
+    - сервисы неопределённого происхождения.
 
 Кроме того:
 
@@ -445,14 +444,11 @@ __Кнопки__:
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 
-[cerebras]: https://cloud.cerebras.ai/
 [chutes]: https://chutes.ai/app
 [clarifai]: https://www.clarifai.com/products/model-inference
 [codestral]: https://console.mistral.ai/codestral
 [cloudflare]: https://developers.cloudflare.com/workers-ai/models/
 [deepinfra]: https://deepinfra.com/models/text-generation
-[featherless]: https://featherless.ai/models
-[fireworks.ai]: https://fireworks.ai/models
 [gemini]: https://ai.google.dev/gemini-api/docs/openai
 [github-copilot]: https://docs.github.com/en/copilot/get-started/what-is-github-copilot
 [github-models]: https://github.com/marketplace?type=models&task=chat-completion

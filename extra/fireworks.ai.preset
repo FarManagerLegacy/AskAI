@@ -1,7 +1,10 @@
+--DeepSeek, GLM, Kimi, Llama, MiniMax, OpenAI gpt-oss, Qwen
+--internal_ key from playground can be used (requires special headers)
+--https://app.fireworks.ai/playground
+
 --https://fireworks.ai/
 --https://docs.fireworks.ai/updates/changelog
 --https://chat.fireworks.ai/ (5 messages/day)
---https://app.fireworks.ai/playground
 
 --https://docs.fireworks.ai/tools-sdks/openai-compatibility
 --https://docs.fireworks.ai/api-reference/post-chatcompletions
