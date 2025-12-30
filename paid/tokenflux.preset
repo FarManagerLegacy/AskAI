@@ -1,0 +1,14 @@
+-- Anthropic, Google, OpenAI, xAI,
+-- DeepSeek, Kimi, MiniMax, Qwen, GLM, ...
+--https://tokenflux.ai/
+
+--https://docs.tokenflux.ai/introduction#base-url
+--https://docs.tokenflux.ai/api-reference/chat-completions
+apibase="https://tokenflux.ai/v1"
+
+--https://tokenflux.ai/dashboard/api-keys
+apikey=win.GetEnv"TOKENFLUX_API_KEY" or "set TOKENFLUX_API_KEY env variable!"
+
+--https://tokenflux.ai/models
+--https://docs.tokenflux.ai/api-reference/models
+model="gpt-5.2-chat"

@@ -1,0 +1,16 @@
+--Anthropic Claude, Google Gemini, Meta Llama, Mistral, OpenAI, Perplexity Sonar, xAI Grok
+--Alibaba Qwen, DeepSeek, Moonshot Kimi, Zhipu GLM, ...
+--$6 free credits?
+
+--https://www.requesty.ai/
+--https://www.requesty.ai/pricing
+--https://app.requesty.ai/chat
+
+--https://docs.requesty.ai/quickstart
+--https://docs.requesty.ai/api-reference/endpoint/chat-completions-create
+apibase="https://router.requesty.ai/v1"
+apikey=win.GetEnv"REQUESTY_API_KEY" or "set REQUESTY_API_KEY env variable!"
+
+--https://www.requesty.ai/solution/llm-routing/models
+--https://app.requesty.ai/model-list
+model="openai/gpt-5-mini"

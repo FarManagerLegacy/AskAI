@@ -1,0 +1,16 @@
+--Anthropic, Cohere, Google, OpenAI, Perplexity, xAI
+--GLM, Kimi, Mistral, Qwen, ...
+
+--$0.20 trial credit
+--https://glama.ai/gateway
+--https://glama.ai/playground/?chat=
+--https://glama.ai/settings/release-notes
+
+--https://glama.ai/gateway/docs
+apibase="https://glama.ai/api/gateway/openai/v1"
+
+--https://glama.ai/settings/api-keys
+apikey=win.GetEnv"GLAMA_API_KEY" or "set GLAMA_API_KEY env variable!"
+
+--https://glama.ai/gateway/models
+model="openai/gpt-5-mini-2025-08-07"

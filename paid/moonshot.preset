@@ -1,0 +1,9 @@
+--https://www.moonshot.ai/ [https://www.moonshot.cn/]
+--https://www.kimi.com/
+
+--https://platform.moonshot.ai/docs/api/chat#list-models
+--https://platform.moonshot.ai/console/api-keys
+--https://platform.moonshot.ai/blog/posts/changelog
+apibase="https://api.moonshot.ai/v1"
+apikey=win.GetEnv"MOONSHOT_API_KEY" or "set MOONSHOT_API_KEY env variable!"
+model="kimi-latest"

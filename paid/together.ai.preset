@@ -1,0 +1,11 @@
+--DeepSeek, Gemma, GLM, Kimi, Llama, Ministral, Mistral, OpenAI gpt-oss, Qwen, ...
+--https://support.together.ai/articles/1862638756-changes-to-free-tier-and-billing-july-2025
+--https://api.together.xyz/models
+--https://api.together.xyz/playground/
+
+--https://docs.together.ai/docs/openai-api-compatibility
+apibase="https://api.together.xyz/v1"
+apikey=win.GetEnv"TOGETHER_API_KEY" or "set TOGETHER_API_KEY env variable!"
+
+model="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+modelsMeta='filterFn: (model) -> model.type=="chat" and model.id\\match"-[Ff]ree$"'
