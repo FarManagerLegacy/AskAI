@@ -1,0 +1,26 @@
+--https://www.minimax.io/
+--https://agent.minimax.io/
+
+--https://platform.minimax.io/docs/api-reference/text-openai-api
+--apibase="https://api.minimaxi.chat/v1"
+--apibase="https://api.minimaxi.com/v1"
+apibase="https://api.minimax.io/v1"
+
+--https://platform.minimax.io/user-center/basic-information/interface-key
+apikey=win.GetEnv"MiniMax_API_KEY" or "set MiniMax_API_KEY env variable!"
+
+--https://platform.minimax.io/docs/guides/models-intro
+--https://platform.minimax.io/docs/release-notes/models
+--https://platform.minimax.io/docs/faq/history-modelinfo
+model={
+  "MiniMax-M2.1", "MiniMax-M2.1-lightning",
+  "MiniMax-M2",
+}
+modelsMeta="none"
+
+extra_body={
+  "",
+  --https://platform.minimax.io/docs/guides/text-m2-function-call#interleaved-thinking-compatible-format
+  --https://platform.minimax.io/docs/api-reference/text-openai-api#4-important-note
+  "reasoning_split: true",
+}

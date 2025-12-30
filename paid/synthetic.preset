@@ -1,0 +1,10 @@
+--DeepSeek, Llama, MiniMax, Kimi, gpt-oss, Qwen, GLM
+--https://synthetic.new/pricing
+
+--https://dev.synthetic.new/docs/openai/chat-completions
+apibase="https://api.synthetic.new/openai/v1"
+
+apikey=win.GetEnv"SYNTHETIC_API_KEY" or "set SYNTHETIC_API_KEY env variable!"
+
+--https://dev.synthetic.new/docs/api/models
+model="hf:moonshotai/Kimi-K2-Thinking"

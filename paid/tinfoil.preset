@@ -1,0 +1,17 @@
+--DeepSeek, gpt-oss, Llama, Kimi, Qwen
+--https://tinfoil.sh/pricing
+--https://tinfoil.sh/inference
+--https://docs.tinfoil.sh/resources/changelog
+
+--https://chat.tinfoil.sh/
+
+apibase="https://inference.tinfoil.sh/v1"
+
+--https://tinfoil.sh/dashboard
+apikey=win.GetEnv"TINFOIL_API_KEY" or "set TINFOIL_API_KEY env variable!"
+
+--https://docs.tinfoil.sh/models/catalog#chat-models
+--https://api.tinfoil.sh/api/app/models
+--https://api.tinfoil.sh/api/config/models
+model="deepseek-r1-0528"
+modelsMeta='filterFn: (model) -> model.type=="chat" or model.type=="code"'

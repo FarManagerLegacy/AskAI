@@ -1,0 +1,11 @@
+--https://www.mulerouter.ai/collections/qwen
+--$0.5
+
+--https://www.mulerouter.ai/docs/api-reference/endpoint/openai/chat
+--apibase="https://api.mulerouter.ai/vendors/openai/v1"
+apibase="https://api.mulerouter.ai/v1"
+
+--https://www.mulerouter.ai/app/api-keys
+apikey=win.GetEnv"MULEROUTER_API_KEY" or "set MULEROUTER_API_KEY env variable!"
+
+model="qwen-flash"
