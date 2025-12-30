@@ -1,4 +1,5 @@
 --https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro
+--https://docs.github.com/en/copilot/concepts/billing/individual-plans#github-copilot-free
 
 apibase="https://api.githubcopilot.com"
 

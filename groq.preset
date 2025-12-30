@@ -1,8 +1,17 @@
+--Open-Source models <= 120b: gpt-oss, llama-4-maverick, kimi-k2, qwen3, ...
+--Free Plan available
+--https://console.groq.com/settings/billing/plans
+--https://console.groq.com/docs/rate-limits#rate-limits
+
 --https://console.groq.com/playground
 --https://chat.groq.com/
 
+--https://console.groq.com/docs/api-reference#chat-create
 apibase="https://api.groq.com/openai/v1"
+
 apikey=win.GetEnv"GROQ_API_KEY" or "set GROQ_API_KEY env variable!"
+
+--https://console.groq.com/docs/models
 model="openai/gpt-oss-120b"
 
 --https://console.groq.com/docs/reasoning#options-for-reasoning-format

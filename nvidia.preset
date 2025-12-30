@@ -1,7 +1,17 @@
+-- DeepSeek, gpt-oss, Kimi, Llama, MiniMax, Mistral, Qwen, Phi-4, ...
+-- free access to NIM API endpoints for prototyping
+-- https://docs.api.nvidia.com/nim/docs/product#how-do-i-access-nvidia-nim-via-the-nvidia-developer-program
+
 -- https://build.nvidia.com/
 -- https://build.nvidia.com/openai/gpt-oss-120b
- 
+
+-- https://build.nvidia.com/explore
+-- https://build.nvidia.com/explore/reasoning
+
+-- https://docs.api.nvidia.com/nim/reference/llm-apis
 apibase="https://integrate.api.nvidia.com/v1"
+
+--https://build.nvidia.com/settings/api-keys
 apikey=win.GetEnv"NVIDIA_API_KEY" or "set NVIDIA_API_KEY env variable!"
 
 --https://build.nvidia.com/models?filters=usecase%3Ausecase_code_gen

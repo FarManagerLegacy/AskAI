@@ -1,9 +1,7 @@
---https://www.ncompass.tech/about
---https://docs.ncompass.tech/
+--Deprecated
+--https://docs.ncompass.tech/legacy/ai-inference-api
 
 apibase="https://api.ncompass.tech/v1"
 apikey=win.GetEnv"NCOMPASS_API_KEY" or "set NCOMPASS_API_KEY env variable!"
 
---https://ncompass.tech/models
 model="openai/gpt-oss-120b"
-

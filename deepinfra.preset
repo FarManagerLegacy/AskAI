@@ -1,8 +1,17 @@
---https://deepinfra.com/chat
---https://deepinfra.com/docs/inference
---https://deepinfra.com/models/text-generation
+--Misc. Open-Source: gemma, Llama, Mistral, gpt-oss, 
+--DeepSeek, MiniMax, Kimi, Qwen, GLM, ...
 
+--https://deepinfra.com/
+--https://deepinfra.com/blog
+--https://deepinfra.com/chat
+
+--https://deepinfra.com/docs/inference
+--https://deepinfra.com/docs/openai_api#user-content-caveats
 apibase="https://api.deepinfra.com/v1/openai"
+
 apikey=win.GetEnv"DEEPINFRA_TOKEN" -- some anonymous usage allowed
+
+--https://deepinfra.com/models/text-generation
 model="openai/gpt-oss-120b"
 
+modelsMeta='filterFn: (model) -> type(model.metadata)=="table" and next model.metadata'

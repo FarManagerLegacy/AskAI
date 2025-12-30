@@ -1,16 +1,26 @@
---https://nextchat-sf.vercel.app/
---https://cloud.siliconflow.cn/me/playground/chat
---https://docs.siliconflow.cn/en/userguide/quickstart
---New users will receive 20 million tokens when they register
-
-apibase="https://api.siliconflow.cn/v1"
-apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!"
-model="deepseek-ai/DeepSeek-R1"
-
---https://cloud.siliconflow.cn/me/models?types=chat
+--Free: DeepSeek, Kimi, ...
 --https://docs.siliconflow.cn/en/userguide/rate-limits/rate-limit-and-upgradation#2-1-free-model-rate-limits
 --The free version is named after the original name, while the paid version is prefixed with “Pro/” to distinguish it.
 -- curl "https://api.siliconflow.cn/v1/models?sub_type=chat" -H "Authorization: Bearer %SILICONFLOW_API_KEY%" | jq "[.data[].id | select(startswith(\"Pro/\")) | sub(\"^Pro/\"; \"\")] | sort_by(ascii_downcase)"
+
+--https://account.siliconflow.cn/en/login
+--New users will receive 20 million tokens when they register
+
+--https://docs.siliconflow.cn/en/userguide/quickstart
+--https://docs.siliconflow.cn/en/release-notes/overview
+--https://cloud.siliconflow.cn/me/playground/chat
+--https://nextchat-sf.vercel.app/
+
+--https://docs.siliconflow.cn/en/api-reference/chat-completions/chat-completions
+apibase="https://api.siliconflow.cn/v1"
+
+--https://cloud.siliconflow.cn/me/account/ak
+apikey=win.GetEnv"SILICONFLOW_API_KEY" or "set SILICONFLOW_API_KEY env variable!"
+
+--https://cloud.siliconflow.cn/me/models?types=chat
+model="deepseek-ai/DeepSeek-R1"
+
+--https://docs.siliconflow.cn/en/api-reference/models/get-model-list
 modelsMeta=[[{
   endpoint: "/models?sub_type=chat"
   filterFn: (model, models) ->

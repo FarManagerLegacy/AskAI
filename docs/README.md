@@ -257,6 +257,7 @@
 
 - `gpt-oss-120b` от OpenAI;
 - из серии [Llama](https://www.llama.com/) от [Meta AI](https://ai.meta.com/): `llama-4-maverick`, `llama-3.1-405b`, `llama-3.2-90b`, `llama-3.3-70b`;
+- [Mistral](https://mistral.ai/models) Large 3;
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
   [DeepSeek](https://www.deepseek.com/), [Qwen](https://qwenlm.github.io/) от *Alibaba*, [GLM-4.5](https://z.ai/) от [Zhipu AI](https://zhipuai.cn/en/), [Kimi](https://www.kimi.com/) *K2* от [Moonshot AI](https://www.moonshot.ai/), [Baidu](https://ernie.baidu.com/blog/) *ERNIE*,
   [MiniMax](https://www.minimaxi.com/en), *Yi* от [01.AI](https://www.01.ai/).
@@ -297,38 +298,38 @@
     `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b` и модели поменьше)
   - [cohere](https://cohere.com/command) (серии `command-*` и `c4ai-aya-*`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от *Google*
-  - [github-copilot](https://docs.github.com/en/copilot/get-started/what-is-github-copilot) (модели от *OpenAI*, *Anthropic*, *Google*)
+  - [github-copilot](https://docs.github.com/en/copilot/get-started/what-is-github-copilot) (модели от *OpenAI*, *Anthropic*, *Google*, *xAI*)
   - [github-models](https://github.com/marketplace?type=models&task=chat-completion) (модели от *Cohere*, *DeepSeek*, *Meta*, *Mistral AI*, *Microsoft*, *OpenAI*, *xAI* и др.)
-  - [groq](https://console.groq.com/playground) (модели до 120b)
+  - [groq](https://console.groq.com/playground) (OpenSource-модели до 120b: gpt-oss, llama-4-maverick, kimi-k2, qwen, …)
   - [iflow](https://platform.iflow.cn/en) (китайские OpenSource-модели: DeepSeek, GLM, Kimi, Qwen, TStars)
-  - [mistral](https://docs.mistral.ai/getting-started/models/models_overview/), [codestral](https://console.mistral.ai/codestral)
-  - [nvidia](https://build.nvidia.com/) (OpenSource-модели: DeepSeek, gpt-oss, Llama, Qwen и др.)
+  - [mistral](https://mistral.ai/models), [codestral](https://console.mistral.ai/codestral)
+  - [nvidia](https://build.nvidia.com/) (OpenSource-модели: DeepSeek, gpt-oss, Kimi, Llama, MiniMax, Mistral, Qwen, Phi-4, …)
   - [poe](https://poe.com/) (все популярные модели + пользовательские “боты”): 3000 поинтов в день на бесплатном плане
-  - [sambanova](https://cloud.sambanova.ai/pricing) (Llama, DeepSeek, Qwen)
-  - [vercel](https://vercel.com/ai-gateway) (модели от *Alibaba* Qwen, *Amazon*, *Anthropic*, *Cohere*, *DeepSeek*, *Google*,
-    *Meta*, *Mistral AI*, *Moonshot AI*, *OpenAI*, *xAI*, *Zhipu AI* и др.)  
+  - [sambanova](https://cloud.sambanova.ai/pricing) (DeepSeek, gpt-oss, Llama, Qwen, …)
+  - [vercel](https://vercel.com/ai-gateway) (модели от *Anthropic*, *Google*, *Meta*, *Mistral AI*, *OpenAI*, *xAI*,
+    и множество других, включая китайские OpenSource модели)  
     Для регистрации требуется привязка кредитной карты.  
     Free-аккаунты получают ежемесячно кредит \$5.
-    Некоторые модели бывают доступны бесплатно, в настоящий момент это `meituan/longcat-flash-chat`.
+    Некоторые модели бывают доступны бесплатно (см. в пресете).
 - На некоторых сервисах только часть моделей доступна бесплатно:
   - [chutes](https://chutes.ai/app) (бесплатно - небольшие модели `openai/gpt-oss-20b`, `zai-org/GLM-4.5-Air`, `Qwen/Qwen3-Coder-30B-A3B-Instruct`, …)
   - [clarifai](https://www.clarifai.com/products/model-inference) (бесплатно до 1K запросов/месяц: gpt-oss, DeepSeek, Ministral, Qwen, …)
   - [openrouter](https://openrouter.ai/models?q=:free) (до 50 запросов в день к бесплатным “:free” моделям,
-    в том числе от Google, а также `llama`, `deepseek`, `qwen` и др.;  
+    в том числе gemma, gpt-oss, Mistral, DeepSeek, Kimi, Llama, Qwen, Xiaomi MiMo, …;  
     покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
-  - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно - небольшие модели)
+  - [siliconflow](https://docs.siliconflow.cn/reference/chat-completions-1) (бесплатно - DeepSeek, Kimi, …)
 - Некоторые сервисы дают возможность бесплатно пользоваться только сайтом, но в некоторых случаях возможно
   задействовать их приватный API (указав Cookie и/или другие требуемые данные в заголовках):
-  - [cerebras](https://cloud.cerebras.ai/) (`gpt-oss-120b`, и несколько моделей *Llama*, *Qwen*)
+  - [cerebras](https://cloud.cerebras.ai/) (gpt-oss, GLM, Llama, Qwen)
   - [featherless](https://featherless.ai/models) (бесплатно - огромное количество моделей \<15B)
   - [fireworks.ai](https://fireworks.ai/models) (всевозможные OpenSource-модели)
   - [lepton](https://www.lepton.ai/playground) (`llama3-3-70`, …, `mixtral-8x7b` и др.)
 - Для полноты: пресеты для некоторых сервисов, для которых доступны пробные ключи:
   - [ai21](https://www.ai21.com/jamba) (Jamba): \$10 credit, 3mo trial
-  - [deepbricks](https://deepbricks.ai/pricing) (o1/o3/o4/gpt-5/…/claude/deepseek/gemini/llama): allows some usage with 0 balance
+  - [deepbricks](https://deepbricks.ai/pricing) (o1/o3/o4/gpt-5/…/Claude/Gemini): allows some usage with 0 balance
   - [grok](https://console.x.ai/) от [xAI](https://x.ai/grok)
   - [huggingface](https://huggingface.co/models?pipeline_tag=text-generation&inference_provider=fireworks-ai,cerebras,together,novita,nebius,groq,hyperbolic,nscale,cohere,sambanova,hf-inference&sort=trending) (OpenSource-модели): \$0.1 monthly
-  - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, Qwen): \$10 credit for free trial
+  - [hyperbolic](https://app.hyperbolic.xyz/models) (OpenSource-модели: DeepSeek, Llama, gpt-oss, Qwen): \$10 credit for free trial
   - [ncompass](https://www.ncompass.tech/about) (OpenSource-модели: Llama, Qwen, …): \$1 free credits
   - [novita.ai](https://novita.ai/model-api/product/llm-api) (OpenSource-модели): \$0.5 credit
 
