@@ -1,5 +1,6 @@
 ﻿--https://huggingface.co/playground
 --https://huggingface.co/docs/inference-providers/index#http--curl
+--https://huggingface.co/docs/inference-providers/tasks/chat-completion#api-specification
 --https://huggingface.co/docs/inference-providers/pricing#free-credits-to-get-started
 --Monthly Credits: $0.10
 

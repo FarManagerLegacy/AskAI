@@ -1,15 +1,8 @@
---https://docs.github.com/en/github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api
---https://github.com/marketplace/models/
-
 --https://github.blog/changelog/2025-07-17-deprecation-of-azure-endpoint-for-github-models/
 apibase="https://models.inference.ai.azure.com"
 
---https://github.com/settings/personal-access-tokens
 apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 
---https://github.com/marketplace?type=models
---https://github.com/marketplace/models/azure-openai/gpt-4o/playground
---https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models#rate-limits
 model="gpt-5"
 
 modelsMeta=function()

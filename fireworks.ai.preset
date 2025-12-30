@@ -1,12 +1,25 @@
---https://docs.fireworks.ai/api-reference/introduction
---https://fireworks.ai/models
---https://fireworks.ai/models/fireworks/llama-v3p1-405b-instruct
+--https://fireworks.ai/
+--https://docs.fireworks.ai/updates/changelog
+--https://chat.fireworks.ai/ (5 messages/day)
+--https://app.fireworks.ai/playground
 
+--https://docs.fireworks.ai/tools-sdks/openai-compatibility
+--https://docs.fireworks.ai/api-reference/post-chatcompletions
+--https://docs.fireworks.ai/guides/reasoning
 apibase="https://api.fireworks.ai/inference/v1"
-apikey=win.GetEnv"FIREWORKS_API_KEY" or "set FIREWORKS_API_KEY env variable!" -- or internal key from playground
+
+--https://docs.fireworks.ai/api-reference/introduction
+apikey=win.GetEnv"FIREWORKS_API_KEY" or "set FIREWORKS_API_KEY env variable!"
+
+--https://app.fireworks.ai/models?filter=LLM&serverless=true
+--https://fireworks.ai/models/fireworks/llama4-maverick-instruct-basic
 model="accounts/fireworks/models/llama4-maverick-instruct-basic"
 
---headers='{["fireworks-playground"]="true", origin="https://fireworks.ai"}'
+headers={
+  "",
+  -- in order to use internal_ key from playground:
+  '"fireworks-playground":"true", origin:"https://app.fireworks.ai"'
+}
 
 modelsMeta="filterFn: (model) -> model.supports_chat"
 

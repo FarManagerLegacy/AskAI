@@ -1,16 +1,33 @@
---https://vercel.com/ai-gateway
---https://ai-sdk.dev/playground
---https://vercel.com/ai-gateway/models
+--Amazon Nova, Anthropic, Cohere, Google, Meta, Mistral AI, OpenAI, Perplexity, xAI,
+--Alibaba Qwen, DeepSeek, MiniMax, MoonshotAI Kimi, Zhipu GLM, ...
 
+--Free users get $5 of credits every 30 days [after Payment Method set]
+--https://vercel.com/d?to=/[team]/~/settings/billing
 --https://vercel.com/docs/ai-gateway/pricing#free-tier
---Free users get $5 of credits every 30 days
 --curl https://ai-gateway.vercel.sh/v1/credits -H "Authorization: Bearer %AI_GATEWAY_API_KEY%"
+
+--https://vercel.com/ai-gateway
+--https://vercel.com/dashboard
+--https://ai-sdk.dev/playground
 
 --https://vercel.com/docs/ai-gateway/openai-compat
 apibase="https://ai-gateway.vercel.sh/v1"
+
+--https://vercel.com/d?to=/[team]/~/ai/api-keys
 apikey=win.GetEnv"AI_GATEWAY_API_KEY" or "set AI_GATEWAY_API_KEY env variable!"
-model="meituan/longcat-flash-chat"
-modelsMeta='filterFn: (model) -> model.type=="language"'-- and model.pricing.input=="0" and model.pricing.output=="0"'
+
+--https://vercel.com/ai-gateway/models
+--Some models may be free: https://vercel.com/ai-gateway/models?sortField=inputCost&sortDirection=asc
+model={
+  "kwaipilot/kat-coder-pro-v1",
+  "meituan/longcat-flash-chat",
+  "mistral/devstral-2",
+  "mistral/devstral-small-2",
+  "zai/glm-4.6v-flash",
+}
+--curl https://ai-gateway.vercel.sh/v1/models | jq "[.data[] | select(.pricing == {}) | .id]"
+
+modelsMeta='filterFn: (model) -> model.type=="language"'-- and not next model.pricing'
 
 --https://vercel.com/docs/ai-gateway/openai-compat#reasoning-configuration
 extra_body={

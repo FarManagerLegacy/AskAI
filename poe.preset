@@ -1,10 +1,18 @@
---https://creator.poe.com/docs/external-applications/interface-configuration
---https://creator.poe.com/docs/external-applications/openai-compatible-api
---https://creator.poe.com/docs/resources/usage-api
---curl https://api.poe.com/usage/current_balance -H "Authorization: Bearer %POE_API_KEY%"
+--Free plan: 3,000 points/day (0,090 $) https://poe.com/settings
+--https://creator.poe.com/changelog
+--https://poe.com/
 
+--https://creator.poe.com/docs/external-applications/openai-compatible-api
+--https://creator.poe.com/docs/external-applications/interface-configuration
+--https://creator.poe.com/api-reference/overview
+--https://creator.poe.com/api-reference/createChatCompletion
 apibase="https://api.poe.com/v1"
+
+--https://poe.com/api_key
 apikey=win.GetEnv"POE_API_KEY" or "set POE_API_KEY env variable!"
+
+--https://creator.poe.com/api-reference/listModels
+--https://poe.com/leaderboard
 model="Grok-4-Fast-Reasoning"
 modelsMeta='filterFn: (model) -> model.architecture.modality\\match"text.-%->text"'
 
@@ -19,3 +27,7 @@ extra_body={
   --Claude
   "thinking_budget: 12288",
 }
+
+--https://creator.poe.com/api-reference/getCurrentBalance
+--https://creator.poe.com/docs/resources/usage-api
+--curl https://api.poe.com/usage/current_balance -H "Authorization: Bearer %POE_API_KEY%"

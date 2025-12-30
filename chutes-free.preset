@@ -1,6 +1,10 @@
---https://chutes.ai/app?type=llm&free=true&minPrice=0&maxPrice=0
+--https://chutes.ai
+--https://chutes.ai/chat
+
 apibase="https://llm.chutes.ai/v1"
 apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
+
+--https://chutes.ai/app?type=llm&free=true&minPrice=0&maxPrice=0
 model="zai-org/GLM-4.5-Air"
 
 modelsMeta=[[{

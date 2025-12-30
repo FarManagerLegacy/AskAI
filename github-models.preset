@@ -1,12 +1,16 @@
---https://docs.github.com/en/rest/models/inference 
+--https://docs.github.com/en/billing/concepts/product-billing/github-models#free-use-of-github-models
+--https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models#rate-limits
+
+--Playground: https://github.com/marketplace/models
+--https://github.com/marketplace/models/azure-openai/gpt-5/playground
+
+--https://docs.github.com/en/rest/models/inference#run-an-inference-request
 apibase="https://models.github.ai/inference"
 
 --https://github.com/settings/personal-access-tokens
 apikey=win.GetEnv"GH_TOKEN" or "set GH_TOKEN env variable!"
 
 --https://github.com/marketplace?type=models
---https://github.com/marketplace/models/azure-openai/gpt-4o/playground
---https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits
 model="gpt-5"
 
 --https://docs.github.com/en/rest/models/catalog

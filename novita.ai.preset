@@ -1,9 +1,13 @@
---https://novita.ai/model-api/product/llm-api
---https://novita.ai/model-api/product/llm-api/playground
 --https://novita.ai/console
+--https://novita.ai/models/llm/index
+--https://novita.ai/docs/changelog/
+--https://blogs.novita.ai/tag/novita-ai-llm-api/
 
-apibase="https://api.novita.ai/v3/openai"
+--apibase="https://api.novita.ai/v3/openai"
+apibase="https://api.novita.ai/openai/v1"
 apikey=win.GetEnv"NOVITAAI_API_KEY" or "set NOVITAAI_API_KEY env variable!"
+
+--https://novita.ai/models/llm
 model="openai/gpt-oss-120b"
 
 --https://novita.ai/docs/api-reference/model-apis-llm-create-chat-completion#param-separate-reasoning

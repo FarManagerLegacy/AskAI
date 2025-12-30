@@ -1,10 +1,22 @@
---https://docs.mistral.ai/api/
---https://docs.mistral.ai/getting-started/models
+--Free Tier available
+--https://mistral.ai/pricing#api-pricing
+--https://mistral.ai/
+--https://docs.mistral.ai/getting-started/changelog
+--https://console.mistral.ai/build/playground
 --https://chat.mistral.ai/
 
+--https://docs.mistral.ai/capabilities/completion/usage
+--https://docs.mistral.ai/api
 apibase="https://api.mistral.ai/v1"
+
+--https://admin.mistral.ai/organization/api-keys
+--https://console.mistral.ai/home?workspace_dialog=apiKeys
 apikey=win.GetEnv"MISTRAL_API_KEY" or "set MISTRAL_API_KEY env variable!"
+
+--https://mistral.ai/models
+--https://docs.mistral.ai/getting-started/models
 model="mistral-large-latest"
+
 modelsMeta='filterFn: (model) -> "string"!=type model.deprecation'
 
 --https://docs.mistral.ai/capabilities/reasoning
