@@ -313,7 +313,6 @@
     Free-аккаунты получают ежемесячно кредит \$5.
     Некоторые модели бывают доступны бесплатно (см. в пресете).
 - На некоторых сервисах только часть моделей доступна бесплатно:
-  - [chutes](https://chutes.ai/app) (бесплатно - небольшие модели `openai/gpt-oss-20b`, `zai-org/GLM-4.5-Air`, `Qwen/Qwen3-Coder-30B-A3B-Instruct`, …)
   - [clarifai](https://www.clarifai.com/products/model-inference) (бесплатно до 1K запросов/месяц: gpt-oss, DeepSeek, Ministral, Qwen, …)
   - [openrouter](https://openrouter.ai/models?q=:free) (до 50 запросов в день к бесплатным “:free” моделям,
     в том числе gemma, gpt-oss, Mistral, DeepSeek, Kimi, Llama, Qwen, Xiaomi MiMo, …;  

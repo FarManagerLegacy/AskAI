@@ -1,0 +1,37 @@
+--https://chutes.ai/app
+apibase="https://chutes-{model-slug}.chutes.ai/v1"
+apikey=win.GetEnv"CHUTES_API_TOKEN" or "set CHUTES_API_TOKEN env variable!"
+model="deepseek-ai/DeepSeek-R1"
+
+modelsMeta=[[{
+  modelsFn: (data) ->
+    errmsg = 'Specify headers like `"user-agent":"...", cookie:"_vcrcs=..."`'
+    headers = (assert require"moonscript".loadstring assert data.headers, errmsg)!
+    assert headers and type(headers)=="table" and headers["user-agent"] and headers.cookie, errmsg
+    acc = {}
+    _, status_code, _, status_line = assert require"ssl.https".request
+      url:"https://chutes.ai/app/__data.json?type=llm&x-sveltekit-invalidated=011"
+      :headers
+      sink:require"ltn12".sink.table acc
+    assert status_code==200, status_line --todo
+
+    local data
+    for line in (table.concat acc, "", 1)\gmatch"[^\n]+"
+      data = assert json.decode line
+      break if data.id==1
+    assert(data.id==1)
+
+    _data = (id) ->
+      type(id)=="number" and data.data[id+1] or id
+
+    map = (t) ->
+      unless type(t)=="table"
+        return t
+      {k, map _data key for k,key in pairs t}
+
+    with (map _data 0).items
+      .keyId = "name"
+
+  filterFn: (model) ->
+    model.standard_template=="vllm" and model.current_estimated_price.usd.hour==0
+}]]
