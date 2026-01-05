@@ -1,0 +1,3 @@
+apibase="https://g4f.dev/api/openrouter"
+--apibase="https://g4f.dev/ai/ollama"
+model="deepseek/deepseek-r1-0528:free"

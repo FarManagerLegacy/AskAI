@@ -1,7 +1,8 @@
 --https://ai.azure.com/
 --100KB size limitation.
 
-apibase="https://g4f.dev/api/Azure"
+apibase="https://g4f.dev/api/azure"
+--apibase="https://g4f.dev/ai/azure"
 
 --https://discord.gg/qXA4Wf4Fsm
 --https://g4f.dev/members.html
