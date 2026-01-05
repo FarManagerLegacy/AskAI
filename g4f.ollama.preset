@@ -1,3 +1,5 @@
 --https://g4f.dev/docs/ready_to_use.html
 apibase="https://g4f.dev/api/ollama"
+--apibase="https://g4f.dev/ai/ollama"
+apikey=win.GetEnv"OLLAMA_API_KEY" --https://ollama.com/settings/keys
 model="deepseek-v3.1:671b"
