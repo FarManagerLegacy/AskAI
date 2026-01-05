@@ -395,7 +395,6 @@ __Кнопки__:
 
 - Не требуют ключа (`apikey`) эти пресеты:
    - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
-   - [g4f.*]\: GPT4Free
    - [deepinfra] (всевозможные OpenSource модели): some anonymous usage allowed
    - Некоторые пресеты из поддиректории `extra/` (см. ниже)
 - Для использования других надо зарегистрироваться и получить ключ.
@@ -450,7 +449,6 @@ __Кнопки__:
 [gemini]: https://ai.google.dev/gemini-api/docs/openai
 [github-copilot]: https://docs.github.com/en/copilot/get-started/what-is-github-copilot
 [github-models]: https://github.com/marketplace?type=models&task=chat-completion
-[g4f.*]: https://g4f.dev/
 [groq]: https://console.groq.com/playground
 [iflow]: https://platform.iflow.cn/en
 [mistral]: https://mistral.ai/models

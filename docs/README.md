@@ -288,7 +288,6 @@
 
 - Не требуют ключа (`apikey`) эти пресеты:
   - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
-  - [g4f.\*](https://g4f.dev/): GPT4Free
   - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели): some anonymous usage allowed
   - Некоторые пресеты из поддиректории `extra/` (см. ниже)
 - Для использования других надо зарегистрироваться и получить ключ.
