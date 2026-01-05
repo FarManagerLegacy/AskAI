@@ -6,7 +6,7 @@ local O = Common.O
 local F = far.Flags
 local DIF_HOMEITEM = F.DIF_HOMEITEM or 0 --far2m
 
-local newDlgInfo = utils.load"DlgHelper.lua.1"()
+local newDlgInfo = utils.load"DlgHelper.lua.1"
 local X2 = 3 -- coords indices
 local SELECTED, FLAGS, DATA = 6,9,10
 
@@ -66,15 +66,16 @@ local function main (opts)
     end
     Common.json = json
     if pcall(require, "ssl.https") then
-      if O.debug or not Common.restapi then
-        Common.restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
-        Common.restapi.Plain.__base.formatErr = function (meta)
+      Common.restapi = utils.cached(function()
+        local restapi = utils.loadMoon("restapi.moon.1", {json=json}) "restapi"
+        restapi.Plain.__base.formatErr = function (meta)
           return table.concat({meta.statusline or meta.status_code, meta.data_str}, "\n\1\n")
         end
-      end
+        return restapi
+      end)"restapi"
     end
   end
-  local configs = utils.load"configs.lua.1"(Common,main)
+  local configs = utils.load("configs.lua.1",main)
 
   local function fmtProfile (fmt)
     return opts.profile=="default" and "" or fmt:format(opts.profile)
@@ -138,7 +139,7 @@ local function main (opts)
   II:add {F.DI_DOUBLEBOX, Common.name, {[X2]=-1}}
 
   local dialog = { II=II, opts=opts, populateHistory=populateHistory, } --processSetsHistories
-  utils.load"profiles.lua.1"(Common,dialog)
+  utils.load"profiles.lua.1"(dialog)
 
   II:add {F.DI_TEXT, _prompt}
   II:ln() -- -- -- --
@@ -347,9 +348,9 @@ local function main (opts)
     }
   end
 
-  utils.load"presets.lua.1"(Common,dialog)
+  utils.load"presets.lua.1"(dialog)
 
-  utils.load"models.lua.1"(Common,dialog)
+  utils.load"models.lua.1"(dialog)
 
   local function editConfig (hDlg,idx)
     if F.EEC_MODIFIED==editor.Editor(cfg.pathname) then
@@ -374,7 +375,7 @@ local function main (opts)
   II:add {F.DI_BUTTON, "Go&!", nil, F.DIF_CENTERGROUP +F.DIF_DEFAULTBUTTON,
     name="btnGo"
   }
-  data.DlgProc = utils.load"dlgproc.lua.1"(Common,dialog)
+  data.DlgProc = utils.load"dlgproc.lua.1"(dialog)
 
   State.isDlgOpened = true
   local res = far.Dialog(II:params())
