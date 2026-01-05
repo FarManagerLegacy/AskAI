@@ -1,0 +1,10 @@
+apibase="https://puter.g4f-dev.workers.dev"
+
+--https://puter.com/ --puter_auth_token` cookie
+apikey=win.GetEnv"PUTER_AUTH_TOKEN" or "set PUTER_AUTH_TOKEN env variable!"
+model="gpt-5.2-chat-latest"
+
+--https://github.com/HeyPuter/puter-cli
+--%APPDATA%\puter-cli-nodejs\Config\config.json 
+--npx puter-cli --save
+--apikey=win.GetEnv"PUTER_API_KEY"

@@ -1,4 +1,5 @@
 --https://g4f.dev/docs/ready_to_use.html
 apibase="https://g4f.dev/api/gemini"
 --apibase="https://g4f.dev/ai/gemini"
+--https://g4f.dev/custom/srv_mjnryskw9fe0567fa267
 model="models/gemini-flash-latest"
