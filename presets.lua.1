@@ -1,9 +1,7 @@
-local Common,dialog = ... -- name, json | processSetsHistories, populateHistory
+local Common = ... -- name, json
 local State = Common.State
 local utils = Common.utils
 local cfgpath = Common.cfgpath
-local II = dialog.II
-local cfg = dialog.opts.cfg
 local F = far.Flags
 
 -- menu ------------
@@ -169,68 +167,71 @@ local function _pcall (fn, ...)
   far.Message(res,"Error in preset",nil,"wl")
 end
 local DATA = 10
-II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
-  onclick=function(_,hDlg)
-    local preset = choosePreset(II, cfg.info)
-    if preset then
-      hDlg:EnableRedraw(0)
-      local secondary = {}
-      for k,v in pairs(preset) do
-        local item = II[k]
-        local dependants = cfg.info.sets and cfg.info.sets[k]
-        if dependants then
-          if type(v)=="function" then
-            v = _pcall(v)
-            if not v then goto exitPresets end
+return function (dialog)
+  local II,cfg = dialog.II, dialog.opts.cfg -- .processSetsHistories, .populateHistory
+  II:add {F.DI_BUTTON, "&Presets - F5", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP,
+    onclick=function(_,hDlg)
+      local preset = choosePreset(II, cfg.info)
+      if preset then
+        hDlg:EnableRedraw(0)
+        local secondary = {}
+        for k,v in pairs(preset) do
+          local item = II[k]
+          local dependants = cfg.info.sets and cfg.info.sets[k]
+          if dependants then
+            if type(v)=="function" then
+              v = _pcall(v)
+              if not v then goto exitPresets end
+            end
+            if v~=hDlg:GetText(item.idx) then
+              hDlg:SetText(item.idx, v)
+              hDlg:AddHistory(item.idx, v)
+              dialog.processSetsHistories(hDlg, v, dependants)
+            end
+          else
+            secondary[k] = v
           end
-          if v~=hDlg:GetText(item.idx) then
+        end
+        for k,v in pairs(secondary) do
+          local item = II[k]
+          local exV = hDlg:GetText(item.idx)
+          local isFn = type(v)=="function"
+          if isFn then
+            v = _pcall(v, exV)
+            if not v then goto continue end
+          end
+          if type(v)=="table" then
+            dialog.populateHistory(item, hDlg, v)
+            v = v[1]
+            isFn = false
+          end
+          local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
+          local isService = cfg.info.serviceFields and cfg.info.serviceFields[item.name]
+          if isHidden or isService or isFn or exV=="" or exV:match" env variable!$" then
             hDlg:SetText(item.idx, v)
             hDlg:AddHistory(item.idx, v)
-            dialog.processSetsHistories(hDlg, v, dependants)
           end
-        else
-          secondary[k] = v
+          if item.name=="apidef" and v~=exV then
+            local name = exV:match"^%s-class (%w+) extends OpenAI"
+            if name then
+              Common.restapi.OpenAI[name] = nil
+            end
+          end
+          ::continue::
         end
-      end
-      for k,v in pairs(secondary) do
-        local item = II[k]
-        local exV = hDlg:GetText(item.idx)
-        local isFn = type(v)=="function"
-        if isFn then
-          v = _pcall(v, exV)
-          if not v then goto continue end
-        end
-        if type(v)=="table" then
-          dialog.populateHistory(item, hDlg, v)
-          v = v[1]
-          isFn = false
-        end
-        local isHidden = cfg.info.hidden and cfg.info.hidden[item.name]
-        local isService = cfg.info.serviceFields and cfg.info.serviceFields[item.name]
-        if isHidden or isService or isFn or exV=="" or exV:match" env variable!$" then
-          hDlg:SetText(item.idx, v)
-          hDlg:AddHistory(item.idx, v)
-        end
-        if item.name=="apidef" and v~=exV then
-          local name = exV:match"^%s-class (%w+) extends OpenAI"
-          if name then
-            Common.restapi.OpenAI[name] = nil
+        if cfg.info.serviceFields then
+          for _,k in ipairs(cfg.info.serviceFields) do
+            local item = II[k]
+            if not preset[k] and item[DATA]~="" then
+              hDlg:SetText(item.idx, "")
+              hDlg:AddHistory(item.idx, "")
+            end
           end
         end
-        ::continue::
+        ::exitPresets::
+        hDlg:EnableRedraw(1)
       end
-      if cfg.info.serviceFields then
-        for _,k in ipairs(cfg.info.serviceFields) do
-          local item = II[k]
-          if not preset[k] and item[DATA]~="" then
-            hDlg:SetText(item.idx, "")
-            hDlg:AddHistory(item.idx, "")
-          end
-        end
-      end
-      ::exitPresets::
-      hDlg:EnableRedraw(1)
-    end
-  end,
-  name="btnPreset"
-}
+    end,
+    name="btnPreset"
+  }
+end

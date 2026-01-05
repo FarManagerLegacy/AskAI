@@ -1,7 +1,4 @@
-local Common,dialog = ... --O | populateHistory
-local II = dialog.II
-local opts = dialog.opts
-local cfg = opts.cfg
+local Common = ... --O
 local F = far.Flags
 local HISTORY, DATA = 7,10
 
@@ -32,7 +29,6 @@ local function prepActions (Items)
     end
   }
 end
-local acts = prepActions(II)
 
 local function getEnvValues (list)
   local t = {}
@@ -43,99 +39,104 @@ local function getEnvValues (list)
   return t
 end
 
-return function (hDlg,msg,idx,Param2)
-  local function run (name, ...)
-    local self = ...
-    if self[name] then
-      return self[name](...)
-    end
-  end
-  local item = II[idx]
-  if msg==F.DN_INITDIALOG then
-    for param,list in pairs(cfg.info.predefined or {}) do
-      dialog.populateHistory(II[param], hDlg, list, "init")
-    end
-    for param,list in pairs(Common.O.stdEnvs) do
-      dialog.populateHistory(II[param], hDlg, getEnvValues(list))
-    end
-    for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
-      if item.History then
-        hDlg:SetEditPosition(idx,{CurPos=1})
+return function (dialog) --main
+  local II,opts = dialog.II, dialog.opts -- .populateHistory
+  local cfg = opts.cfg
+  local acts = prepActions(II)
+  return function (hDlg,msg,idx,Param2)
+    local function run (name, ...)
+      local self = ...
+      if self[name] then
+        return self[name](...)
       end
-      run("oninit",item,hDlg,idx)
     end
-    if opts.nodialog then
-      hDlg:Close(II.btnGo.idx)
-      return
-    end
-  elseif msg==F.DN_BTNCLICK then
-    return run("onclick",item,hDlg,idx)
-  elseif msg==F.DN_CTLCOLORDLGITEM then
-    return run("oncolor",item,hDlg,idx,Param2)
-  elseif msg==F.DN_EDITCHANGE then
-    return run("onedit", item, hDlg, idx, Param2[DATA])
-  elseif msg==F.DN_GOTFOCUS or msg==F.DN_KILLFOCUS then
-    return run("onfocus", item, hDlg, idx, msg==F.DN_GOTFOCUS)
-  elseif msg==F.DN_HELP then
-    return run("onhelp", item, hDlg, idx, Param2)
-  elseif msg==F.DN_CLOSE then
-    II.prompt[DATA] = hDlg:GetText(II.prompt.idx)
-    for pos,self in ipairs(II) do
-      if self.onclose then
-        if self:onclose(hDlg,pos,item)==false then
-          return false
+    local item = II[idx]
+    if msg==F.DN_INITDIALOG then
+      for param,list in pairs(cfg.info.predefined or {}) do
+        dialog.populateHistory(II[param], hDlg, list, "init")
+      end
+      for param,list in pairs(Common.O.stdEnvs) do
+        dialog.populateHistory(II[param], hDlg, getEnvValues(list))
+      end
+      for idx,item in ipairs(II) do --luacheck: ignore 421/ idx item
+        if item.History then
+          hDlg:SetEditPosition(idx,{CurPos=1})
+        end
+        run("oninit",item,hDlg,idx)
+      end
+      if opts.nodialog then
+        hDlg:Close(II.btnGo.idx)
+        return
+      end
+    elseif msg==F.DN_BTNCLICK then
+      return run("onclick",item,hDlg,idx)
+    elseif msg==F.DN_CTLCOLORDLGITEM then
+      return run("oncolor",item,hDlg,idx,Param2)
+    elseif msg==F.DN_EDITCHANGE then
+      return run("onedit", item, hDlg, idx, Param2[DATA])
+    elseif msg==F.DN_GOTFOCUS or msg==F.DN_KILLFOCUS then
+      return run("onfocus", item, hDlg, idx, msg==F.DN_GOTFOCUS)
+    elseif msg==F.DN_HELP then
+      return run("onhelp", item, hDlg, idx, Param2)
+    elseif msg==F.DN_CLOSE then
+      II.prompt[DATA] = hDlg:GetText(II.prompt.idx)
+      for pos,self in ipairs(II) do
+        if self.onclose then
+          if self:onclose(hDlg,pos,item)==false then
+            return false
+          end
         end
       end
-    end
-    if item~=II.btnGo then return end
-    for pos,self in ipairs(II) do
-      if self.History then
-        hDlg:AddHistory(pos, hDlg:GetText(pos))
+      if item~=II.btnGo then return end
+      for pos,self in ipairs(II) do
+        if self.History then
+          hDlg:AddHistory(pos, hDlg:GetText(pos))
+        end
       end
-    end
-  elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
-    local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
-    local key = KeyToName(Param2)
-    local ret = acts.processKey(item,hDlg,idx,key)
-    if ret~=nil then return ret end
-    if item then
-      ret = run("onkey",item,hDlg,idx,key)
+    elseif msg==(F.DN_CONTROLINPUT or F.DN_KEY) then
+      local KeyToName = far.KeyToName or far.InputRecordToName --luacheck: globals far.KeyToName --far2m
+      local key = KeyToName(Param2)
+      local ret = acts.processKey(item,hDlg,idx,key)
       if ret~=nil then return ret end
-    end
-    if key==Common.O.key then
-      hDlg:Close(II.btnSwitch.idx)
-    elseif key=="AltSubtract" then
-      hDlg:send(F.DN_BTNCLICK, II.btnClrSession.idx)
-    elseif key=="ShiftF4" then
-      if II.headers then
-        local d_item = hDlg:GetDlgItem(II.headers.idx)
-        local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
-        local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):",
-                                     d_item[HISTORY], d_item[DATA])
-        if headers then
-          hDlg:SetText(II.headers.idx, headers)
+      if item then
+        ret = run("onkey",item,hDlg,idx,key)
+        if ret~=nil then return ret end
+      end
+      if key==Common.O.key then
+        hDlg:Close(II.btnSwitch.idx)
+      elseif key=="AltSubtract" then
+        hDlg:send(F.DN_BTNCLICK, II.btnClrSession.idx)
+      elseif key=="ShiftF4" then
+        if II.headers then
+          local d_item = hDlg:GetDlgItem(II.headers.idx)
+          local id = win.Uuid"6EDB0A6C-2D65-4F1B-80B9-A8C88B08701B"
+          local headers = far.InputBox(id, cfg.info.name, "Enter headers (moonscript- or lua-table):",
+                                       d_item[HISTORY], d_item[DATA])
+          if headers then
+            hDlg:SetText(II.headers.idx, headers)
+          end
         end
-      end
-    elseif key=="F5" then
-      hDlg:send(F.DN_BTNCLICK, II.btnPreset.idx)
-    elseif key=="ShiftF5" then
-      local apibase = II.apibase or II.api_base or II.api or II.provider
-      if apibase then
-        hDlg:SetDropdownOpened(apibase.idx, 1)
-      end
-    elseif key=="F6" then
-      hDlg:send(F.DN_BTNCLICK, II.btnModels.idx)
-    elseif key=="ShiftF6" then
-      if F.ACTL_GETFARMANAGERVERSION then --far3
+      elseif key=="F5" then
+        hDlg:send(F.DN_BTNCLICK, II.btnPreset.idx)
+      elseif key=="ShiftF5" then
+        local apibase = II.apibase or II.api_base or II.api or II.provider
+        if apibase then
+          hDlg:SetDropdownOpened(apibase.idx, 1)
+        end
+      elseif key=="F6" then
         hDlg:send(F.DN_BTNCLICK, II.btnModels.idx)
-      elseif II.model then
-        hDlg:SetDropdownOpened(II.model.idx, 1)
+      elseif key=="ShiftF6" then
+        if F.ACTL_GETFARMANAGERVERSION then --far3
+          hDlg:send(F.DN_BTNCLICK, II.btnModels.idx)
+        elseif II.model then
+          hDlg:SetDropdownOpened(II.model.idx, 1)
+        end
+      elseif key=="PgUp" or key=="CtrlHome" then
+        hDlg:SetFocus(II.prompt.idx)
+      elseif key=="CtrlH" then
+        opts.compact = not opts._hidden
+        hDlg:Close(II.profile.idx)
       end
-    elseif key=="PgUp" or key=="CtrlHome" then
-      hDlg:SetFocus(II.prompt.idx)
-    elseif key=="CtrlH" then
-      opts.compact = not opts._hidden
-      hDlg:Close(II.profile.idx)
     end
   end
 end

@@ -213,15 +213,17 @@ if Common.restapi then
 end
 export = setmetatable(export or {}, {__index=Common})
 
-local function _import (filename, env, ...)
-  env = env or getfenv(2) -- parent _ENV
-  local fn = utils.load(filename,env)
+local function after (choreFn, ...) choreFn(); return ... end
+local loadCfg --fwd decl.
+local function _import (filename, ...)
+  local cfg = loadCfg(utils.pathjoin(Common.cfgpath, filename), filename)
+  local env = getfenv(2) -- parent _ENV
   local name = env.name
-  local ret1,ret2 = fn(export, ...)
-  if name and name~=env.name then
-    env.name = ("%s [%s]"):format(name, env.name)
-  end
-  return ret1,ret2
+  return after(function()
+    if name and name~=env.name then
+      env.name = ("%s [%s]"):format(name, env.name)
+    end
+  end, setfenv(cfg.sourceFn, env)(export, ...))
 end
 
 local function _readLines (args, filter, field)
@@ -259,7 +261,7 @@ local mt = setmetatable({
   _readLines=_readLines,
   _tmpfile=_tmpfile,
 }, { __index=_G })
-local function loadCfg (pathname, filename)
+local function _loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
   local applyParamsFn, getModels, authFn = setfenv(fn, env)(export)
@@ -298,9 +300,11 @@ local function loadCfg (pathname, filename)
     info = env,
     filename = filename,
     pathname = pathname,
-    reachable = isReachable(env.exe, pathname)
+    reachable = isReachable(env.exe, pathname),
+    sourceFn=fn
   }
 end
+loadCfg = utils.cached(_loadCfg)
 
 local function clearSession (info, session)
   if info.clearSession then

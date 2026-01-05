@@ -62,7 +62,7 @@ local Common = { State=State, O=O, cfgpath=cfgpath, name=nfo.name, tempdir=tempd
 local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(Common)
 Common.utils = utils
 
-local output = utils.load"output.lua.1"(utils)
+local output = utils.load"output.lua.1"
 
 local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
@@ -71,7 +71,10 @@ local function askAI (opts)
   if opts.compact==nil then
     opts.compact = O.compactDlg
   end
-  local openDialog = utils.load"dialog.lua.1"(Common,output)
+  if O.debug then
+    utils.cached("clear")
+  end
+  local openDialog = utils.load("dialog.lua.1",output)
   openDialog(opts)
 end
 

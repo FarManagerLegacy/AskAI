@@ -89,14 +89,17 @@ local function loadMoon (filename, env)
   return assert(require"moonscript".loadfile(pathname,nil,env,nil))
 end
 
-local loaded = {}
-local function load (filename, env)
-  if not Common.O.debug and loaded[filename] then
-    return env and setfenv(loaded[filename], env)
-                or loaded[filename]
+local cache = {}
+local function cached (fn)
+  if fn=="clear" then
+    cache = {}; return
   end
-  loaded[filename] = loadLua(filename,env)
-  return loaded[filename]
+  return function (key, ...)
+    if not cache[key] then
+      cache[key] = fn(key,...)
+    end
+    return cache[key]
+  end
 end
 
 local function HelpTopic (name)
@@ -225,7 +228,8 @@ return {
   mload=mload,
   msave=msave,
   pathjoin=pathjoin,
-  load=load,
+  cached=cached,
+  load=cached(function(filename, ...) return loadLua(filename)(Common,...) end),
   loadLua=loadLua,
   loadMoon=loadMoon,
   HelpTopic=HelpTopic,
