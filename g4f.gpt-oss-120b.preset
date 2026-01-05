@@ -1,8 +1,0 @@
---https://g4f.dev/docs/ready_to_use.html
-apibase="https://g4f.dev/api/gpt-oss-120b"
-
---https://discord.gg/qXA4Wf4Fsm
---https://g4f.dev/api_key.html
-local Common, g4f = ..., {}
-Common.utils.loadLua("g4f.preset",g4f)(Common)
-apikey=g4f.apikey

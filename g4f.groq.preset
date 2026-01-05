@@ -1,3 +1,4 @@
 --https://g4f.dev/docs/ready_to_use.html
 apibase="https://g4f.dev/api/groq"
+--apibase="https://g4f.dev/ai/groq"
 model="openai/gpt-oss-120b"
