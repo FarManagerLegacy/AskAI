@@ -143,6 +143,21 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
     local code = false
     buf = ""
     local before1stToken,total,started,title
+    local function outputChunk (chunk)
+      for space,word in _words(chunk) do
+        editor.InsertText(Id, space:gsub("\r\n","\n")
+                                   :gsub("\r$","")) -- partial
+        if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
+          editor.InsertString(Id)
+        end
+        editor.InsertText(Id, word)
+        if linewrap then
+          local backticks = space:match"\n" and word:match("^```")
+                         or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
+          if backticks then code = not code end
+        end
+      end
+    end
     local _,err = pcall(processStream, function (chunk, _title, nowrap)
       if not started then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
@@ -164,19 +179,7 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
       if nowrap then
         nowrap,chunk = chunk,nil
       end
-      for space,word in _words(chunk) do
-        editor.InsertText(Id, space:gsub("\r\n","\n")
-                                   :gsub("\r$","")) -- partial
-        if linewrap and not code and editor.GetInfo(Id).CurPos + word:len() > linewrap then
-          editor.InsertString(Id)
-        end
-        editor.InsertText(Id, word)
-        if linewrap then
-          local backticks = space:match"\n" and word:match("^```")
-                         or space=="" and editor.GetString(Id,nil,3):match"^%s*```%S*$"
-          if backticks then code = not code end
-        end
-      end
+      outputChunk(chunk)
       if nowrap then
         editor.InsertText(Id, nowrap)
       end
@@ -185,6 +188,7 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
         setBigCursor()
       end
     end)
+    outputChunk() --rest of the buffer
     editor.InsertString(Id)
     if err and err~="interrupted" then
       if type(err)=="string" then

@@ -81,7 +81,6 @@ local function _pipeOut (exe, context)
         end
         cb(chunk)
       until false
-      cb()
       pipe:close()
       cleanup()
     end
