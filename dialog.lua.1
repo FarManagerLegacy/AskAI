@@ -211,6 +211,11 @@ local function main (opts)
       end,
     }
   end
+  II:add {F.DI_CHECKBOX, "Deb&ug", {interval=4}, O.debug==nil and F.DIF_HIDDEN, O.debug and 1 or 0,
+    onclick=function(_,hDlg,idx)
+      O.debug = hDlg:GetCheck(idx)==1
+    end, name="chkDebug"
+  }
   II:add {F.DI_CHECKBOX, "&Wrap", {-12}, F.DIF_3STATE, State.useWrap,
     onclick=function(_,hDlg,idx)
       hDlg:Enable(idx+1, hDlg:GetCheck(idx)==0 and 0 or 1)
@@ -322,7 +327,7 @@ local function main (opts)
   II:ln() -- -- -- --
   if cfg.info.exe~=true then
     local vFlags = cfg.info.config and 0 or F.DIF_DISABLE
-    II:add {F.DI_BUTTON, "&Utility cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +vFlags,
+    II:add {F.DI_BUTTON, "Utilit&y cfg", nil, F.DIF_BTNNOCLOSE +F.DIF_CENTERGROUP +vFlags,
       onclick=function()
         if cfg.info.config then
           editor.Editor(cfg.info.config)

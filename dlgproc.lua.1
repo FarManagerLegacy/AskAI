@@ -136,6 +136,8 @@ return function (dialog) --main
       elseif key=="CtrlH" then
         opts.compact = not opts._hidden
         hDlg:Close(II.profile.idx)
+      elseif key=="AltU" then
+        hDlg:ShowItem(II.chkDebug.idx,1)
       end
     end
   end
