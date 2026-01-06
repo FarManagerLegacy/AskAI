@@ -272,7 +272,11 @@ local function _loadCfg (pathname, filename)
   end
   if env.historyName then
     env.showSession = env.showSession or function () --todo
-      local session = State[env.historyName]
+      local historyName = env.historyName
+      if Common.O.debug then
+        historyName = historyName.."_debug"
+      end
+      local session = State[historyName]
       if session and next(session) then
         require"le"(session)
       end
