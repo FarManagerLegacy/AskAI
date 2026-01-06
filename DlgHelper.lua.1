@@ -83,7 +83,7 @@ local function newDlgInfo (data)
       local prevX1,prevX2 = prev[X1], prev[X2]
       if prevX2<=prevX1 then
         local len = prev[DATA]:len()
-        if bit64.band(item[FLAGS], F.DIF_LISTNOAMPERSAND)==0 then
+        if bit64.band(item[FLAGS] or 0, F.DIF_LISTNOAMPERSAND)==0 then
           prev[DATA]:gsub("&&?", function() len = len-1 end)
         end
         if prev[TYPE]==F.DI_BUTTON then
