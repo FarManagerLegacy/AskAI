@@ -1,4 +1,4 @@
-﻿local Common,output = ... -- name, utils, tempdir, cfgpath
+﻿local Common = ... -- name, utils, tempdir, cfgpath
 local State = Common.State
 local utils = Common.utils -- HelpTopic, clearSession, HK
 local O = Common.O
@@ -437,7 +437,7 @@ local function main (opts)
       return main(opts)
     end
     local linewrap = ({[0]=nil, tonumber(II.edtWrap[DATA]), "dynamic"})[State.useWrap]
-    output(
+    utils.load"output.lua.1"(
       outputFilename,
       processFn,
       II.prompt[DATA],
