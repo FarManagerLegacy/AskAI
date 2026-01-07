@@ -1,4 +1,4 @@
-local Common = ... --utils
+local Common = ... --utils,json
 local F = far.Flags
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
@@ -94,7 +94,7 @@ local setBigCursor; if jit and jit.os=="Windows" then
   end
 end
 
-local function main (outputFilename, processStream, prompt, linewrap, stream)
+local function main (outputFilename, processStream, prompt, model, linewrap, stream)
   if not processStream then
     openOutput(outputFilename, "existing")
     return
@@ -158,7 +158,7 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
         end
       end
     end
-    local _,err = pcall(processStream, function (chunk, _title, nowrap)
+    local _,err = pcall(processStream, function (chunk, meta)
       if not started then
         repeat until not win.ExtractKeyEx() -- clean kbd buffer
         before1stToken = clockwatch()
@@ -166,22 +166,23 @@ local function main (outputFilename, processStream, prompt, linewrap, stream)
         if hDlg then
           if stream then
             hDlg:SetText(2, "Streaming data..")
+            stream = nil
           end
-          if _title then
-            title = _title
-            hDlg:SetText(1, title)
+          if meta and meta.model and meta.model~=Common.json.null and meta.model~=model then
+            model = meta.model
+            title = model
+            hDlg:SetText(1, model)
           end
         end
         started = true
       end
       total = clockwatch()
       editor.SetTitle(Id, ("Fetching response [%s s] +%s s"):format(before1stToken, total-before1stToken))
-      if nowrap then
-        nowrap,chunk = chunk,nil
-      end
-      outputChunk(chunk)
-      if nowrap then
-        editor.InsertText(Id, nowrap)
+      if meta and meta.nowrap then
+        outputChunk() --rest of the buffer
+        editor.InsertText(Id, chunk)
+      else
+        outputChunk(chunk)
       end
       if isFar3 then
         editor.Redraw(Id)
