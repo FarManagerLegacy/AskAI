@@ -62,8 +62,6 @@ local Common = { State=State, O=O, cfgpath=cfgpath, name=nfo.name, tempdir=tempd
 local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(Common)
 Common.utils = utils
 
-local output = utils.load"output.lua.1"
-
 local function askAI (opts)
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
@@ -74,7 +72,7 @@ local function askAI (opts)
   if O.debug then
     utils.cached("clear")
   end
-  local openDialog = utils.load("dialog.lua.1",output)
+  local openDialog = utils.load"dialog.lua.1"
   openDialog(opts)
 end
 
@@ -97,7 +95,7 @@ if Macro then
     id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
     condition=function() return not State.isDlgOpened end;
     action=function()
-      output(State.lastOutputFilename)
+      utils.openOutput(State.lastOutputFilename, "existing")
     end;
   }
   Macro { description=nfo.name..": choose cfg";

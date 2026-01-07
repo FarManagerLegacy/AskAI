@@ -216,6 +216,39 @@ else -- far2m
   end
 end
 
+local F = far.Flags
+local function openOutput (outputFilename, mode)
+  local CP = 65001
+  local curModal = bit64.band(actl.GetWindowInfo().Flags, F.WIF_MODAL)==F.WIF_MODAL
+  local opened
+  for i=actl.GetWindowCount(),1,-1 do
+    local wi = actl.GetWindowInfo(i)
+    if wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename then
+      opened = true
+      if curModal then
+        editor.SaveFile(wi.Id)
+        editor.Quit(wi.Id)
+      end
+      break
+    end
+  end
+  if mode=="existing" then
+    if not (opened or win.GetFileAttr(outputFilename)) then
+      mf.beep(); return
+    end
+  elseif not opened then
+    win.DeleteFile(outputFilename)
+  end
+  local res
+  if not curModal then
+    local tryNotModal = F.EF_DISABLEHISTORY +F.EF_NONMODAL +F.EF_IMMEDIATERETURN +F.EF_OPENMODE_USEEXISTING
+    res = editor.Editor(outputFilename, nil, nil, nil, nil, nil, tryNotModal, nil, nil, CP)
+  end
+  if curModal or res==F.EEC_LOADING_INTERRUPTED then
+    editor.Editor(outputFilename, nil, nil, nil, nil, nil, F.EF_DISABLEHISTORY +F.EF_OPENMODE_NEWIFOPEN, nil, nil, CP)
+  end
+end
+
 --make use of actl.Synchro after Luafar 859
 local synchro = pcall(actl.Synchro, function()end) and actl.Synchro or function(fn, ...)
   far.Timer(1, function(t, ...)
@@ -239,4 +272,5 @@ return {
   cleanHistory=cleanHistory,
   check=check,
   openUrl=openUrl,
+  openOutput=openOutput,
 }

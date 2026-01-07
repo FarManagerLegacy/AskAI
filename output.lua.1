@@ -1,4 +1,5 @@
-local Common = ... --utils,json
+local Common = ... --json
+local utils = Common.utils
 local F = far.Flags
 
 local idProgress = win.Uuid"3E5021C5-47C7-4446-8E3B-13D3D9052FD8"
@@ -10,38 +11,6 @@ local function progress (text, title)
     {F.DI_TEXT,     0,  1,0,    1,0,0,0,F.DIF_CENTERGROUP, text},
   }
   return far.DialogInit(idProgress, -1, -1, len+4, 3, nil, items, F.FDLG_NONMODAL +(title and 0 or F.FDLG_KEEPCONSOLETITLE))
-end
-
-local function openOutput (outputFilename, mode)
-  local CP = 65001
-  local curModal = bit64.band(actl.GetWindowInfo().Flags, F.WIF_MODAL)==F.WIF_MODAL
-  local opened
-  for i=actl.GetWindowCount(),1,-1 do
-    local wi = actl.GetWindowInfo(i)
-    if wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename then
-      opened = true
-      if curModal then
-        editor.SaveFile(wi.Id)
-        editor.Quit(wi.Id)
-      end
-      break
-    end
-  end
-  if mode=="existing" then
-    if not (opened or win.GetFileAttr(outputFilename)) then
-      mf.beep(); return
-    end
-  elseif not opened then
-    win.DeleteFile(outputFilename)
-  end
-  local res
-  if not curModal then
-    local tryNotModal = F.EF_DISABLEHISTORY +F.EF_NONMODAL +F.EF_IMMEDIATERETURN +F.EF_OPENMODE_USEEXISTING
-    res = editor.Editor(outputFilename, nil, nil, nil, nil, nil, tryNotModal, nil, nil, CP)
-  end
-  if curModal or res==F.EEC_LOADING_INTERRUPTED then
-    editor.Editor(outputFilename, nil, nil, nil, nil, nil, F.EF_DISABLEHISTORY +F.EF_OPENMODE_NEWIFOPEN, nil, nil, CP)
-  end
 end
 
 local buf
@@ -95,11 +64,7 @@ local setBigCursor; if jit and jit.os=="Windows" then
 end
 
 local function main (outputFilename, processStream, prompt, model, linewrap, stream)
-  if not processStream then
-    openOutput(outputFilename, "existing")
-    return
-  end
-  Common.utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
+  utils.synchro(function() -- workaround for https://bugs.farmanager.com/view.php?id=3044
     local wi = actl.GetWindowInfo()
     assert(wi.Type==F.WTYPE_EDITOR and wi.Name==outputFilename, "oops, editor has not been opened")
     local Id = wi.Id
@@ -206,7 +171,7 @@ local function main (outputFilename, processStream, prompt, model, linewrap, str
     editor.SetTitle(Id, title..status)
   end)
 
-  openOutput(outputFilename)
+  utils.openOutput(outputFilename)
 end
 
 return main
