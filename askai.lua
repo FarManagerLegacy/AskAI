@@ -59,12 +59,18 @@ local State do
 end
 
 local Common = { State=State, O=O, cfgpath=cfgpath, name=nfo.name, tempdir=tempdir, }
-local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(Common)
-Common.utils = utils
+local utils
+local function _bootstrap ()
+  utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(Common)
+  Common.utils = utils
+end
+_bootstrap()
 
 local function askAI (opts)
   if State.isBusy then
-    return
+    if bit64.band(F.WIF_MODAL, actl.GetWindowInfo().Flags)~=0 then return end
+    -- restore from previous dialog crash
+    O.debug = true
   end
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
@@ -73,6 +79,7 @@ local function askAI (opts)
     opts.compact = O.compactDlg
   end
   if O.debug then
+    _bootstrap()
     utils.cached("clear")
   end
   local openDialog = utils.load"dialog.lua.1"
