@@ -334,7 +334,6 @@ local function toggleHidden (items)
 end
 
 local function chooseCfg (opts)
-  if State.isDlgOpened then return end
   local curcfgfile = type(opts.cfg)=="table" and opts.cfg.filename or opts.cfg
   local items1,items2 = {visibleN=0}, {visibleN=0}
   local empty = true
@@ -394,9 +393,7 @@ local function chooseCfg (opts)
   end
   local bkeys = "Enter CtrlEnter F4 AltF4 CtrlH AltF1"
   repeat
-    State.isDlgOpened = true
     local item, pos = far.Menu(props, items, bkeys)
-    State.isDlgOpened = false
     if item then
       local bk = item.BreakKey
       item = items[pos]

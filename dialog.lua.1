@@ -380,9 +380,7 @@ local function main (opts)
   }
   data.DlgProc = utils.load"dlgproc.lua.1"(dialog)
 
-  State.isDlgOpened = true
   local res = far.Dialog(II:params())
-  State.isDlgOpened = false
   if res==-1 then return end
 
   if II[res].name=="btnGo" then
