@@ -24,7 +24,7 @@ local nfo = Info { _filename or ...,
       model  ={OPENAI_API_MODEL=1, OPENAI_MODEL=1},
     },
     State = {
-      isDlgOpened=false,
+      isBusy=false,
       useSession=2,
       useStream=1,
       useWrap=1, -- wrap lines
@@ -63,7 +63,7 @@ local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(
 Common.utils = utils
 
 local function askAI (opts)
-  if State.isDlgOpened then
+  if State.isBusy then
     return
   end
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
@@ -76,7 +76,9 @@ local function askAI (opts)
     utils.cached("clear")
   end
   local openDialog = utils.load"dialog.lua.1"
+  State.isBusy = true
   openDialog(opts)
+  State.isBusy = false
 end
 
 nfo.config  = function () mf.acall(askAI, {cfg=""}) end;
@@ -97,7 +99,7 @@ if Macro then
   Macro { description=nfo.name..": reopen output";
     area="Common"; key=O.keyOutput or O.key..":Double";
     id="89C2EB3B-7D32-4BC8-B5D0-874C0B34367D";
-    condition=function() return not State.isDlgOpened end;
+    condition=function() return not State.isBusy end;
     action=function()
       utils.openOutput(State.lastOutputFilename, "existing")
     end;
