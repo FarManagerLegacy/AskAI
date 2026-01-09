@@ -8,7 +8,6 @@ local askAI = require"askAI"
 -- Принимает на вход таблицу со такими возможными полями: `profile`: string, `nodialog`, `compact`: boolean.
 Macro { description="^BN  Тест";
   key="CtrlB-N"; area="Common";
-  condition=askAI.isNotOpened;
   action=function()
     askAI {profile="test", compact=false}
   end}

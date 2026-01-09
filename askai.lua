@@ -63,6 +63,9 @@ local utils = assert(loadfile(cfgpath..package.config:sub(1,1).."utils.lua.1"))(
 Common.utils = utils
 
 local function askAI (opts)
+  if State.isDlgOpened then
+    return
+  end
   opts = not opts and {} or type(opts)=="table" and opts or error "opts should be table"
   opts.profile = opts.profile or "default"
   opts.context = opts.context or Editor.SelValue
@@ -81,10 +84,11 @@ nfo.help    = function () far.ShowHelp(cfgpath, nil, F.FHELP_CUSTOMPATH) end;
 nfo.execute = function () mf.acall(askAI) end;
 
 if Macro then
+  local ownId = "58DD9ECD-CFFA-472E-BFD7-042295C86CAE";
   Macro { description=nfo.name;
     area="Common"; key=O.key;
     id="AF167BA4-E362-449E-A3F7-FF65E716F075";
-    condition=function() return not State.isDlgOpened end;
+    condition=function() return not Area.Dialog or Dlg.Id~=ownId end;
     action=function()
       mf.acall(askAI)
     end;
@@ -101,7 +105,6 @@ if Macro then
   Macro { description=nfo.name..": choose cfg";
     area="Common"; key=O.keyList;
     id="FD155A5E-3415-4A9A-BD91-1D7BA91097F0";
-    condition=function() return not State.isDlgOpened end;
     action=function()
       mf.acall(askAI, {cfg=""})
     end;
@@ -110,7 +113,6 @@ if Macro then
     area="Editor"; key=O.keyReply or O.key..":Hold";
     filemask="Ask AI*.md",
     id="56A1EBC9-BE76-4CD8-AE43-E42A13DF1178";
-    condition=function() return not State.isDlgOpened end;
     action=function()
       if Object.Selected then
         local profile = editor.GetFileName():match"[\\/]Ask AI%.(.+)%.md$"
@@ -210,16 +212,8 @@ if Macro then
       compact=true,
     })
   end
-  local function stdCondition (_,m)
-    if not State.isDlgOpened then
-      return not m._condition or m._condition()
-    end
-  end
-  local function isNotOpened ()
-    return not State.isDlgOpened
-  end
   local fnCache = {}
-  package.loaded.askAI = setmetatable({isNotOpened=isNotOpened},{
+  package.loaded.askAI = setmetatable({},{
     __call=function(_,...)
       return askAI(...)
     end,
@@ -237,11 +231,9 @@ if Macro then
             macro.action = withProfile
           end
           if type(macro.condition)=="string" then
-            macro._condition = fnCache[macro.condition] or assert(require"moonscript".loadstring(macro.condition))
-            fnCache[macro.condition] = macro._condition
-            macro.condition = nil
+            macro.condition = fnCache[macro.condition] or assert(require"moonscript".loadstring(macro.condition))
+            fnCache[macro.condition] = macro.condition
           end
-          macro.condition = macro.condition or stdCondition
           return env.Macro(macro)
         end
       end
