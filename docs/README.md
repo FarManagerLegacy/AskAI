@@ -290,9 +290,9 @@
 - Другие *OpenAI*-совместимые: [Mistral AI](https://mistral.ai/), [xAI](https://x.ai/grok) *Grok*, [AI21 labs](https://www.ai21.com) *Jamba*.  
   К этой же категории относится целый ряд провайдеров, предоставляющих доступ к OpenSource-моделям.
 - Провайдеры с собственным API, такие как [Google](https://ai.google.dev/) *Gemini*, [Anthropic](https://www.anthropic.com/) *Claude*, [Cohere](https://cohere.com/command) *Command* и т.д.  
-  Для поддержки в *AskAI* требуется или соответствующая “нативная” конфигурация, или специальный
-  сервис-адаптер, который будет конвертировать API в совместимый с *OpenAI* формат.  
-  Примеры таких сервисов: [openai-gemini](https://habr.com/ru/articles/798123/), [openai-github-copilot](https://habr.com/ru/articles/799215/) и др.
+  Для поддержки в *AskAI* требуется соответствующая “нативная” конфигурация.  
+  Кроме того существуют прокси сервисы для конвертации API в совместимый с *OpenAI* формат,
+  некоторые доступны онлайн, другие предназначены для локального использования.
 
 ### Обзор [пресетов](#работа-с-пресетами) для сервисов совместимых с [OpenAI API](https://platform.openai.com/docs/api-reference)
 
@@ -351,9 +351,6 @@
 
 Кроме того:
 
-- `github-copilot-`/`gemini-proxy-public` позволяют попробовать соответствующие сервисы-адаптеры, упомянутые выше.  
-  Примечание: `gemini` [с некоторых пор](https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/)
-  доступен и через OpenAI API.
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 
