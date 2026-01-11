@@ -1,0 +1,71 @@
+local Common = ...
+client_id = "Iv1.b507a08c87ecfe98" -- GitHub Copilot Plugin by GitHub
+Common.utils.loadLua("github-copilot.preset", getfenv())(Common)
+client_id = nil
+
+apidef=[[
+class GithubCopilot extends OpenAI
+  @@._cache = {}
+  chatVersion = "0.32.4"
+  vscodeVersion = "1.105.1"
+  apiVersion = "2025-05-01"
+
+  class Token extends Plain
+    githubapihost = "api.github.com"
+    @__base.api_base = "https://#{githubapihost}/copilot_internal/v2"
+    @__base.headers =
+      "Host": githubapihost
+      "Editor-Version": "vscode/#{vscodeVersion}"
+      "Editor-Plugin-Version": "copilot-chat/#{chatVersion}"
+      "User-Agent": "GitHubCopilotChat/#{chatVersion}"
+      "Accept": "*/*"
+      "Accept-Encoding": "*"
+
+    authorization: { "authorization", "Token %s" }
+
+    new: (@api_key) =>
+
+    refresh: (data) =>
+      unless data and data.expires_at>os.time!
+        data, meta = assert @request "/token"
+        with data
+          unless .token
+            error "token not found:\n#{meta.data_str}"
+
+  sha256_like = ->
+    hex = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"}
+    table.concat [ hex[math.random 1,16] for i=1,64 ]
+
+  uuid = -> win.Uuid win.Uuid!
+
+  @__base.headers =
+    "X-Github-Api-Version": apiVersion
+    "Vscode-Sessionid": uuid! .. os.time!*1000
+    "vscode-machineid": sha256_like!
+    "Editor-Version": "vscode/#{vscodeVersion}"
+    "Editor-Plugin-Version": "copilot-chat/#{chatVersion}"
+    "Openai-Organization": "github-copilot"
+    "Copilot-Integration-Id": "vscode-chat"
+    "Openai-Intent": "conversation-panel"
+    "User-Agent": "GitHubCopilotChat/#{chatVersion}"
+    "Accept": "*/*"
+    "Accept-Encoding": "gzip, deflate, br"
+
+  api_base: "https://api.githubcopilot.com"
+
+  new: (@refresh_token, @api_base) =>
+    assert @refresh_token, "reload preset to authorize"
+    @auth = Token @refresh_token
+    if token = @@._cache[@refresh_token]
+      { token:@api_key, endpoints:{api:@api_base} } = token
+      @headers.Host = @api_base\gsub "^https?://", ""
+
+  request: (...) =>
+    if token = @auth\refresh @@._cache[@refresh_token]
+      @@._cache[@refresh_token] = token
+      { token:@api_key, endpoints:{api:@api_base} } = token
+      @headers.Host = @api_base\gsub "^https?://", ""
+
+    @headers["X-Request-Id"] = uuid!
+    super ...
+]]
