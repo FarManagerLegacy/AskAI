@@ -288,7 +288,11 @@
 
 - Не требуют ключа (`apikey`) эти пресеты:
   - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
-  - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели): some anonymous usage allowed
+  - Следующие пресеты из поддиректории `trial/`:
+    - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели):
+      some anonymous usage allowed
+    - [ovh](https://endpoints.ai.cloud.ovh.net/) (gpt-oss-120b, DeepSeek-R1-Distill-Llama-70B, Meta-Llama-3_3-70B-Instruct):
+      Анонимно: 2 запроса в минуту, на IP и на модель.
   - Некоторые пресеты из поддиректории `extra/` (см. ниже)
 - Для использования других надо зарегистрироваться и получить ключ.
   Следующие пресеты относятся к бесплатным сервисам (с определёнными лимитами):

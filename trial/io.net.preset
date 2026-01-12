@@ -1,0 +1,12 @@
+--DeepSeek, Llama, Devstral/Magistral/Mistral, Kimi, gpt-oss, Qwen, GLM
+--Sign up with just an email. Instantly get free credits for every model. No credit card, no sales calls, no friction.
+--https://io.net/intelligence
+
+--https://io.net/docs/reference/ai-models/create-chat-completion
+apibase="https://api.intelligence.io.solutions/api/v1"
+
+--https://ai.io.net/ai/api-keys
+apikey=win.GetEnv"IOINTELLIGENCE_API_KEY" or "set IOINTELLIGENCE_API_KEY env variable!"
+
+--https://ai.io.net/ai/models
+model="deepseek-ai/DeepSeek-V3.2"

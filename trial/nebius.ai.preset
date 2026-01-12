@@ -1,0 +1,23 @@
+--DeepSeek, GLM, gpt-oss, Kimi, Llama, Qwen, ...
+--https://tokenfactory.nebius.com/playground -- $1
+--https://docs.nebius.com/signup-billing/payments/promo-codes
+
+--https://docs.tokenfactory.nebius.com/quickstart
+--https://docs.tokenfactory.nebius.com/api-reference/introduction
+apibase="https://api.tokenfactory.nebius.com/v1"
+--apibase="https://api.studio.nebius.ai/v1"
+-- or __Host-app_session cookie from playground (expires in 24h), but it also counts in usage
+apikey=win.GetEnv"NEBIUS_API_KEY" or "set NEBIUS_API_KEY env variable!"
+
+--https://tokenfactory.nebius.com/?modality=text2text
+model="deepseek-ai/DeepSeek-R1"
+
+modelsMeta=[[{
+  endpoint: "/models?verbose=true"
+  filterFn: (model) -> model.architecture.modality\match"text.*->text"
+}]]
+modelsMeta=""--todo
+
+--https://studio.nebius.com/proxy/billing/public/accounts
+--https://api.studio.nebius.com/private/v1/models_info
+--https://api.studio.nebius.com/private/v1/quota

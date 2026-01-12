@@ -1,0 +1,26 @@
+﻿--gpt-oss-120b, DeepSeek-R1-Distill-Llama-70B, Meta-Llama-3_3-70B-Instruct
+--amd smaller models incl. Qwen, Mistral, ...
+
+--Anonymous: 2 requests per minute, per IP and per model.
+--https://help.ovhcloud.com/csm/en-gb-public-cloud-ai-endpoints-troubleshooting?id=kb_article_view&sysparm_article=KB0066994
+
+--Activate your project by adding a payment method and get 200 € free credit.
+--Valid for 1 month to test our services after opening your project.
+--https://www.ovhcloud.com/en-gb/public-cloud/prices/#ai-&-machine-learning:~:text=Large%20Language%20Models%20(LLM)
+
+--https://www.ovhcloud.com/en-gb/public-cloud/ai-endpoints/
+--https://help.ovhcloud.com/csm/en-gb-public-cloud-ai-endpoints-getting-started?id=kb_article_view&sysparm_article=KB0065401
+
+--https://www.ovhcloud.com/en/public-cloud/ai-endpoints/catalog/gpt-oss-120b/
+apibase="https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
+apikey=win.GetEnv"OVH_AI_ENDPOINTS_ACCESS_TOKEN" --or "set OVH_AI_ENDPOINTS_ACCESS_TOKEN env variable!"
+
+--https://endpoints.ai.cloud.ovh.net
+model={
+  "gpt-oss-120b",
+  --https://help.ovhcloud.com/csm/en-gb-public-cloud-ai-endpoints-virtual-models?id=kb_article_view&sysparm_article=KB0072104
+  "code_chat@latest",
+  "meta-llama@latest",
+  "mistral@latest?context_size > 100000",
+  "llama@biggest?input_cost<0.5",
+}

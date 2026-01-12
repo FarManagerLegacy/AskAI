@@ -1,0 +1,32 @@
+--DeepSeek, Kimi, Qwen
+--1 Million AI tokens [Billing Information required!]
+--https://www.alibabacloud.com/en/free
+--https://www.alibabacloud.com/en/product/modelstudio
+--https://www.alibabacloud.com/help/en/model-studio/new-free-quota
+
+--https://dashscope.console.aliyun.com/
+--DashScope has not yet been released on Alibabacloud.com(international),please stay tuned for our updates!
+
+--https://modelstudio.console.alibabacloud.com/
+
+apibase="https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+--apibase="https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+--https://bailian.console.alibabacloud.com/?tab=model#/api-key
+--https://modelstudio.console.alibabacloud.com/?tab=playground#/api-key
+apikey=win.GetEnv"DASHSCOPE_API_KEY" or "set DASHSCOPE_API_KEY env variable!"
+
+model="qwen-max-latest"
+
+extra_body={
+   -- Qwen/DeepSeek @ DashScope (aliyun/alibabacloud)
+   "enable_thinking: true",
+   -- Qwen
+   -- https://www.alibabacloud.com/help/en/model-studio/qwen-api-reference
+   "thinking_budget: 100",
+   'thinking_strategy: "short_think" --"chain_of_draft"',
+   "enable_code_interpreter=true",
+   "enable_search=true",
+   'search_strategy="turbo" -- | "max" | "agent"',
+   "enable_search_extension=true",
+}
