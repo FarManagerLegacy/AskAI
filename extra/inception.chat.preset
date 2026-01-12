@@ -1,0 +1,5 @@
+--https://chat.inceptionlabs.ai/
+apibase="https://chat.inceptionlabs.ai/api"
+apikey=" "
+model="mercury-refresh-preview"
+headers='"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"'
