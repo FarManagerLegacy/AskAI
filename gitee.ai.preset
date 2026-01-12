@@ -1,0 +1,55 @@
+--DeepSeek, ERNIE, gemma, GLM, gpt-oss, Kimi, MiniMax, Qwen, Yi, ...
+
+-- Daily free API calls: 100
+--https://ai.gitee.com/docs/appendix/qa#%E8%B4%AD%E4%B9%B0%E5%89%8D%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E4%BD%93%E9%AA%8C
+
+--https://ai.gitee.com/
+--https://ai.gitee.com/docs/products/apis/texts/text-comlpetion
+--https://ai.gitee.com/docs/products/apis/texts/text-generation
+
+--https://ai.gitee.com/docs/openapi/v1#tag/%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/post/chat/completions
+apibase="https://ai.gitee.com/v1"
+
+--https://ai.gitee.com/dashboard/settings/tokens (when logged in)
+apikey=win.GetEnv"GITEE_API_KEY" or "set GITEE_API_KEY env variable!"
+
+--https://ai.gitee.com/docs/products/apis/?tag=%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90#%E6%9C%AC%E5%9C%B0%E8%B0%83%E7%94%A8-api-%E8%BF%9B%E8%A1%8C%E6%8E%A8%E7%90%86
+--https://ai.gitee.com/serverless-api#text-generation
+--  playground: https://ai.gitee.com/serverless-api?model=MiniMax-M2.1 (https://ai.gitee.com/hf-models/MiniMaxAI/MiniMax-M2.1/api)
+
+--https://ai.gitee.com/docs/openapi/v1#tag/global/get/models
+model={--Free
+  --"DeepSeek-R1-Distill-Qwen-1.5B",
+  "DeepSeek-R1-Distill-Qwen-14B",
+  --"DeepSeek-R1-Distill-Qwen-7B",
+  "GLM-4-9B-0414",
+  "GLM-4-9B-Chat",
+  "InternLM3-8B-Instruct",
+  --"Qwen2-7B-Instruct",
+  --"Qwen3-0.6B",
+  --"Qwen3-4B",
+  "Qwen3-8B",
+}
+
+modelsMeta='endpoint:"/models?type=text2text"' --=completions
+
+--[[
+curl "https://ai.gitee.com/api/pay/services?type=serverless&status=1&size=1000"
+-- List of items tagged with "code-generation" or "text-generation"
+jq "[.items[] | select(any(.tags[]?; .slug == \"code-generation\" or .slug ==\"text-generation\")) | .name] | sort"
+-- With 0 price
+jq "[.items[] | select(.operation_summary.min_price == 0) | .name] | sort"
+jq "[.items[] | select(.operation_summary.min_price == 0 and any(.tags[]?; .slug == \"code-generation\" or .slug == \"text-generation\")) | .name] | sort"
+-- Tags list
+jq "[ .items[].tags[]? | .slug ] | unique | .[]"
+jq "[ .items[].tags[]? | .slug | select(test(\"[0-9]\") | not) ] | unique | .[]"
+-- Items without any tag
+jq ".items[] | select((.tags // []) | length == 0) | .name"
+--]]
+
+headers={
+  "",
+  '"x-failover-enabled":"true"', --https://ai.gitee.com/docs/products/apis/#%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E6%9C%BA%E5%88%B6
+  '"x-package":"1910", "x-trial-enabled":"true"', --from playground
+}
+--curl "https://ai.gitee.com/api/base/hub/***/serverless/call-quota" -b "__Secure-next-auth.session-token=***"

@@ -318,6 +318,8 @@
     `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b` и модели поменьше)
   - [cohere](https://cohere.com/command) (серии `command-*` и `c4ai-aya-*`)
   - [gemini](https://ai.google.dev/gemini-api/docs/openai) от *Google*
+  - [gitee.ai](https://ai.gitee.com/) / [moark](https://moark.ai/) (DeepSeek, ERNIE, gemma, GLM, gpt-oss, Kimi, MiniMax, Qwen, Yi, …):
+    Бесплатно: 100 запросов в день.
   - [github-copilot](https://docs.github.com/en/copilot/get-started/what-is-github-copilot) (модели от *OpenAI*, *Anthropic*, *Google*, *xAI*)
   - [github-models](https://github.com/marketplace?type=models&task=chat-completion) (модели от *Cohere*, *DeepSeek*, *Meta*, *Mistral AI*, *Microsoft*, *OpenAI*, *xAI* и др.)
   - [groq](https://console.groq.com/playground) (OpenSource-модели до 120b: gpt-oss, llama-4-maverick, kimi-k2, qwen, …)
