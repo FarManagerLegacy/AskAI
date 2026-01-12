@@ -363,7 +363,7 @@ __Кнопки__:
 - из серии [Llama] от [Meta AI]: `llama-4-maverick`, `llama-3.1-405b`, `llama-3.2-90b`, `llama-3.3-70b`;
 - [Mistral] Large 3;
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
-  [DeepSeek], [Qwen] от _Alibaba_, [GLM-4.5] от [Zhipu AI], [Kimi] _K2_ от [Moonshot AI], [Baidu] _ERNIE_,
+  [DeepSeek], [Qwen] от _Alibaba_, [GLM-4.7] от [Zhipu AI], [Kimi] _K2_ от [Moonshot AI], [Baidu] _ERNIE_,
   [MiniMax], [LongCat] от _Meituan_, _Yi_ от [01.AI].
 
 Ориентироваться можно по рейтингу [LMArena](https://lmarena.ai/leaderboard).
@@ -377,7 +377,7 @@ __Кнопки__:
 [DeepSeek]: https://www.deepseek.com/
 [Qwen]: https://qwenlm.github.io/
 [Zhipu AI]: https://zhipuai.cn/en/
-[GLM-4.5]: https://z.ai/
+[GLM-4.7]: https://z.ai/blog/glm-4.7
 [Kimi]: https://www.kimi.com/
 [Moonshot AI]: https://www.moonshot.ai/
 [Baidu]: https://ernie.baidu.com/blog/
@@ -452,6 +452,7 @@ __Кнопки__:
      в том числе gemma, gpt-oss, Mistral, DeepSeek, Kimi, Llama, Qwen, Xiaomi MiMo, ...;  
      покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
    - [siliconflow] (бесплатно - DeepSeek, Kimi, ...)
+   - [z.ai], [zhipu] (бесплатно небольшие модели ~ 9B, вида `glm-X.Xx-flash`, см. в пресетах)
 - Дополнительные пресеты расположены в поддиректориях.  
   Чтобы они появились в [списке][Пресеты], необходимо скопировать нужные из них в основную директорию
   (лучше сделать ссылку).
@@ -489,6 +490,8 @@ __Кнопки__:
 [sambanova]: https://cloud.sambanova.ai/pricing
 [siliconflow]: https://docs.siliconflow.cn/reference/chat-completions-1
 [vercel]: https://vercel.com/ai-gateway
+[z.ai]: https://z.ai/model-api
+[zhipu]: https://bigmodel.cn/
 
 [Обзор пресетов]: #Services
 

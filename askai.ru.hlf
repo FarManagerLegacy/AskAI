@@ -324,7 +324,7 @@ $ #Обзор онлайн-сервисов#
  #•# §¦из серии ~Llama~@https://www.llama.com/@ от ~Meta AI~@https://ai.meta.com/@: #llama-4-maverick#, #llama-3.1-405b#, #llama-3.2-90b#, #llama-3.3-70b#;
  #•# §¦~Mistral~@https://mistral.ai/models@ Large 3;
  #•# §¦ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
-~DeepSeek~@https://www.deepseek.com/@, ~Qwen~@https://qwenlm.github.io/@ от #Alibaba#, ~GLM-4.5~@https://z.ai/@ от ~Zhipu AI~@https://zhipuai.cn/en/@, ~Kimi~@https://www.kimi.com/@ #K2# от ~Moonshot AI~@https://www.moonshot.ai/@, ~Baidu~@https://ernie.baidu.com/blog/@ #ERNIE#,
+~DeepSeek~@https://www.deepseek.com/@, ~Qwen~@https://qwenlm.github.io/@ от #Alibaba#, ~GLM-4.7~@https://z.ai/blog/glm-4.7@ от ~Zhipu AI~@https://zhipuai.cn/en/@, ~Kimi~@https://www.kimi.com/@ #K2# от ~Moonshot AI~@https://www.moonshot.ai/@, ~Baidu~@https://ernie.baidu.com/blog/@ #ERNIE#,
 ~MiniMax~@https://www.minimaxi.com/en@, ~LongCat~@https://www.longcatai.org/@ от #Meituan#, #Yi# от ~01.AI~@https://www.01.ai/@.
 
  Ориентироваться можно по рейтингу ~LMArena~@https://lmarena.ai/leaderboard@.
@@ -391,6 +391,7 @@ DeepSeek, Kimi, Qwen, ~…~@https://gen.pollinations.ai/models@)
 в том числе gemma, gpt-oss, Mistral, DeepSeek, Kimi, Llama, Qwen, Xiaomi MiMo, …;
        §¦покупкой 10 кредитов лимит можно увеличить до 1000 запросов в день)
      #•# §¦~siliconflow~@https://docs.siliconflow.cn/reference/chat-completions-1@ (бесплатно - DeepSeek, Kimi, …)
+     #•# §¦~z.ai~@https://z.ai/model-api@, ~zhipu~@https://bigmodel.cn/@ (бесплатно небольшие модели ~~ 9B, вида #glm-X.Xx-flash#, см. в пресетах)
  #•# §¦Дополнительные пресеты расположены в поддиректориях.
    §¦Чтобы они появились в ~списке~@Presets@, необходимо скопировать нужные из них в основную директорию
 (лучше сделать ссылку).

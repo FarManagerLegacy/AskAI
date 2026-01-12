@@ -1,0 +1,39 @@
+--New users get 20.00million tokens for free!
+--https://bigmodel.cn/trialcenter/modeltrial/text
+
+--https://www.zhipuai.cn/en
+--https://bigmodel.cn/
+
+--https://docs.bigmodel.cn/cn/guide/start/quick-start
+--https://docs.bigmodel.cn/cn/api/introduction
+--https://docs.bigmodel.cn/api-reference/%E6%A8%A1%E5%9E%8B-api/%E5%AF%B9%E8%AF%9D%E8%A1%A5%E5%85%A8
+apibase="https://open.bigmodel.cn/api/paas/v4"
+--apibase="https://open.bigmodel.cn/api/coding/paas/v4"
+
+--https://bigmodel.cn/usercenter/proj-mgmt/apikeys
+apikey=win.GetEnv"BIGMODEL_API_KEY" or "set BIGMODEL_API_KEY env variable!"
+
+--https://docs.bigmodel.cn/cn/guide/start/model-overview
+--https://docs.bigmodel.cn/cn/update/new-releases
+model={
+  --https://docs.bigmodel.cn/cn/guide/models/free
+  --https://z.ai/blog/glm-4.6v
+  "glm-4.6v-flash", "glm-4.1v-thinking-flash", "glm-4v-flash",
+  "glm-4.5-flash", "glm-4-flash",
+
+  -- others
+  --"glm-4.7", "glm-4.6",
+  --"glm-4.5", "glm-4.5-air", "glm-4.5-airx", "glm-4.5-flash", "glm-4.5-x",
+  --"glm-4-air", "glm-4-air-250414", "glm-4-airx", "glm-4-flashx", "glm-4-flashx-250414", "glm-4-long", "glm-4-plus",
+
+  -- deprecated
+  --"glm-4-0520",
+  --"glm-z1-air", "glm-z1-airx", "glm-z1-flash", "glm-z1-flashx",
+}
+
+--https://docs.bigmodel.cn/cn/guide/capabilities/thinking
+extra_body={
+  'thinking: type:"enabled", clear_thinking: false',
+  'thinking: type:"enabled"',
+  'thinking: type:"disabled"',
+}
