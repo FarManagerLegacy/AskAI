@@ -364,7 +364,7 @@ __Кнопки__:
 - [Mistral] Large 3;
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
   [DeepSeek], [Qwen] от _Alibaba_, [GLM-4.5] от [Zhipu AI], [Kimi] _K2_ от [Moonshot AI], [Baidu] _ERNIE_,
-  [MiniMax], _Yi_ от [01.AI].
+  [MiniMax], [LongCat] от _Meituan_, _Yi_ от [01.AI].
 
 Ориентироваться можно по рейтингу [LMArena](https://lmarena.ai/leaderboard).
 
@@ -434,6 +434,7 @@ __Кнопки__:
    - [github-models] (модели от _Cohere_, _DeepSeek_, _Meta_, _Mistral AI_, _Microsoft_, _OpenAI_, _xAI_ и др.)
    - [groq] (OpenSource-модели до 120b: gpt-oss, llama-4-maverick, kimi-k2, qwen, ...)
    - [iflow] (китайские OpenSource-модели: DeepSeek, GLM, Kimi, Qwen, TStars)
+   - [longcat]: (`LongCat-Flash-Chat`, `LongCat-Flash-Thinking`): 500,000 токенов в день бесплатно.
    - [mistral], [codestral]
    - [nvidia] (OpenSource-модели: DeepSeek, gpt-oss, Kimi, Llama, MiniMax, Mistral, Qwen, Phi-4, ...)
    - [poe] (все популярные модели + пользовательские "боты"): 3000 поинтов в день на бесплатном плане
@@ -477,6 +478,7 @@ __Кнопки__:
 [github-models]: https://github.com/marketplace?type=models&task=chat-completion
 [groq]: https://console.groq.com/playground
 [iflow]: https://platform.iflow.cn/en
+[longcat]: https://www.longcatai.org/
 [mistral]: https://mistral.ai/models
 [moark]: https://moark.ai/
 [nvidia]: https://build.nvidia.com/
