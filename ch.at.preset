@@ -1,0 +1,4 @@
+--https://ch.at/
+--https://github.com/Deep-ai-inc/ch.at
+--Current Production Model: OpenAI's GPT-4o.
+apibase="https://ch.at/v1"

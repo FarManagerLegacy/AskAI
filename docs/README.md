@@ -306,6 +306,7 @@
 
 - Не требуют ключа (`apikey`) эти пресеты:
   - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
+  - [ch.at](https://github.com/Deep-ai-inc/ch.at) (заявлена gpt-4o)
   - Следующие пресеты из поддиректории `trial/`:
     - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели):
       some anonymous usage allowed

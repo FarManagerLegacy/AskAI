@@ -416,6 +416,7 @@ __Кнопки__:
 
 - Не требуют ключа (`apikey`) эти пресеты:
    - `tmrace` (`gpt-4o-mini`): лимит 50 запросов в сутки
+   - [ch.at] (заявлена gpt-4o)
    - Следующие пресеты из поддиректории `trial/`:
      - [deepinfra] (всевозможные OpenSource модели):
        some anonymous usage allowed
@@ -464,6 +465,7 @@ __Кнопки__:
 - `keepass` позволяет держать свои собственные пресеты в базе [KeePass](https://keepass.info/).  
   Подобным образом можно организовать работу и с другими аналогичными утилитами.
 
+[ch.at]: https://github.com/Deep-ai-inc/ch.at
 [clarifai]: https://www.clarifai.com/products/model-inference
 [codestral]: https://console.mistral.ai/codestral
 [cloudflare]: https://developers.cloudflare.com/workers-ai/models/
