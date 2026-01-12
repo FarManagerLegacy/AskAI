@@ -1,0 +1,12 @@
+DeepSeek (distilled), gpt-oss, Llama-4-Scout, Qwen, ...
+--Claim $5 free credits
+--https://www.nscale.com/product/serverless
+
+--https://docs.nscale.com/changelog/changelog
+--https://docs.nscale.com/docs/faqs/deprecations
+
+--https://docs.nscale.com/docs/use-cases/chat
+--https://docs.nscale.com/api-reference/inference/create-chat-completion
+apibase="https://inference.api.nscale.com/v1"
+apikey=win.GetEnv"NSCALE_TOKEN" or "set NSCALE_TOKEN env variable!"
+model="openai/gpt-oss-120b"

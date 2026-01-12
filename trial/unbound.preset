@@ -1,0 +1,12 @@
+--Anthropic, Gemini, Grok, OpenAI,
+--DeepSeek, GLM, gpt-oss, Kimi, Qwen
+
+--$1
+--https://getunbound.ai/
+
+--https://docs.getunbound.ai/integrations/api-reference
+apibase="https://api.getunbound.ai/v1"
+apikey=win.GetEnv"UNBOUND_API_KEY" or "set UNBOUND_API_KEY env variable!"
+
+--https://gateway.getunbound.ai/models
+model="x-ai/grok-4-fast"

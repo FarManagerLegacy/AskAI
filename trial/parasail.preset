@@ -1,0 +1,15 @@
+--DeepSeek, gemma, GLM, gpt-oss, Kimi, Llama, Mistral, Qwen, ...
+--Apply for $10 in Free Credits [Credit card required!]
+
+--https://www.saas.parasail.io/home
+--https://docs.parasail.io/parasail-docs/serverless/serverless
+--https://docs.parasail.io/parasail-docs/billing/rate-limits-limitations
+
+apibase="https://api.parasail.io/v1"
+apikey=win.GetEnv"PARASAIL_API_KEY" or "set PARASAIL_API_KEY env variable!"
+model="parasail-deepseek-r1"
+
+--https://docs.parasail.io/parasail-docs/serverless/model-specific-parameters
+extra_body={
+  "chat_template_kwargs: thinking: true",
+}

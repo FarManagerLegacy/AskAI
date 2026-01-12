@@ -1,0 +1,25 @@
+--Anthropic Claude, Google Gemini, Meta Llama, OpenAI, xAI Grok
+--DeepSeek, gpt-oss, MiniMax, Alibaba Qwen, Zhipu GLM
+
+--Verified Free Tier (billing method added) — you get 50,000 free credits
+--https://docs.aimlapi.com/faq/free-tier#via-api
+--https://aimlapi.com/ai-ml-api-pricing
+--10 requests / hour
+
+--AI/ML API
+--https://docs.aimlapi.com/quickstart/supported-sdks#shell
+--https://docs.aimlapi.com/api-references/text-models-llm
+apibase="https://api.aimlapi.com/v1"
+
+--https://aimlapi.com/app/keys/
+apikey=win.GetEnv"AIMLAPI_KEY" or "set AIMLAPI_KEY env variable!"
+
+--https://docs.aimlapi.com/api-references/model-database#full-list-of-model-ids
+--curl https://api.aimlapi.com/models/with-details | jq "[.[] | select(.isFree) | .name]"
+model={
+  "google/gemma-3-4b-it",
+  "google/gemma-3-12b-it",
+  "google/gemma-3n-e4b-it",
+}
+
+modelsMeta='filterFn: (model) -> model.type=="chat-completion"'

@@ -1,0 +1,27 @@
+--DeepSeep, ERNIE, Kimi, Qwen, gpt-oss, ...
+--Free credit for new users: https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+--Validity period: 3 months
+
+--https://ai.baidu.com/
+--https://cloud.baidu.com/doc/qianfan/index.html
+--Inference Service API V2: https://cloud.baidu.com/doc/qianfan/s/qmh4sv5vi
+
+--Text generation: https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb
+apibase="https://qianfan.baidubce.com/v2"
+--https://cloud.baidu.com/doc/qianfan-docs/s/Mm8r1mejk
+--apibase="https://qianfan.gz.baidubce.com/v2"
+
+--https://console.bce.baidu.com/qianfan/ais/console/apiKey
+--https://console.bce.baidu.com/iam/#/iam/apikey/list
+apikey=win.GetEnv"QIANFAN_AK" or "set QIANFAN_AK env variable!"
+
+--https://cloud.baidu.com/doc/qianfan/s/rmh4stp0j
+--https://console.bce.baidu.com/qianfan/modelcenter/model/buildIn/list
+model="ernie-5.0-thinking-latest"
+
+--https://cloud.baidu.com/doc/qianfan-docs/s/Wm95lyynv
+extra_body={
+  "enable_thinking: true",
+  "thinking_budget: 100", --min
+  'thinking_strategy: "short_think" --"chain_of_draft"',
+}
