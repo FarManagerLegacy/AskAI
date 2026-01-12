@@ -1,0 +1,27 @@
+--500,000 Tokens free quota per day
+--https://longcat.chat/platform/docs/#daily-free-quota
+--https://longcat.chat/platform/docs/ChangeLog.html
+--https://x.com/Meituan_LongCat
+
+--https://www.longcatai.org/
+--https://longcat.chat/
+--https://longcat.chat/platform
+
+--https://longcat.chat/platform/docs/APIDocs.html#endpoints
+apibase="https://api.longcat.chat/openai/v1"
+
+--https://longcat.chat/platform/api_keys
+apikey=win.GetEnv"LONGCAT_API_KEY" or "set LONGCAT_API_KEY env variable!"
+
+--https://longcat.chat/platform/docs/#supported-models
+model={
+  "LongCat-Flash-Chat",
+  "LongCat-Flash-Thinking",
+}
+
+modelsMeta="none"
+
+extra_body={
+  "",
+  "enable_thinking: true", --defaults to false, only effective for the LongCat-Flash-Thinking model
+}
