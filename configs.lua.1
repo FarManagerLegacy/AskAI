@@ -235,9 +235,10 @@ local function _readLines (args, filter, field)
     end
     local pipe,err = io.popen(args)
     if not pipe then return nil, err end
-    local list = {}
+    local list,state = {},{}
     for line in pipe:lines() do
-      table.insert(list, not filter and line or filter(line))
+      table.insert(list, not filter and line or filter(line,state))
+      if state.finished then break end
     end
     pipe:close()
     return list, field

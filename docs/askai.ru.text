@@ -318,6 +318,9 @@ __Кнопки__:
 - [gh models] - GitHub Models extension.  
   Инструкции по установке см. на домашней странице.  
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
+- [Copilot CLI] - GitHub Copilot CLI.  
+  Стартует медленно!  
+  Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/copilot/get-started/plans#comparing-copilot-plans).
 - [tgpt], [pytgpt] - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
 - Прочие утилиты - [aichat], [chatgpt-cli], [mods], [sgpt], [smartcat] - работают с [OpenAI API] (и совместимыми).  
@@ -332,6 +335,7 @@ __Кнопки__:
 [Обзор утилит]: #ProvidersMenu
 [Gemini CLI]: https://github.com/google-gemini/gemini-cli
 [gh models]: https://github.com/github/gh-models
+[Copilot CLI]: https://github.com/features/copilot/cli
 [tgpt]: https://github.com/aandrew-me/tgpt
 [pytgpt]: https://github.com/Simatwa/python-tgpt
 [aichat]: https://github.com/sigoden/aichat
