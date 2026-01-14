@@ -250,6 +250,9 @@
 - [gh models](https://github.com/github/gh-models) - GitHub Models extension.  
   Инструкции по установке см. на домашней странице.  
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
+- [Copilot CLI](https://github.com/features/copilot/cli) - GitHub Copilot CLI.  
+  Стартует медленно!  
+  Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/copilot/get-started/plans#comparing-copilot-plans).
 - [tgpt](https://github.com/aandrew-me/tgpt), [pytgpt](https://github.com/Simatwa/python-tgpt) - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
 - Прочие утилиты - [aichat](https://github.com/sigoden/aichat), [chatgpt-cli](https://github.com/kardolus/chatgpt-cli), [mods](https://github.com/charmbracelet/mods), [sgpt](https://github.com/tbckr/sgpt), [smartcat](https://github.com/efugier/smartcat) - работают с [OpenAI API](https://platform.openai.com/docs/api-reference) (и совместимыми).  

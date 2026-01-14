@@ -95,7 +95,8 @@ local function main (opts)
       cfg.params[name] = i
     end
   end
-  local canSession = cfg.info.clearSession or cfg.info.sessionFile or cfg.info.historyName
+  local canClearSession = cfg.info.clearSession or cfg.info.sessionFile or cfg.info.historyName
+  local canSession = cfg.params.session or canClearSession
 
   local width = 86
   local flags = O.smallDlg and F.FDLG_SMALLDIALOG or 0
@@ -398,9 +399,6 @@ local function main (opts)
     State.wrapAt = II.edtWrap[DATA]
     local outputFilename = utils.pathjoin(Common.tempdir, ("Ask AI%s.md")
                                           :format(fmtProfile".%s"))
-    if State.useSession==2 and not isOpened(outputFilename) then
-      configs.clearSession(cfg.info, SESSION)
-    end
     local context = opts.context
     if not cfg.params.prompt then
       local p = II.prompt[DATA]
@@ -413,9 +411,19 @@ local function main (opts)
       end
       context = p
     end
+    local session = SESSION
+    if State.useSession==0 then
+      session = ""
+    elseif State.useSession==2 and not isOpened(outputFilename) then
+      if canClearSession then
+        configs.clearSession(cfg.info, SESSION)
+      else
+        session = ""
+      end
+    end
     local base = {
       context=context,
-      session=State.useSession==0 and "" or SESSION,
+      session=session,
       stream=State.useStream==1,
     }
     local args = {}
