@@ -245,6 +245,30 @@ local function _readLines (args, filter, field)
   end
 end
 
+local function clearSessionCmd (self, session)
+  win.system(self.clearSessionCmd:format(session))
+end
+local function clearSessionFile (self, session)
+  local pathname = self.sessionFile:format(session)
+  win.DeleteFile(pathname)
+end
+local function clearSessionHistory (self)
+  export.setHistory(self.historyName, nil)
+end
+local function clearSession (info)
+  if info.clearSession then
+    if type(info.clearSession)=="function" then
+      return info.clearSession
+    end
+    info.clearSessionCmd = info.clearSession
+    return clearSessionCmd
+  elseif info.sessionFile then
+    return clearSessionFile
+  elseif info.historyName then
+    return clearSessionHistory
+  end
+end
+
 local function assert (success, ...) -- to prevent "error object is not a string"
   if success then return success, ... end
   error(...==nil and "assertion failed!" or tostring(...), 2)
@@ -297,6 +321,7 @@ local function _loadCfg (pathname, filename)
   if env.hidden then
     toMap(env.hidden)
   end
+  env.clearSession = clearSession(env)
   return {
     applyParamsFn = applyParamsFn,
     authFn = authFn,
@@ -309,22 +334,6 @@ local function _loadCfg (pathname, filename)
   }
 end
 loadCfg = utils.cached(_loadCfg)
-
-local function clearSession (info, session)
-  if info.clearSession then
-    if type(info.clearSession)=="function" then
-      info.clearSession(session)
-    else
-      local cmd = info.clearSession:format(session)
-      win.system(cmd)
-    end
-  elseif info.sessionFile then
-    local pathname = info.sessionFile:format(session)
-    win.DeleteFile(pathname)
-  elseif info.historyName then
-    export.setHistory(info.historyName, nil)
-  end
-end
 
 local function toggleHidden (items)
   for _,item in ipairs(items) do

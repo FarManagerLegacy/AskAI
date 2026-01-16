@@ -1,6 +1,6 @@
 ﻿local Common = ... -- name, utils, tempdir, cfgpath
 local State = Common.State
-local utils = Common.utils -- HelpTopic, clearSession, HK
+local utils = Common.utils -- HelpTopic, HK
 local O = Common.O
 
 local F = far.Flags
@@ -95,8 +95,7 @@ local function main (opts)
       cfg.params[name] = i
     end
   end
-  local canClearSession = cfg.info.clearSession or cfg.info.sessionFile or cfg.info.historyName
-  local canSession = cfg.params.session or canClearSession
+  local canSession = cfg.params.session or cfg.info.clearSession
 
   local width = 86
   local flags = O.smallDlg and F.FDLG_SMALLDIALOG or 0
@@ -182,7 +181,7 @@ local function main (opts)
   end
   II:add {F.DI_BUTTON, "‹&-›", nil, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(_,hDlg,idx)
-      configs.clearSession(cfg.info, SESSION)
+      cfg.info:clearSession(SESSION)
       local item = hDlg:GetDlgItem(idx)
       item[FLAGS] = bit64.bor(item[FLAGS], F.DIF_DISABLE)
       hDlg:SetDlgItem(idx, item)
@@ -415,8 +414,8 @@ local function main (opts)
     if State.useSession==0 then
       session = ""
     elseif State.useSession==2 and not isOpened(outputFilename) then
-      if canClearSession then
-        configs.clearSession(cfg.info, SESSION)
+      if cfg.info.clearSession then
+        cfg.info:clearSession(SESSION)
       else
         session = ""
       end
