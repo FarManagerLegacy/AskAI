@@ -420,6 +420,8 @@ __Кнопки__:
 
 - Не требуют ключа (`apikey`) эти пресеты:
    - [ch.at] (заявлена gpt-4o)
+   - [opencode] (`gpt-5-nano`, `big-pickle`, `grok-code`, `minimax-m2.1-free`, `glm-4.7-free`)  
+     Доступны и лучшие модели, но уже с ключом и за деньги (Anthropic, Gemini, OpenAI, Kimi, Qwen)
    - Следующие пресеты из поддиректории `trial/`:
      - [deepinfra] (всевозможные OpenSource модели):
        some anonymous usage allowed
@@ -487,6 +489,7 @@ __Кнопки__:
 [mistral]: https://mistral.ai/models
 [moark]: https://moark.ai/
 [nvidia]: https://build.nvidia.com/
+[opencode]: https://opencode.ai/docs/zen/#pricing
 [openrouter]: https://openrouter.ai/models?q=:free
 [ovh]: https://endpoints.ai.cloud.ovh.net/
 [poe]: https://poe.com/

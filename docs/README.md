@@ -309,6 +309,8 @@
 
 - Не требуют ключа (`apikey`) эти пресеты:
   - [ch.at](https://github.com/Deep-ai-inc/ch.at) (заявлена gpt-4o)
+  - [opencode](https://opencode.ai/docs/zen/#pricing) (`gpt-5-nano`, `big-pickle`, `grok-code`, `minimax-m2.1-free`, `glm-4.7-free`)  
+    Доступны и лучшие модели, но уже с ключом и за деньги (Anthropic, Gemini, OpenAI, Kimi, Qwen)
   - Следующие пресеты из поддиректории `trial/`:
     - [deepinfra](https://deepinfra.com/models/text-generation) (всевозможные OpenSource модели):
       some anonymous usage allowed
