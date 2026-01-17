@@ -255,6 +255,30 @@ local function clearSession (info)
   end
 end
 
+local function showSessionState (self)
+  local historyName = self.historyName
+  if Common.O.debug then
+    historyName = historyName.."_debug"
+  end
+  local session = State[historyName]
+  if session and next(session) then
+    require"le"(session)
+  end
+end
+local function showSessionFile (self, session)
+  local pathname = self.sessionFile:format(session)
+  if win.GetFileAttr(pathname) then
+    editor.Editor(pathname)
+  end
+end
+local function showSession (info)
+  if info.historyName then
+    return showSessionState
+  elseif info.sessionFile then
+    return showSessionFile
+  end
+end
+
 local function assert (success, ...) -- to prevent "error object is not a string"
   if success then return success, ... end
   error(...==nil and "assertion failed!" or tostring(...), 2)
@@ -276,18 +300,6 @@ local function _loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
   local applyParamsFn, getModels, authFn = setfenv(fn, env)(export)
-  if env.historyName then
-    env.showSession = env.showSession or function () --todo
-      local historyName = env.historyName
-      if Common.O.debug then
-        historyName = historyName.."_debug"
-      end
-      local session = State[historyName]
-      if session and next(session) then
-        require"le"(session)
-      end
-    end
-  end
   if not env.exe then
     env.url = "https://github.com/FarManagerLegacy/LuaBinaries"
   end
@@ -304,6 +316,7 @@ local function _loadCfg (pathname, filename)
     toMap(env.hidden)
   end
   env.clearSession = clearSession(env)
+  env.showSession = env.showSession or showSession(env)
   return {
     applyParamsFn = applyParamsFn,
     authFn = authFn,

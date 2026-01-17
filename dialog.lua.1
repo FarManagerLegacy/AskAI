@@ -160,12 +160,7 @@ local function main (opts)
     onkey=function(_,_,_,key)
       if key=="F3" then
         if cfg.info.showSession then
-          cfg.info.showSession()
-        elseif cfg.info.sessionFile then
-          local pathname = cfg.info.sessionFile:format(SESSION)
-          if win.GetFileAttr(pathname) then
-            viewer.Viewer(pathname)
-          end
+          cfg.info:showSession(SESSION)
         end
         return true
       end
