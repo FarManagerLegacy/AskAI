@@ -7,20 +7,6 @@ local F = far.Flags
 
 local _isWindows = package.config:sub(1,1)=="\\"
 
-local expandEnv
-if _isWindows then
-  function expandEnv (path)
-    return (path:gsub("%%([%w_]-)%%", win.GetEnv))
-  end
-else
-  function expandEnv (path)
-    if path:sub(1,1)=="~" then
-      return win.GetEnv"HOME"..path:sub(2)
-    end
-    return path
-  end
-end
-
 local function _quote (str)
   return '"'..str..'"'
 end
@@ -284,16 +270,12 @@ local mt = setmetatable({
   _quote=_quote,
   _readLines=_readLines,
   _tmpfile=_tmpfile,
+  _env=win.GetEnv,
 }, { __index=_G })
 local function _loadCfg (pathname, filename)
   local env = setmetatable({}, { __index=mt })
   local fn = assert(loadfile(pathname))
   local applyParamsFn, getModels, authFn = setfenv(fn, env)(export)
-  for _,param in ipairs{"config", "sessionFile"} do
-    if env[param] then
-      env[param] = expandEnv(env[param])
-    end
-  end
   if env.historyName then
     env.showSession = env.showSession or function () --todo
       local historyName = env.historyName
