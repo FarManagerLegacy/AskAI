@@ -167,13 +167,7 @@ local function main (opts)
     end,
     name="chkUseSession"
   }
-  local sessionExists = cfg.info.clearSession
-  if cfg.info.sessionFile then
-    sessionExists = win.GetFileAttr(cfg.info.sessionFile:format(SESSION))
-  elseif cfg.info.historyName then
-    sessionExists = State[cfg.info.historyName]
-    sessionExists = sessionExists and next(sessionExists)
-  end
+  local sessionExists = cfg.info:sessionExists(SESSION)
   II:add {F.DI_BUTTON, "‹&-›", nil, F.DIF_BTNNOCLOSE +F.DIF_NOBRACKETS +(sessionExists and 0 or F.DIF_DISABLE),
     onclick=function(_,hDlg,idx)
       cfg.info:clearSession(SESSION)
