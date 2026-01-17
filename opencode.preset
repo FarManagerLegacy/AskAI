@@ -1,0 +1,18 @@
+-- Paid: Anthropic, Gemini, OpenAI, Kimi, Qwen
+-- Free: gpt-5-nano
+-- currently free on OpenCode for a limited time. The team is using this time to collect feedback and improve the model(s):
+-- big-pickle, grok-code, minimax-m2.1-free, glm-4.7-free
+--https://opencode.ai/docs/zen/#pricing
+
+apibase="https://opencode.ai/zen/v1"
+
+--https://opencode.ai/auth
+apikey=win.GetEnv"ZEN_API_KEY" -- Required for paid models
+
+model={
+  "gpt-5-nano",
+  "big-pickle",
+  "grok-code",
+  "minimax-m2.1-free",
+  "glm-4.7-free",
+}
