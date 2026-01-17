@@ -279,6 +279,16 @@ local function showSession (info)
   end
 end
 
+local function sessionExists (self, session)
+  if self.sessionFile then
+    return win.GetFileAttr(self.sessionFile:format(session)) and true
+  elseif self.historyName then
+    local history = State[self.historyName]
+    return history and next(history) and true
+  end
+  return self.clearSession and true
+end
+
 local function assert (success, ...) -- to prevent "error object is not a string"
   if success then return success, ... end
   error(...==nil and "assertion failed!" or tostring(...), 2)
@@ -317,6 +327,7 @@ local function _loadCfg (pathname, filename)
   end
   env.clearSession = clearSession(env)
   env.showSession = env.showSession or showSession(env)
+  env.sessionExists = sessionExists
   return {
     applyParamsFn = applyParamsFn,
     authFn = authFn,
