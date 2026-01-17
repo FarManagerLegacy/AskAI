@@ -1,5 +1,6 @@
 -- 2,000 requests per day with no token limits
 -- 60 requests per minute rate limit
+-- https://qwenlm.github.io/qwen-code-docs/en/users/configuration/auth/#option-1-qwen-oauth-recommended--free-
 -- https://github.com/QwenLM/qwen-code
 
 apibase="https://portal.qwen.ai/v1"
@@ -25,6 +26,7 @@ apikey=function (cur)
   end
 end
 
+--https://github.com/QwenLM/qwen-code/blob/main/packages/core/src/models/constants.ts#L102
 model={
   --"qwen3-coder-plus",
   "coder-model",  --qwen3-coder-plus-2025-09-23

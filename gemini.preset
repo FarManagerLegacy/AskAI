@@ -1,5 +1,8 @@
+--Free-tier limits: 20 RPD per model
 --https://ai.google.dev/gemini-api/docs/pricing#free
+--https://ai.google.dev/gemini-api/docs/rate-limits#free-tier
 --https://aistudio.google.com/usage?timeRange=last-28-days&tab=rate-limit
+--https://ai.google.dev/gemini-api/docs/changelog
 
 --https://ai.google.dev/gemini-api/docs/openai
 --https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/
@@ -7,7 +10,6 @@
 
 apibase="https://generativelanguage.googleapis.com/v1beta/openai"
 apikey=win.GetEnv"GEMINI_API_KEY" or "set GEMINI_API_KEY env variable!"
---https://ai.google.dev/gemini-api/docs/rate-limits#free-tier
 model="gemini-flash-latest"
 
 --https://ai.google.dev/gemini-api/docs/openai#extra-body
