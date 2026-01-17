@@ -1,6 +1,9 @@
 --Trial API key available
 --https://cohere.com/pricing
---https://docs.cohere.com/docs/rate-limits
+--1,000 API calls a month.
+--https://docs.cohere.com/docs/rate-limits#trial-key-limitations
+--https://github.com/cohere-ai/cohere-developer-experience/blob/main/fern/pages/going-to-production/rate-limits.mdx
+--https://docs.cohere.com/docs/cohere-faqs
 --https://docs.cohere.com/changelog
 
 --https://docs.cohere.com/docs/compatibility-api

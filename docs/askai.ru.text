@@ -289,7 +289,7 @@ __Кнопки__:
 - Верхний раздел списка содержит "нативные" конфигурации, работающие с сетью средствами Lua.  
   Раздел не будет отображаться, если отсутствуют необходимые модули, см. [Установка].  
   Стандартные конфигурации (см. [обзор][Обзор сервисов]):
-  _OpenAI-compatible_, _Google Gemini_, _Cohere_.
+  _OpenAI-compatible_, _Cohere_, _Google_: **Gemini**, **Gemini CLI API**, **Antigravity API**.
 - Нижний раздел списка содержит определения, использующие внешние утилиты (см. обзор ниже).  
   По умолчанию список содержит только установленные утилиты, полный список -- по `Ctrl+H`.
   - Утилиты необходимо скачать самостоятельно (соответствующий сайт открывается по `Alt+F1` из меню).
@@ -339,7 +339,7 @@ __Кнопки__:
 [sgpt]: https://github.com/tbckr/sgpt
 [smartcat]: https://github.com/efugier/smartcat
 [OpenAI API]: https://platform.openai.com/docs/api-reference
-[Gemini CLI]: https://github.com/google-gemini/gemini-cli
+[Gemini CLI]: https://geminicli.com/
 [Copilot CLI]: https://github.com/features/copilot/cli
 
 
@@ -390,18 +390,34 @@ __Кнопки__:
 -----------------
 
 - [OpenAI] -- оригинальный разработчик _ChatGPT_.  
-  Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью "нативной" конфигурации,
-  так и называющейся "_OpenAI-compatible_".
-- Другие _OpenAI_-совместимые: [Mistral AI], [xAI] _Grok_, [AI21 labs] _Jamba_.  
-  К этой же категории относится целый ряд провайдеров, предоставляющих доступ к OpenSource-моделям.
-- Провайдеры с собственным API, такие как [Google] _Gemini_, [Anthropic] _Claude_, [Cohere] _Command_ и т.д.  
-  Для поддержки в _AskAI_ требуется соответствующая "нативная" конфигурация.  
+  Работа с этим апи возможна как с помощью сторонних утилит, так и с помощью "нативной" конфигурации.
+- Другие _OpenAI_-совместимые: [Mistral AI], [xAI] _Grok_, и несметное количество других провайдеров.
+- Провайдеры с собственным API, такие как [Google] _Gemini_, [Anthropic] _Claude_, [Cohere] _Command_,
+  требуют поддержки посредством соответствующей "нативной" конфигурации.  
   Кроме того существуют прокси сервисы для конвертации API в совместимый с _OpenAI_ формат,
   некоторые доступны онлайн, другие предназначены для локального использования.
 
+В комплекте идут следующие нативные конфигурации:
+
+- **OpenAI-compatible**  
+  В комплекте поставки идут готовые **пресеты** для множества совместимых сервисов,
+  подробнее они рассматриваются в следующем разделе.
+- **Cohere**: бесплатно 1,000 запросов в месяц.
+- **Google Gemini**: бесплатный доступ к моделям уровня до `gemini-3-flash-preview`.  
+  _Free-tier_ лимиты непостоянны, и сейчас они у меня например составляют (для каждой модели отдельно)
+  по 20 запросов в день.
+  - **Gemini CLI API**: на основе внутреннего API [Gemini CLI]; логин через боаузер.  
+    Предоставляется бесплатный доступ к моделям уровня до `gemini-3-pro-preview`.  
+    Дневная квота: 1000 запросов.
+  - **Antigravity API**: использует внутренние API _Google_ [Antigravity]; логин через боаузер.  
+    Предоставляется бесплатный доступ к моделям уровня до `gemini-3-pro-high`,
+    а также `claude-sonnet-4-5`/`claude-opus-4-5-thinking` от [Anthropic].  
+    Лимиты изменчивы, и конкретных цифр не указано, но в любом случае больше чем
+    при использовании **Google Gemini** Free-tier.
+
 [Mistral AI]: https://mistral.ai/
-[AI21 labs]: https://www.ai21.com
 [Cohere]: https://cohere.com/command
+[Antigravity]: https://antigravity.google/
 
 
 Обзор [пресетов][Пресеты] для сервисов совместимых с [OpenAI API]
@@ -433,7 +449,8 @@ __Кнопки__:
    - [gemini] от _Google_
    - [gitee.ai] / [moark] (DeepSeek, ERNIE, gemma, GLM, gpt-oss, Kimi, MiniMax, Qwen, Yi, ...):
      Бесплатно: 100 запросов в день.
-   - [github-copilot] (модели от _OpenAI_, _Anthropic_, _Google_, _xAI_)
+   - [github-copilot] (модели от _OpenAI_, _Anthropic_, _Google_, _xAI_)  
+     Авторизация через браузер.
    - [github-models] (модели от _Cohere_, _DeepSeek_, _Meta_, _Mistral AI_, _Microsoft_, _OpenAI_, _xAI_ и др.)
    - [groq] (OpenSource-модели до 120b: gpt-oss, llama-4-maverick, kimi-k2, qwen, ...)
    - [iflow] (китайские OpenSource-модели: DeepSeek, GLM, Kimi, Qwen, TStars)
@@ -443,6 +460,9 @@ __Кнопки__:
    - [poe] (все популярные модели + пользовательские "боты"): 3000 поинтов в день на бесплатном плане
    - [pollinations.ai] (Claude, Gemini, Grok, Llama, Mistral, Nova, OpenAI, Perplexity,
      DeepSeek, Kimi, Qwen, [...](https://gen.pollinations.ai/models))
+   - [qwen-code-api] (`qwen3-coder-plus`, `qwen3-vl-plus`):
+     Бесплатно 2000 запросов в день.  
+     Авторизация через браузер.
    - [sambanova] (DeepSeek, gpt-oss, Llama, Qwen, ...)
    - [vercel] (модели от _Anthropic_, _Google_, _Meta_, _Mistral AI_, _OpenAI_, _xAI_,
      и множество других, включая китайские OpenSource модели)  
@@ -491,6 +511,7 @@ __Кнопки__:
 [ovh]: https://endpoints.ai.cloud.ovh.net/
 [poe]: https://poe.com/
 [pollinations.ai]: https://pollinations.ai/
+[qwen-code-api]: https://github.com/QwenLM/qwen-code
 [sambanova]: https://cloud.sambanova.ai/pricing
 [siliconflow]: https://docs.siliconflow.cn/reference/chat-completions-1
 [vercel]: https://vercel.com/ai-gateway
