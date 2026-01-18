@@ -8,7 +8,7 @@ local F = far.Flags
 local _isWindows = package.config:sub(1,1)=="\\"
 
 local function _quote (str)
-  return '"'..str..'"'
+  return str and '"'..str..'"' or ""
 end
 
 local function _optional (...)
