@@ -304,23 +304,16 @@ __Кнопки__:
 Однако в некоторых случаях может оказаться проще или удобнее работать и через утилиты, например:
 
 - если соответствующая утилита уже есть (и используется из командной строки);
-- если утилита уже содержит настройки провайдеров (как `gemini`, `gh models`, `tgpt`, `pytgpt`);
+- если утилита уже содержит настройки провайдеров (как `gh models`, `tgpt`, `pytgpt`);
 - если пользователю проще скачать утилиту, чем выполнить другие инструкции по [установке][Установка].
 
 
 Обзор утилит
 ------------
 
-- [Gemini CLI] - ещё один способ доступа к моделям от [Google].  
-  В отличии от других вариантов бесплатно предоставляется доступ к `gemini-2.5-pro` (до 1000 запросов в день).  
-  Простой логин через браузер.  
-  Требуется [Node.js](https://nodejs.org/en/download).
 - [gh models] - GitHub Models extension.  
   Инструкции по установке см. на домашней странице.  
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
-- [Copilot CLI] - GitHub Copilot CLI.  
-  Стартует медленно!  
-  Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/copilot/get-started/plans#comparing-copilot-plans).
 - [tgpt], [pytgpt] - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
 - Прочие утилиты - [aichat], [chatgpt-cli], [mods], [sgpt], [smartcat] - работают с [OpenAI API] (и совместимыми).  
@@ -330,12 +323,14 @@ __Кнопки__:
   или они могут быть доступны сразу в [диалоге][Диалог],
   если они передаются как __аргументы__ командной строки, или через __переменные окружения__.  
   Для заполнения параметров в диалоге можно использовать [пресеты], идущие в комплекте (см. [обзор][Обзор пресетов]).
+- Дополнительно: в директории `extra` есть конфигурации для ещё нескольких утилит, таких как [Gemini CLI], [Copilot CLI], ...  
+  При необходимости их можно использовать поместив в основную директорию (лучше сделать ссылку).  
+  Отделены они поскольку не очень удобны для использования в **Ask AI** (например долго стартуют).  
+  Обычно они имеют соответствия в "нативных" конфигурациях.
 
 [Провайдеры]: #ProvidersMenu
 [Обзор утилит]: #ProvidersMenu
-[Gemini CLI]: https://github.com/google-gemini/gemini-cli
 [gh models]: https://github.com/github/gh-models
-[Copilot CLI]: https://github.com/features/copilot/cli
 [tgpt]: https://github.com/aandrew-me/tgpt
 [pytgpt]: https://github.com/Simatwa/python-tgpt
 [aichat]: https://github.com/sigoden/aichat
@@ -344,6 +339,8 @@ __Кнопки__:
 [sgpt]: https://github.com/tbckr/sgpt
 [smartcat]: https://github.com/efugier/smartcat
 [OpenAI API]: https://platform.openai.com/docs/api-reference
+[Gemini CLI]: https://github.com/google-gemini/gemini-cli
+[Copilot CLI]: https://github.com/features/copilot/cli
 
 
 Обзор онлайн-сервисов {#Services}

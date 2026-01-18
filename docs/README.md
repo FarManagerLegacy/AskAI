@@ -238,21 +238,14 @@
 Однако в некоторых случаях может оказаться проще или удобнее работать и через утилиты, например:
 
 - если соответствующая утилита уже есть (и используется из командной строки);
-- если утилита уже содержит настройки провайдеров (как `gemini`, `gh models`, `tgpt`, `pytgpt`);
+- если утилита уже содержит настройки провайдеров (как `gh models`, `tgpt`, `pytgpt`);
 - если пользователю проще скачать утилиту, чем выполнить другие инструкции по [установке](#установка).
 
 ### Обзор утилит
 
-- [Gemini CLI](https://github.com/google-gemini/gemini-cli) - ещё один способ доступа к моделям от [Google](https://ai.google.dev/).  
-  В отличии от других вариантов бесплатно предоставляется доступ к `gemini-2.5-pro` (до 1000 запросов в день).  
-  Простой логин через браузер.  
-  Требуется [Node.js](https://nodejs.org/en/download).
 - [gh models](https://github.com/github/gh-models) - GitHub Models extension.  
   Инструкции по установке см. на домашней странице.  
   Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/github-models/prototyping-with-ai-models#rate-limits).
-- [Copilot CLI](https://github.com/features/copilot/cli) - GitHub Copilot CLI.  
-  Стартует медленно!  
-  Необходим аккаунт GitHub. Действуют [лимиты](https://docs.github.com/en/copilot/get-started/plans#comparing-copilot-plans).
 - [tgpt](https://github.com/aandrew-me/tgpt), [pytgpt](https://github.com/Simatwa/python-tgpt) - не требуют предварительной настройки.  
   Недостаток: не гарантирована стабильность (иногда требуется обновление утилит).
 - Прочие утилиты - [aichat](https://github.com/sigoden/aichat), [chatgpt-cli](https://github.com/kardolus/chatgpt-cli), [mods](https://github.com/charmbracelet/mods), [sgpt](https://github.com/tbckr/sgpt), [smartcat](https://github.com/efugier/smartcat) - работают с [OpenAI API](https://platform.openai.com/docs/api-reference) (и совместимыми).  
@@ -262,6 +255,10 @@
   или они могут быть доступны сразу в [диалоге](#диалог),
   если они передаются как **аргументы** командной строки, или через **переменные окружения**.  
   Для заполнения параметров в диалоге можно использовать [пресеты](#работа-с-пресетами), идущие в комплекте (см. [обзор](#обзор-онлайн-сервисов)).
+- Дополнительно: в директории `extra` есть конфигурации для ещё нескольких утилит, таких как [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Copilot CLI](https://github.com/features/copilot/cli), …  
+  При необходимости их можно использовать поместив в основную директорию (лучше сделать ссылку).  
+  Отделены они поскольку не очень удобны для использования в **Ask AI** (например долго стартуют).  
+  Обычно они имеют соответствия в “нативных” конфигурациях.
 
 ## Обзор онлайн-сервисов
 
