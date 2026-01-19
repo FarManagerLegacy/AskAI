@@ -1,0 +1,21 @@
+--Role-Play, Story-writing
+--Free credits: 200 monthly or 25 daily
+--https://dreamgen.com/docs/faq#is-dreamgen-free
+--https://dreamgen.com/account/usage
+--https://dreamgen.com/account/billing#model-credit-cost
+
+--https://v2.dreamgen.com/
+--https://dreamgen.com/docs/api#openai-compatible-apis
+apibase="https://v2.dreamgen.com/api/openai/v1"
+
+--https://dreamgen.com/account/api-keys
+apikey=win.GetEnv"DREAMGEN_API_KEY" or "set DREAMGEN_API_KEY env variable!"
+
+--https://dreamgen.com/docs/faq#what-are-the-different-dreamgen-models
+--https://huggingface.co/collections/dreamgen/
+model="lucid-v1-base"
+
+--https://dreamgen.com/docs/api#role-config-in-the-request-body
+extra_body={"",
+[[role_config: ...]],
+}

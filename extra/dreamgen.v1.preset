@@ -1,0 +1,4 @@
+--https://dreamgen.com/app
+apibase="https://dreamgen.com/api/openai/v1"
+apikey=win.GetEnv"DREAMGEN_API_KEY" or "set DREAMGEN_API_KEY env variable!"
+model="lucid-v1-extra-large/assistant"
