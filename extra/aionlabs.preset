@@ -1,0 +1,15 @@
+--Role-Play, Story-writing
+--Free : Best option for limited personal use and initial exploration. : $0/month : Low rate limits
+--https://www.aionlabs.ai/pricing/
+--https://www.aionlabs.ai/documentation/chat#rate-limits
+
+--https://www.aionlabs.ai/chat/
+
+--https://www.aionlabs.ai/documentation/
+apibase="https://api.aionlabs.ai/v1"
+
+--https://www.aionlabs.ai/users/api_keys/
+apikey=win.GetEnv"AIONLABS_API_KEY" or "set AIONLABS_API_KEY env variable!"
+
+--https://www.aionlabs.ai/documentation/chat#models
+model="aion-labs/aion-2.0"
