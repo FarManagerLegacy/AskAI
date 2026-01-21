@@ -55,7 +55,7 @@ local openUrl; do
       win.ShellExecute(nil,nil,url)
     end
   else
-    for _,fname in ipairs{"xdg-open","explorer.exe","open"} do
+    for _,fname in ipairs{"xdg-open","wslview","open"} do
       if 0==os.execute("which "..fname) then
         function openUrl (url)
           os.execute(("%s '%s'"):format(fname,url))
@@ -63,10 +63,14 @@ local openUrl; do
         break
       end
     end
-    openUrl = openUrl or function(url,fallback)
+    openUrl = openUrl or 0==os.execute("which cmd.exe") and function(url)
+      os.execute(('cmd.exe /c start "" "%s"'):format(url:gsub("&","^&")))
+    end or function(url,fallback)
       if fallback then fallback(url) end
       far.CopyToClipboard(url)
+      local handle = far.SaveScreen()
       far.Message(url, "Copied to clipboard")
+      far.RestoreScreen(handle)
     end
   end
 end
