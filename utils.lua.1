@@ -179,13 +179,15 @@ else -- far2m
       local section = "[SavedDialogHistory/"..name.."]"
       for line in file:lines() do
         if line==section then
-          local nextLine = file:read()
-          if nextLine then
-            local Lines = nextLine:match"Lines=(.+)"
-            if Lines then
-              local quoted = Lines:match'"(.+)"'
-              splitLines(quoted and quoted:gsub("\\.", unescape) or Lines, history)
-            end
+          local Lines
+          repeat
+            local nextLine = file:read()
+            if not nextLine or #nextLine==0 then break end
+            Lines = nextLine:match"^Lines=(.+)"
+          until Lines
+          if Lines then
+            local quoted = Lines:match'^"(.+)"$'
+            splitLines(quoted and quoted:gsub("\\.", unescape) or Lines, history)
           end
           break
         end
