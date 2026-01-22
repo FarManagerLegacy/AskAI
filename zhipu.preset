@@ -18,6 +18,7 @@ apikey=win.GetEnv"BIGMODEL_API_KEY" or "set BIGMODEL_API_KEY env variable!"
 model={
   --https://docs.bigmodel.cn/cn/guide/models/free
   --https://z.ai/blog/glm-4.6v
+  "glm-4.7-flash",
   "glm-4.6v-flash", "glm-4.1v-thinking-flash", "glm-4v-flash",
   "glm-4.5-flash", "glm-4-flash",
 
