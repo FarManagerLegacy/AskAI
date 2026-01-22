@@ -17,6 +17,7 @@ model={
   --Free models: 
   --https://docs.z.ai/guides/overview/pricing#text-models
   --https://z.ai/blog/glm-4.6v
+  "GLM-4.7-Flash",  --https://docs.z.ai/guides/llm/glm-4.7#glm-4-7-flash
   "GLM-4.6V-Flash", --https://docs.z.ai/guides/vlm/glm-4.6v#glm-4-6v-flash
   "GLM-4.5-Flash",  --https://docs.z.ai/guides/llm/glm-4.5#glm-4-5-flash
 }
