@@ -84,7 +84,7 @@ return function (dialog) --main
       end
       local getModels, fromHistory = cfg.getModels
       local SHIFT = 16 -- invert action (also for F6/ShiftF6)
-      local isFar3 = win.GetKeyState
+      local isFar3 = win.GetKeyState or false
       local invert = isFar3 and win.GetKeyState(SHIFT)
       if not cfg.getModels or (args.modelsMeta=="none" ~= invert) then
         if not II.model then return end
