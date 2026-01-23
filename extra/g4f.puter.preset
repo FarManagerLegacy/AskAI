@@ -1,4 +1,5 @@
-apibase="https://puter.g4f-dev.workers.dev"
+apibase="https://g4f.space/api/puter"
+--apibase="https://puter.g4f-dev.workers.dev"
 
 --https://puter.com/ --puter_auth_token` cookie
 apikey=win.GetEnv"PUTER_AUTH_TOKEN" or "set PUTER_AUTH_TOKEN env variable!"

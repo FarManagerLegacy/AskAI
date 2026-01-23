@@ -1,4 +1,2 @@
---https://g4f.dev/docs/ready_to_use.html
-apibase="https://g4f.dev/api/nvidia"
---apibase="https://g4f.dev/ai/nvidia"
-model="deepseek-ai/deepseek-r1-0528"
+apibase="https://g4f.space/api/nvidia"
+--apibase="https://g4f.space/api/nvidia.com"
