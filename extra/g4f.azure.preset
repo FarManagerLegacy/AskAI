@@ -1,11 +1,4 @@
 --https://ai.azure.com/
 --100KB size limitation.
 
-apibase="https://g4f.dev/api/azure"
---apibase="https://g4f.dev/ai/azure"
-
---https://discord.gg/qXA4Wf4Fsm
---https://g4f.dev/members.html
-apikey=win.GetEnv"G4F_API_KEY" or "set G4F_API_KEY env variable!"
-
-model="model-router3"
+apibase="https://g4f.space/api/azure"

@@ -1,6 +1,7 @@
---https://g4f.dev/docs/providers-and-models.html
+apibase="https://g4f.space/v1"
+--apibase="https://api.gpt4free.workers.dev/v1"
 
---https://g4f.dev/docs/ready_to_use.html
-apibase="https://g4f.dev/v1"
+--https://g4f.dev/members.html
+apikey=win.GetEnv"G4F_API_KEY"
 
 model="gpt-5.2"

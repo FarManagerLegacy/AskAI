@@ -1,5 +1,5 @@
-local title = "g4f.claude preset"
 local file = "g4f.claude.preset"
+local title = file
 local function input (id, prompt, name, fn)
   local guid = win.Uuid(id)
   local prompt1,prompt2 = ("Enter %s:"):format(prompt), ("%s required"):format(prompt)
@@ -16,8 +16,9 @@ local function input (id, prompt, name, fn)
   end
 end
 
+local base = "https://g4f.space/api"
 apibase=input("2562BE23-A0BC-4874-B80A-8BC0713F4E56", "organization ID (lastActiveOrg cookie)", "organization_id", function(organization_id)
-  return "https://g4f.dev/api/claude/"..organization_id
+  return base.."/claude/"..organization_id
 end)
 
 model={
