@@ -5,9 +5,6 @@ local cfgpath = Common.cfgpath
 local F = far.Flags
 
 -- menu ------------
-F.FMENU_SHOWSHORTBOX = F.FMENU_SHOWSHORTBOX or 0 -- not recent far2m
-F.FMENU_SHOWSINGLEBOX = F.FMENU_SHOWSINGLEBOX or 0
-
 local function toggleHidden (items)
   for _,item in ipairs(items) do
     if item.hidden~=nil then
