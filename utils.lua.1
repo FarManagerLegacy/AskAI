@@ -152,17 +152,29 @@ if far.CreateSettings then
     end
   end
 else -- far2m
-  local function splitLines (s,lines)
+  local function splitV1 (s,lines)
     local pos = 1
     local length = #s
     while pos<=length do
       local nlStart,nlEnd = string.find(s, '\n', pos)
-      local line = string.sub(s, pos, (nlStart or 0)-1)
-      lines[#lines+1] = line
+      lines[#lines+1] = string.sub(s, pos, (nlStart or 0)-1)
       if not nlStart then break end
       pos = nlEnd+1
     end
   end
+  local function splitV2 (s,lines)
+    local pos = 1
+    local length = #s
+    while pos<=length do
+      local _,lenEnd,len = string.find(s, "^%[(%d+)%]", pos)
+      if not len then break end --invalid
+      local lineStart = lenEnd+1
+      local lineEnd = lineStart+tonumber(len)-1
+      lines[#lines+1] = string.sub(s, lineStart, lineEnd)
+      pos = lineEnd+1
+    end
+  end
+  local splitLines = {["1"]=splitV1, ["2"]=splitV2}
   local unescape = {
     --https://github.com/shmuz/far2m/blob/b770d1fd61cfe703d3c68b2b8da94feefced0ad5/utils/src/KeyFileHelper.cpp#L169
     ["\\r"]="\r",
@@ -179,15 +191,17 @@ else -- far2m
       local section = "[SavedDialogHistory/"..name.."]"
       for line in file:lines() do
         if line==section then
-          local Lines
+          local Lines,Version
           repeat
             local nextLine = file:read()
             if not nextLine or #nextLine==0 then break end
-            Lines = nextLine:match"^Lines=(.+)"
-          until Lines
+            Lines = Lines or nextLine:match"^Lines=(.+)"
+            Version = Version or nextLine:match"^Version=(.+)"
+          until Lines and Version
           if Lines then
             local quoted = Lines:match'^"(.+)"$'
-            splitLines(quoted and quoted:gsub("\\.", unescape) or Lines, history)
+            Lines = quoted and quoted:gsub("\\.", unescape) or Lines
+            splitLines[Version or "1"](Lines, history)
           end
           break
         end
