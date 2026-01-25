@@ -1,4 +1,6 @@
-apibase="https://g4f.space/api/ollama"
---apibase="https://ollama.g4f-dev.workers.dev"
-apikey=win.GetEnv"OLLAMA_API_KEY" --https://ollama.com/settings/keys
+--apibase="https://g4f.space/api/ollama"
+apibase="https://ollama.g4f-dev.workers.dev"
+
+--https://ollama.com/settings/keys
+apikey=win.GetEnv"OLLAMA_API_KEY" or "set OLLAMA_API_KEY env variable!"
 model="deepseek-v3.1:671b"

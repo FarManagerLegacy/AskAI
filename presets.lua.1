@@ -171,16 +171,20 @@ return function (dialog)
       local preset = choosePreset(II, cfg.info)
       if preset then
         hDlg:EnableRedraw(0)
-        local secondary = {}
+        local secondary,primary = {},{}
         for k,v in pairs(preset) do
           local item = II[k]
           local dependants = cfg.info.sets and cfg.info.sets[k]
           if dependants then
+            local cur = hDlg:GetText(item.idx)
             if type(v)=="function" then
-              v = _pcall(v)
+              v = _pcall(v,cur)
               if not v then goto exitPresets end
             end
-            if v~=hDlg:GetText(item.idx) then
+            if v==cur then
+              primary[k] = cur
+            else
+              primary[k] = v
               hDlg:SetText(item.idx, v)
               hDlg:AddHistory(item.idx, v)
               dialog.processSetsHistories(hDlg, v, dependants)
@@ -194,7 +198,7 @@ return function (dialog)
           local exV = hDlg:GetText(item.idx)
           local isFn = type(v)=="function"
           if isFn then
-            v = _pcall(v, exV)
+            v = _pcall(v, exV, primary)
             if not v then goto continue end
           end
           if type(v)=="table" then

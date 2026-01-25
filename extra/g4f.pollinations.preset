@@ -1,5 +1,0 @@
---https://g4f.space/api/pollinations/account/balance
-apibase="https://g4f.space/api/pollinations"
---apibase="https://g4f.space/api/pollinations.ai"
---apibase="https://g4f.space/api/nectar"
-model="openai-large"
