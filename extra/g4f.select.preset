@@ -1,0 +1,101 @@
+--https://discord.gg/qXA4Wf4Fsm
+--https://g4f.dev/docs/ready_to_use.html
+--https://g4f.dev/docs/providers-and-models.html
+--https://g4f.dev/docs/proxy.html
+--https://g4f.dev/dist/js/providers.json
+--https://dna-subjects-billing-scuba.trycloudflare.com/backend-api/v2/providers
+--https://dna-subjects-billing-scuba.trycloudflare.com/backend-api/v2/models
+--curl https://g4f.space/custom/api/servers/public|jq -r .servers[].label
+
+local providers = {
+  "auto",
+
+  "airforce", --"api.airforce",
+
+  --https://ai.azure.com/ (100KB size limitation)
+  "azure",
+
+  --"claude",
+
+  "gemini",
+  --https://accomplished-observations-humanitarian-reprints.trycloudflare.com/api/Gemini
+
+  "geminicli",
+  --https://dna-subjects-billing-scuba.trycloudflare.com/api/GeminiCLI
+
+  "groq", --"groq.com",
+
+  "lmarena",
+  --https://accomplished-observations-humanitarian-reprints.trycloudflare.com/api/LMArena
+
+  "nvidia", --"nvidia.com",
+
+  --https://ollama.com/settings/keys
+  "ollama",
+  --https://ollama.g4f-dev.workers.dev
+
+  "yoai", --onyx
+  --https://onyx.g4f-dev.workers.dev
+
+  "openaichat",
+
+  "openrouter", --"openrouter:free",
+
+  "perplexity",
+  --https://perplexity.g4f-dev.workers.dev
+
+  --https://g4f.space/api/pollinations/account/balance
+  "pollinations", --"pollinations.ai", "nectar",
+
+  "qwencode",
+
+  "yupp"
+  --https://container-starter.gpt4free.workers.dev/api/Yupp
+}
+
+local modelsMap = {
+  auto="auto",
+  azure="model-router3",
+  groq="openai/gpt-oss-120b",
+  ollama="deepseek-v3.1:671b",
+  yoai="gpt-5.2",
+  openrouter="deepseek/deepseek-r1-0528:free",
+  perplexity="turbo",
+  pollinations="openai-large",
+}
+
+--local base = "https://api.gpt4free.workers.dev/api/"
+local base = "https://g4f.space/api/"
+
+local Common = ...
+apibase=function(cur)
+  local items = {}
+  local hk = Common.utils.HK.new(". ")
+  for _,label in ipairs(providers) do
+    local apibase = base..label
+    items[#items+1] = {
+      text=hk:iter()..label,
+      selected=apibase==cur,
+      apibase=apibase,
+    }
+  end
+  local props = {
+    Title="gpt4free endpoints", Bottom="Enter to choose",
+    Id=win.Uuid"48C55223-1504-4A85-BDB1-CE55F9959551",
+  }
+  local choice = far.Menu(props,items)
+  return choice and choice.apibase
+end
+
+--https://g4f.dev/members.html
+apikey=win.GetEnv"G4F_API_KEY"
+
+model=function(cur,primary)
+  if cur=="" then
+    for provider,model in pairs(modelsMap) do
+      if base..provider==primary.apibase then
+        return model
+      end
+    end
+  end
+end

@@ -1,0 +1,39 @@
+--https://g4f.dev/members.html
+
+--local base = "https://api.gpt4free.workers.dev/custom/"
+local base = "https://g4f.space/custom/"
+
+local Common = ...
+apibase=function(cur)
+  local guid = win.Uuid"3815BA87-2275-445B-BC57-5F433D7B3786"
+  local history = "AskAI/g4f.custom.preset/apikey"
+  apikey = far.InputBox(guid, "g4f.custom.preset", "Enter G4F_API_KEY", history,
+                        win.GetEnv"G4F_API_KEY", nil,nil,far.Flags.FIB_BUTTONS)
+  if not apikey then return end
+  local client = Common.restapi.Plain(apikey, "https://g4f.space/custom/api")
+  local servers = assert(client:request("/servers")).servers
+  local items = {}
+  local hk = Common.utils.HK.new(". ")
+  for _,server in ipairs(servers) do
+    local apibase = base..server.id
+    items[#items+1] = {
+      text=hk:iter()..server.label,
+      selected=apibase==cur,
+      apibase=apibase,
+    }
+  end
+  local props = {
+    Title="gpt4free custom servers", Bottom="Enter to choose",
+    Id=win.Uuid"2EDBAB19-17C3-44F4-B311-053F8841E533",
+  }
+  repeat
+    local choice,idx = far.Menu(props,items,"F3")
+    if choice then
+      if choice.apibase then
+        return choice.apibase
+      end
+      require"le"(servers[idx])
+      props.SelectIndex = idx
+    end
+  until not choice
+end

@@ -1,3 +1,0 @@
-apibase="https://g4f.space/api/openrouter"
---apibase="https://g4f.space/api/openrouter:free"
-model="deepseek/deepseek-r1-0528:free"

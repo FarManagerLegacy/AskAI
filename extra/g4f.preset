@@ -1,3 +1,6 @@
+-- Rate limit: 2000/day
+-- without apikey: 50/day
+
 apibase="https://g4f.space/v1"
 --apibase="https://api.gpt4free.workers.dev/v1"
 
