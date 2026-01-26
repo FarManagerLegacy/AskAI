@@ -266,8 +266,8 @@
 
 На данный момент наиболее сильные модели это:
 
-- `gpt-5.1`, `gpt-4.1`, `gpt-4o`, `o4`, `o3`, `o1` (а также модели с суффиксами `-mini`) от [OpenAI](https://platform.openai.com/);
-- `gemini-2.5-pro` от [Google](https://ai.google.dev/);
+- `gpt-5.2`, `gpt-5.1`, `gpt-4.1`, `gpt-4o`, `o4`, `o3`, `o1` (а также модели с суффиксами `-mini`) от [OpenAI](https://platform.openai.com/);
+- `gemini-3-pro` от [Google](https://ai.google.dev/);
 - `claude-opus-4.5`, `-sonnet-4.5` от [Anthropic](https://www.anthropic.com/);
 - `grok-4.1` от [xAI](https://x.ai/grok);
 
@@ -278,7 +278,7 @@
 - [Mistral](https://mistral.ai/models) Large 3;
 - ряд моделей от китайских разработчиков также демонстрирует хорошие результаты:
   [DeepSeek](https://www.deepseek.com/), [Qwen](https://qwenlm.github.io/) от *Alibaba*, [GLM-4.7](https://z.ai/blog/glm-4.7) от [Zhipu AI](https://zhipuai.cn/en/), [Kimi](https://www.kimi.com/) *K2* от [Moonshot AI](https://www.moonshot.ai/), [Baidu](https://ernie.baidu.com/blog/) *ERNIE*,
-  [MiniMax](https://www.minimaxi.com/en), [LongCat](https://www.longcatai.org/) от *Meituan*, *Yi* от [01.AI](https://www.01.ai/).
+  [MiniMax](https://www.minimaxi.com/en), [LongCat](https://www.longcatai.org/) от *Meituan*, *Xiaomi* [MiMo](https://mimo.xiaomi.com/blog), *Yi* от [01.AI](https://www.01.ai/).
 
 Ориентироваться можно по рейтингу [LMArena](https://lmarena.ai/leaderboard).
 

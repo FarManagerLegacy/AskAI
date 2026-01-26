@@ -1,0 +1,21 @@
+--$2.88 Bonus Credits
+--https://platform.xiaomimimo.com/#/docs/faq#promotions
+--https://platform.xiaomimimo.com/#/docs/pricing
+
+--https://mimo.xiaomi.com/
+--https://mimo.xiaomi.com/index#blog
+--https://platform.xiaomimimo.com/#/docs/updates/model
+--https://platform.xiaomimimo.com/#/docs/updates/feature
+
+--https://platform.xiaomimimo.com/#/docs/api/text-generation/openai-api
+apibase="https://api.xiaomimimo.com/v1"
+
+--https://platform.xiaomimimo.com/#/console/api-keys
+apikey=win.GetEnv"MIMO_API_KEY" or "set MIMO_API_KEY env variable!"
+
+model="mimo-v2-flash"
+
+extra_body={
+  'thinking: type:"enabled"',
+  'thinking: type:"disabled"',
+}
