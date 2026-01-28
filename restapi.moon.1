@@ -280,16 +280,39 @@ class GoogleInternal extends BasicSSE -- abstract class
   client_id: nil
   client_secret: nil
   headers: nil
-  api_base: "https://cloudcode-pa.googleapis.com/v1internal"
+  api_base: "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal"
+
+  _loadCodeAssist: =>
+    with assert @request "POST", ":loadCodeAssist", cloudaicompanionProject:"default-project"
+      return .cloudaicompanionProject if .cloudaicompanionProject
+      error .ineligibleTiers[1].reasonMessage, 0 if .ineligibleTiers
+    @_onboardUser!
+
+  _onboardUser: =>
+    { :done, :name, :response, error:err }, meta = assert @request "POST", ":onboardUser", tierId:"free-tier"
+    for i=1,10
+      if done
+        error err.message if err
+        return response and
+          response.cloudaicompanionProject and
+          response.cloudaicompanionProject.id or
+          error meta --failed to get cloudaicompanionProject
+      require"socket".sleep 0.2
+      { :done, :response, error:err }, meta = assert @request "GET", "/"..name
+    error meta --onboardUser timeout
 
   new: (@refresh_token, @api_base) =>
     assert @refresh_token, "refresh_token required"
     @auth = GoogleAuth @refresh_token, @client_id, @client_secret
-    if data = @@._cache[@refresh_token]
-      { api_key:@api_key, exp:@exp, project:@project } = data
+    data = @@._cache[@refresh_token]
+    if data
+      { api_key:@api_key, exp:@exp, project:[@api_base]:@project } = data
+      return if @project
     else
-      @project = (assert @request "POST", ":loadCodeAssist", cloudaicompanionProject:"default-project").cloudaicompanionProject
-      @@._cache[@refresh_token] = api_key:@api_key, exp:@exp, project:@project
+      data = api_key:@api_key, exp:@exp, project:{}
+      @@._cache[@refresh_token] = data
+    @project = @_loadCodeAssist!
+    data.project[@api_base] = @project
 
   request: (...) =>
     if data = @auth\refresh @exp
